@@ -20,16 +20,17 @@ export function AppHeader() {
 
 	return (
 		<header className="app-header full">
+			<img src="/img/AppLogo.png" alt="Offbeat Logo" />
 			<nav>
 				<NavLink to="/" className="logo">
-					E2E Demo
+					Offbeat
 				</NavLink>
 				<NavLink to="about">About</NavLink>
 				<NavLink to="station">Stations</NavLink>
 				<NavLink to="chat">Chat</NavLink>
 				<NavLink to="review">Review</NavLink>
 
-                {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
+				{user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
 				{!user && <NavLink to="auth/login" className="login-link">Login</NavLink>}
 				{user && (

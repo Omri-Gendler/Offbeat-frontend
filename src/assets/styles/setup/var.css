@@ -1,9 +1,9 @@
 :root {
   --clr1: #000000;
-  --clr2: #1ed760;
-  --clr3: #574f7d;
-  --clr4: #1ed760;
-  --clr5: #ffffff;
+  --clr2: #574f7d;
+  --clr3: #1ed760;
+  --clr4: #ffffff;
+  --clr5: #b3b3b3;
 
   --clr1-light: color-mix(in lab, var(--clr1), white 15%);
 

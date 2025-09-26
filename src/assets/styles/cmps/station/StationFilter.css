@@ -4,7 +4,7 @@
     align-items: center;
     gap: 0 .5em;
 
-    background-color: var(--clr4);
+    background-color: var(--clr3);
     padding: .5em;
 
     & h3 {
