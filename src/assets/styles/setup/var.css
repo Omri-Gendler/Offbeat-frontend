@@ -1,0 +1,17 @@
+:root {
+  --clr1: #000000;
+  --clr2: #1ed760;
+  --clr3: #574f7d;
+  --clr4: #95adbe;
+  --clr5: #ffffff;
+
+  --clr1-light: color-mix(in lab, var(--clr1), white 15%);
+
+  --gray1: #ddd;
+  --gray2: #2e2d2e;
+  --gray3: #1f1f1f;
+  --gray4: #333;
+
+  --success: #1ed760;
+  --error: #d83b3b;
+}
