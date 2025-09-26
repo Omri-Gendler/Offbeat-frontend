@@ -3,7 +3,7 @@
 
     > header {
         font-size: 1.2em;
-        color: var(--gray1);
+        color: var(--clr4);
     }
 
     & p {

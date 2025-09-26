@@ -9,7 +9,6 @@
         display: grid;
         grid-template-columns: max-content auto;
         padding: .5em;
-        background-color: var(--clr2);
 
         .actions {
             justify-self: end;
@@ -18,5 +17,9 @@
                 padding: .3em .5em;
             }
         }
+    }
+
+    a:hover{
+        color: var(--clr4);
     }
 }

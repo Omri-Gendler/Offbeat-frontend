@@ -1,3 +1,4 @@
+import { stations } from '../store/station.js'
 export const storageService = {
     query,
     get,
@@ -6,8 +7,15 @@ export const storageService = {
     remove,
 }
 
+// Demo data
+
 function query(entityType, delay = 500) {
     var entities = JSON.parse(localStorage.getItem(entityType)) || []
+    if (!entities.length) {
+        if (entityType === 'station') {
+            entities = stations
+        }
+    }
     return new Promise(resolve => setTimeout(() => resolve(entities), delay))
 }
 
