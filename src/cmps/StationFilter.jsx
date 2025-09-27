@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
+import TextField from '@mui/material/TextField';
+import Stack from '@mui/material/Stack';
+import SearchIcon from '@mui/icons-material/Search';
+import Autocomplete from '@mui/material/Autocomplete';
+
 
 export function StationFilter({ filterBy, setFilterBy }) {
-    const [ filterToEdit, setFilterToEdit ] = useState(structuredClone(filterBy))
+    const [filterToEdit, setFilterToEdit] = useState(structuredClone(filterBy))
 
     useEffect(() => {
         setFilterBy(filterToEdit)
@@ -16,7 +21,7 @@ export function StationFilter({ filterBy, setFilterBy }) {
             case 'text':
             case 'radio':
                 value = field === 'sortDir' ? +ev.target.value : ev.target.value
-                if(!filterToEdit.sortDir) filterToEdit.sortDir = 1
+                if (!filterToEdit.sortDir) filterToEdit.sortDir = 1
                 break
             case 'number':
                 value = +ev.target.value || ''
@@ -25,72 +30,42 @@ export function StationFilter({ filterBy, setFilterBy }) {
         setFilterToEdit({ ...filterToEdit, [field]: value })
     }
 
-    function clearFilter() {
-        setFilterToEdit({ ...filterToEdit, txt: '' })
-    }
-    
-    function clearSort() {
-        setFilterToEdit({ ...filterToEdit, sortField: '', sortDir: '' })
-    }
+    // function clearFilter() {
+    //     setFilterToEdit({ ...filterToEdit, txt: '' })
+    // }
+
+    // function clearSort() {
+    //     setFilterToEdit({ ...filterToEdit, sortField: '', sortDir: '' })
+    // }
 
     return <section className="station-filter">
-            <h3>Filter:</h3>
-            <input
-                type="text"
-                name="txt"
-                value={filterToEdit.txt}
-                placeholder="Free text"
-                onChange={handleChange}
-                required
+        <Stack spacing={2} sx={{ width: 300, borderRadius: '255px' }}>
+            <Autocomplete
+                freeSolo
+                id='search-input'
+                className='search-input'
+                disableClearable
+                options={[]}
+                onInputChange={(event, newInputValue) => {
+                    setFilterToEdit({ ...filterToEdit, txt: newInputValue })
+                }}
+                renderInput={(params) => (
+                    <TextField sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: '25px',
+                            '&.Mui-focused fieldset': {
+                                borderColor: 'var(--clr4)',
+                            },
+                        },
+                    }} {...params}
+                        label={<SearchIcon />}
+                        InputProps={{
+                            ...params.InputProps,
+                            type: 'search',
+                        }}
+                    />
+                )}
             />
-            <button 
-                className="btn-clear" 
-                onClick={clearFilter}>Clear</button>
-            <h3>Sort:</h3>
-            <div className="sort-field">
-                <label>
-                    <span>Speed</span>
-                    <input
-                        type="radio"
-                        name="sortField"
-                        onChange={handleChange}
-                    />
-                </label>
-                <label>
-                    <span>Name</span>
-                    <input
-                        type="radio"
-                        name="sortField"
-                        value="name"
-                        checked={filterToEdit.sortField === 'name'}            
-                        onChange={handleChange}
-                    />
-                </label>
-            </div>
-            <div className="sort-dir">
-                <label>
-                    <span>Asce</span>
-                    <input
-                        type="radio"
-                        name="sortDir"
-                        value="1"
-                        checked={filterToEdit.sortDir === 1}                        
-                        onChange={handleChange}
-                    />
-                </label>
-                <label>
-                    <span>Desc</span>
-                    <input
-                        type="radio"
-                        name="sortDir"
-                        value="-1"
-                        onChange={handleChange}
-                        checked={filterToEdit.sortDir === -1}                        
-                    />
-                </label>
-            </div>
-            <button 
-                className="btn-clear" 
-                onClick={clearSort}>Clear</button>
-    </section>
+        </Stack>
+    </section >
 }
