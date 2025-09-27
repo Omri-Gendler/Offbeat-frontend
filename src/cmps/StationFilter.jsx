@@ -53,6 +53,12 @@ export function StationFilter({ filterBy, setFilterBy }) {
                     <TextField sx={{
                         '& .MuiOutlinedInput-root': {
                             borderRadius: '25px',
+                            '& fieldset': {
+                                borderColor: 'white',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: 'white',
+                            },
                             '&.Mui-focused fieldset': {
                                 borderColor: 'var(--clr4)',
                             },
