@@ -3,6 +3,7 @@ import TextField from '@mui/material/TextField';
 import Stack from '@mui/material/Stack';
 import SearchIcon from '@mui/icons-material/Search';
 import Autocomplete from '@mui/material/Autocomplete';
+import InputAdornment from '@mui/material/InputAdornment';
 
 
 export function StationFilter({ filterBy, setFilterBy }) {
@@ -38,40 +39,56 @@ export function StationFilter({ filterBy, setFilterBy }) {
     //     setFilterToEdit({ ...filterToEdit, sortField: '', sortDir: '' })
     // }
 
-    return <section className="station-filter">
-        <Stack spacing={2} sx={{ width: 300, borderRadius: '255px' }}>
-            <Autocomplete
-                freeSolo
-                id='search-input'
-                className='search-input'
-                disableClearable
-                options={[]}
-                onInputChange={(event, newInputValue) => {
-                    setFilterToEdit({ ...filterToEdit, txt: newInputValue })
-                }}
-                renderInput={(params) => (
-                    <TextField sx={{
+    return (
+        <section className="station-filter">
+            <Stack spacing={2} sx={{ width: 300 }}>
+                <Autocomplete
+                    freeSolo
+                    id='search-input'
+                    className='search-input'
+                    disableClearable
+                    options={[]}
+                    onInputChange={(event, newInputValue) => {
+                        setFilterToEdit({ ...filterToEdit, txt: newInputValue });
+                    }}
+                    sx={{
                         '& .MuiOutlinedInput-root': {
                             borderRadius: '25px',
                             '& fieldset': {
-                                borderColor: 'white',
+                                borderColor: 'var(--clr5)',
                             },
                             '&:hover fieldset': {
-                                borderColor: 'white',
+                                borderColor: 'var(--clr4)',
                             },
                             '&.Mui-focused fieldset': {
                                 borderColor: 'var(--clr4)',
                             },
                         },
-                    }} {...params}
-                        label={<SearchIcon />}
-                        InputProps={{
-                            ...params.InputProps,
-                            type: 'search',
-                        }}
-                    />
-                )}
-            />
-        </Stack>
-    </section >
+                        '& .MuiInputBase-input::placeholder': {
+                            color: 'white',
+                            opacity: 0.7,
+                        },
+                        '& .MuiSvgIcon-root': {
+                            color: 'white',
+                        },
+                    }}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            placeholder='What do you want to play?'
+                            InputProps={{
+                                ...params.InputProps,
+                                type: 'search',
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    )}
+                />
+            </Stack>
+        </section>
+    )
 }
