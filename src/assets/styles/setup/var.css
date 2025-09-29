@@ -5,9 +5,11 @@
   --clr4: #ffffff;
   --clr5: #b3b3b3;
 
+  --white: var(--white);
+
   --clr1-light: color-mix(in lab, var(--clr1), white 15%);
 
-  --gray1: #ddd;
+  --gray1: #121212;
   --gray2: #2e2d2e;
   --gray3: #1f1f1f;
   --gray4: #333;

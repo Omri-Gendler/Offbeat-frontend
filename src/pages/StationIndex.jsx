@@ -52,11 +52,10 @@ export function StationIndex() {
 
     return (
         <section className="station-index">
+            <StationFilter filterBy={filterBy} setFilterBy={setFilterBy} />
             <header>
-                <h2>Stations</h2>
                 {userService.getLoggedinUser() && <button onClick={onAddStation}>Add a Station</button>}
             </header>
-            <StationFilter filterBy={filterBy} setFilterBy={setFilterBy} />
             <StationList
                 stations={stations}
                 onRemoveStation={onRemoveStation}

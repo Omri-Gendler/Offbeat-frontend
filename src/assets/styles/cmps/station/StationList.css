@@ -4,6 +4,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
     gap: .5em;
+    background-color: var(--gray1);
 
     & li {
         /* display: grid; */
@@ -19,7 +20,7 @@
         }
     }
 
-    a:hover{
+    a:hover {
         color: var(--clr4);
     }
 }
