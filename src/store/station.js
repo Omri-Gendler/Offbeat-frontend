@@ -14,15 +14,17 @@
 // StationDetails - Make it amazing
 // D & D Later....
 
+const img = '/img/infected.jpg'
+
 export const stations = [
 	{
 		_id: 'station001',
 		name: '80s Rock Anthems',
 		tags: ['Rock', '80s', 'Classic'],
+		imgUrl: img,
 		createdBy: {
 			_id: 'u102',
 			fullname: 'Muki Levi',
-			imgUrl: 'http://some-photo/muki.jpg',
 		},
 		likedByUsers: ['u101', 'u103'],
 		songs: [
@@ -51,6 +53,8 @@ export const stations = [
 		_id: 'station002',
 		name: 'Chill Lo-Fi Beats',
 		tags: ['Lo-Fi', 'Chill', 'Study'],
+		imgUrl: img,
+
 		createdBy: {
 			_id: 'u103',
 			fullname: 'Shuki Cohen',
@@ -83,6 +87,8 @@ export const stations = [
 		_id: 'station003',
 		name: '90s Hip Hop Classics',
 		tags: ['Hip Hop', '90s', 'Rap'],
+		imgUrl: img,
+
 		createdBy: {
 			_id: 'u101',
 			fullname: 'Puki Ben David',
@@ -115,6 +121,8 @@ export const stations = [
 		_id: 'station004',
 		name: 'Indie Folk & Acoustic',
 		tags: ['Indie', 'Folk', 'Acoustic'],
+		imgUrl: img,
+
 		createdBy: {
 			_id: 'u104',
 			fullname: 'Anna Popova',
@@ -147,6 +155,8 @@ export const stations = [
 		_id: 'station005',
 		name: 'Electronic Dance Party',
 		tags: ['Electronic', 'Dance', 'Party'],
+		imgUrl: img,
+
 		createdBy: {
 			_id: 'u102',
 			fullname: 'Muki Levi',
@@ -179,6 +189,8 @@ export const stations = [
 		_id: 'station006',
 		name: 'Classic Jazz Lounge',
 		tags: ['Jazz', 'Classic', 'Lounge'],
+		imgUrl: img,
+
 		createdBy: {
 			_id: 'u101',
 			fullname: 'Puki Ben David',
@@ -211,6 +223,8 @@ export const stations = [
 		_id: 'station007',
 		name: 'Reggae Vibes',
 		tags: ['Reggae', 'Vibes', 'Chill'],
+		imgUrl: img,
+
 		createdBy: {
 			_id: 'u103',
 			fullname: 'Shuki Cohen',

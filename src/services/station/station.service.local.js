@@ -5,6 +5,8 @@ import { userService } from '../user'
 
 const STORAGE_KEY = 'station'
 
+const img = '/img/infected.jpg'
+
 export const stationService = {
     query,
     getById,
