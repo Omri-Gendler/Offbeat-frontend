@@ -1,9 +1,9 @@
-import MusicPlayerSlider from '../cmps/MusicPlayer.jsx'
+// import MusicPlayerSlider from '../cmps/MusicPlayer.jsx'
 
 export function HomePage() {
     return (
         <section className="home">
-            <MusicPlayerSlider />
+            {/* <MusicPlayerSlider /> */}
         </section >
     )
 }

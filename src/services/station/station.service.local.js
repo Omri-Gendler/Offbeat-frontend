@@ -29,7 +29,6 @@ async function query(filterBy = { txt: '' }) {
         stations.sort((station1, station2) =>
             station1[sortField].localeCompare(station2[sortField]) * +sortDir)
     }
-    stations = stations.map(({ _id, name, owner }) => ({ _id, name, owner }))
     return stations
 }
 

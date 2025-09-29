@@ -6,7 +6,7 @@
     gap: .5em;
 
     & li {
-        display: grid;
+        /* display: grid; */
         grid-template-columns: max-content auto;
         padding: .5em;
 
