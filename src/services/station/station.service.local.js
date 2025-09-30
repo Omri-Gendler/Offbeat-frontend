@@ -1,11 +1,12 @@
 
 import { storageService } from '../async-storage.service'
-import { makeId } from '../util.service'
+import { makeId, loadFromStorage, saveToStorage } from '../util.service'
 import { userService } from '../user'
 
 const STORAGE_KEY = 'station'
+_createStations()
 
-const img = '/img/infected.jpg'
+// const img = '/img/infected.jpg'
 
 export const stationService = {
     query,
@@ -41,6 +42,81 @@ function getById(stationId) {
 async function remove(stationId) {
     // throw new Error('Nope')
     await storageService.remove(STORAGE_KEY, stationId)
+}
+
+function _createStations() {
+    let stations = loadFromStorage(STORAGE_KEY)
+    if (!stations || !stations.length) {
+        stations = [
+            {
+                _id: 'station001',
+                name: '80s Rock Anthems',
+                tags: ['Rock', '80s', 'Classic'],
+                // imgUrl: img,
+                createdBy: {
+                    _id: 'u102',
+                    fullname: 'Muki Levi',
+                },
+                likedByUsers: ['u101', 'u103'],
+                songs: [
+                    {
+                        id: 'lDK9QqIzhwk',
+                        title: "Bon Jovi - Livin' On A Prayer",
+                        url: 'youtube/song.mp4',
+                        imgUrl: 'https://i.ytimg.com/vi/lDK9QqIzhwk/mqdefault.jpg',
+                        addedBy: 'u102',
+                        likedBy: ['u101'],
+                        addedAt: 162521765262,
+                    },
+                    {
+                        id: '1w7OgIMMRc4',
+                        title: "Guns N' Roses - Sweet Child O' Mine",
+                        url: 'youtube/song.mp4',
+                        imgUrl: 'https://i.ytimg.com/vi/1w7OgIMMRc4/mqdefault.jpg',
+                        addedBy: 'u101',
+                        likedBy: [],
+                        addedAt: 162531765262,
+                    },
+                ],
+                msgs: [{ id: 'm201', from: 'u103', txt: 'Classic!' }],
+            },
+            {
+                _id: 'station002',
+                name: 'Chill Lo-Fi Beats',
+                tags: ['Lo-Fi', 'Chill', 'Study'],
+                // imgUrl: img,
+
+                createdBy: {
+                    _id: 'u103',
+                    fullname: 'Shuki Cohen',
+                    imgUrl: 'http://some-photo/shuki.jpg',
+                },
+                likedByUsers: ['u102', 'u104'],
+                songs: [
+                    {
+                        id: '5AEbq6XbSO0',
+                        title: 'lofi hip hop radio - beats to relax/study to',
+                        url: 'youtube/song.mp4',
+                        imgUrl: 'https://i.ytimg.com/vi/5AEbq6XbSO0/mqdefault.jpg',
+                        addedBy: 'u103',
+                        likedBy: ['u102', 'u104'],
+                        addedAt: 162541765262,
+                    },
+                    {
+                        id: 'DWcJFNfaw9c',
+                        title: 'Affection - Jinsang',
+                        url: 'youtube/song.mp4',
+                        imgUrl: 'https://i.ytimg.com/vi/DWcJFNfaw9c/mqdefault.jpg',
+                        addedBy: 'u103',
+                        likedBy: [],
+                        addedAt: 162551765262,
+                    },
+                ],
+                msgs: [],
+            },
+        ]
+        saveToStorage(STORAGE_KEY, stations)
+    }
 }
 
 async function save(station) {
