@@ -25,7 +25,7 @@ export function AppHeader() {
 				<NavLink to="/" className="logo">
 					Offbeat
 				</NavLink>
-				<NavLink to="about">About</NavLink>
+				<NavLink to="about">About!</NavLink>
 				<NavLink to="station">Stations</NavLink>
 				<NavLink to="review">Review</NavLink>
 
