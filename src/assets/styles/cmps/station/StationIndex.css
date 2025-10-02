@@ -5,7 +5,7 @@
         align-items: center;
         justify-content: space-between;
 
-        padding-block: .3em;
+        /* padding-block: .3em; */
     }
 
     & h2 {

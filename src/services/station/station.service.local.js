@@ -52,7 +52,7 @@ function _createStations() {
                 _id: 'station001',
                 name: '80s Rock Anthems',
                 tags: ['Rock', '80s', 'Classic'],
-                // imgUrl: img,
+                imgUrl: './img/infected.jpg',
                 createdBy: {
                     _id: 'u102',
                     fullname: 'Muki Levi',
@@ -63,7 +63,6 @@ function _createStations() {
                         id: 'lDK9QqIzhwk',
                         title: "Bon Jovi - Livin' On A Prayer",
                         url: 'youtube/song.mp4',
-                        imgUrl: 'https://i.ytimg.com/vi/lDK9QqIzhwk/mqdefault.jpg',
                         addedBy: 'u102',
                         likedBy: ['u101'],
                         addedAt: 162521765262,
@@ -84,7 +83,7 @@ function _createStations() {
                 _id: 'station002',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                // imgUrl: img,
+                imgUrl: './img/infected.jpg',
 
                 createdBy: {
                     _id: 'u103',

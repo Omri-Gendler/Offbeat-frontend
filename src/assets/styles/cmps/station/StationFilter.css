@@ -2,9 +2,9 @@
     display: grid;
     grid-template-columns: 1fr 5em 5em auto;
     align-items: center;
-    gap: 0 .5em;
+    /* gap: 0 .5em; */
     /* background-color: var(--clr3); */
-    padding: .5em;
+    /* padding: .5em; */
 
     & h3 {
         grid-column: 1 / -1;
