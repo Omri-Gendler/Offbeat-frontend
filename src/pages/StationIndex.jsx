@@ -61,6 +61,7 @@ export function StationIndex() {
             <StationList
                 stations={stations}
                 onRemoveStation={onRemoveStation}
+                onEditStation={updateStation}
                 onLikeStation={onLikeStation} />
         </section>
     )
