@@ -25,6 +25,11 @@ export function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min //The maximum is inclusive and the minimum is inclusive 
 }
 
+export function maxLength(text, maxLength) {
+    if (text.length <= maxLength) return text;
+    return text.slice(0, maxLength) + '...';
+}
+
 
 export function randomPastTime() {
     const HOUR = 1000 * 60 * 60

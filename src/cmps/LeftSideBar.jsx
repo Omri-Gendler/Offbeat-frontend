@@ -1,41 +1,34 @@
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { addStation, loadStations } from "../store/actions/station.actions";
-import { stationService } from "../services/station";
+import { loadStations } from "../store/actions/station.actions";
+import { useNavigate } from "react-router-dom";
+import { maxLength } from "../services/util.service";
+import { useMemo } from "react";
 
 import AddIcon from '@mui/icons-material/Add';
-import { useNavigate } from "react-router-dom";
 
 
 export function LeftSideBar() {
 
     const stations = useSelector(storeState => storeState.stationModule.stations)
-    const [filterBy, setFilterBy] = useState({ txt: '', sortField: '', sortDir: 1 })
-    const [filterToEdit, setFilterToEdit] = useState(structuredClone(filterBy))
+    const [filterBy, setFilterBy] = useState({ txt: '' })
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        setFilterBy(filterToEdit)
-    }, [filterToEdit])
+        loadStations()
+    }, [])
 
-    function handleChange(ev) {
-        const type = ev.target.type
-        const field = ev.target.name
-        let value
-
-        switch (type) {
-            case 'text':
-            case 'radio':
-                value = field === 'sortDir' ? +ev.target.value : ev.target.value
-                if (!filterToEdit.sortDir) filterToEdit.sortDir = 1
-                break
-            case 'number':
-                value = +ev.target.value || ''
-                break
-        }
-        setFilterToEdit({ ...filterToEdit, [field]: value })
+      function handleChange(ev) {
+        const { name, value } = ev.target;
+        setFilterBy({ ...filterBy, [name]: value })
     }
+
+    const filteredStations = useMemo(() => {
+        if (!filterBy.txt) return stations
+        const regex = new RegExp(filterBy.txt, 'i')
+        return stations.filter(station => regex.test(station.name))
+    }, [stations, filterBy])
 
 
     function searchBar() {
@@ -51,17 +44,6 @@ export function LeftSideBar() {
         )
     }
 
-    const handleAddStation = async (stationName) => {
-        const newStation = stationService.getEmptyStation()
-        newStation.name = stationName
-
-        try {
-            await addStation(newStation)
-        } catch (err) {
-            console.error('Failed to add station', err)
-        }
-    }
-
 
     function leftHeader() {
         return (
@@ -73,6 +55,7 @@ export function LeftSideBar() {
         )
     }
 
+
     useEffect(() => {
         loadStations()
     }, [])
@@ -80,12 +63,14 @@ export function LeftSideBar() {
     return (
         <aside className="left-side-bar">
             {leftHeader()}
-            {stations.map(station => (
-                <div key={station._id}>
-                    <img src={station.imgUrl} alt="" />
-                    <p>{station.name}</p>
-                </div>
-            ))}
+            <div className="library-list">
+                {filteredStations.map(station => (
+                    <div key={station._id} className="library-item">
+                        <img src={station.imgUrl} alt="" />
+                        <p>{maxLength(station.name, 10)}</p>
+                    </div>
+                ))}
+            </div>
         </aside>
     )
 }
