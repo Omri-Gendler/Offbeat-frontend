@@ -6,6 +6,7 @@ import { loadStations, addStation, updateStation, removeStation, addStationMsg }
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { stationService } from '../services/station'
 import { userService } from '../services/user'
+import { Outlet } from 'react-router-dom'
 
 import { StationList } from '../cmps/StationList'
 import { StationFilter } from '../cmps/StationFilter'
@@ -56,6 +57,7 @@ export function StationIndex() {
             <header>
                 {userService.getLoggedinUser() && <button onClick={onAddStation}>Add a Station</button>}
             </header>
+            <Outlet />
             <StationList
                 stations={stations}
                 onRemoveStation={onRemoveStation}

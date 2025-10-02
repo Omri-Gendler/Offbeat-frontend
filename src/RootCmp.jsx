@@ -15,6 +15,7 @@ import { AppFooter } from './cmps/AppFooter'
 import { UserMsg } from './cmps/UserMsg.jsx'
 import { LeftSideBar } from './cmps/LeftSideBar.jsx'
 import { LoginSignup, Login, Signup } from './pages/LoginSignup.jsx'
+import { AddStationModal } from './cmps/AddStationModal.jsx'
 
 
 
@@ -32,7 +33,9 @@ export function RootCmp() {
                         <Route path="team" element={<AboutTeam />} />
                         <Route path="vision" element={<AboutVision />} />
                     </Route>
-                    <Route path="station" element={<StationIndex />} />
+                    <Route path="stations" element={<StationIndex />} >
+                        <Route path="add" element={<AddStationModal />} />
+                    </Route>
                     <Route path="station/:stationId" element={<StationDetails />} />
                     <Route path="user/:id" element={<UserDetails />} />
                     <Route path="review" element={<ReviewIndex />} />

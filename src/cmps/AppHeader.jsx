@@ -26,7 +26,7 @@ export function AppHeader() {
 					Offbeat
 				</NavLink>
 				<NavLink to="about">About!</NavLink>
-				<NavLink to="station">Stations</NavLink>
+				<NavLink to="stations">Stations</NavLink>
 				<NavLink to="review">Review</NavLink>
 
 				{user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}

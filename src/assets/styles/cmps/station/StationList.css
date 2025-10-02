@@ -1,15 +1,17 @@
 .station-list {
     --min-column-size: 220px;
-
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--min-column-size), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: .5em;
     background-color: var(--gray1);
 
     & li {
-        /* display: grid; */
-        grid-template-columns: max-content auto;
-        /* padding: .5em; */
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+
+        background-color: #181818;
+        padding: 1em;
+        border-radius: 8px;
 
         .actions {
             justify-self: end;
