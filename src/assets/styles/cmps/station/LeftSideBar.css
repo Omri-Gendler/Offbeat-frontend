@@ -43,5 +43,14 @@
             text-overflow: ellipsis;
         }
 
+
+
     }
+}
+
+.left-header {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 2px;
+    font-size: 12px;
 }

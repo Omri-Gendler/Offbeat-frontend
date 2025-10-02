@@ -1,3 +1,33 @@
 .main-container > main {
     min-height: calc(100vh - 9rem);
 }
+
+/* הוסף את זה לקובץ ה-CSS הראשי שלך */
+
+/* מבטיח שהאפליקציה תופסת 100% מהגובה ההתחלתי */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background-color: #000; /* רקע שחור כללי */
+}
+
+/* הקונטיינר הראשי של כל האפליקציה */
+.app-layout {
+  display: flex;
+  flex-direction: column; /* מסדר את הילדים (הדר, תוכן, פוטר) בעמודה */
+  height: 100%; /* תופס 100% מהגובה של ההורה שלו (#root) */
+}
+
+/* הקונטיינר של סרגל הצד והתוכן הראשי */
+.content-layout {
+  flex-grow: 1; /* 🔥 זה החלק החשוב! הוא גורם לאלמנט הזה להתמתח ולמלא את כל הגובה הפנוי */
+  display: grid;
+  grid-template-columns: 250px 1fr; /* חלוקת העמודות שלך (אפשר לשנות את 250px) */
+  overflow: hidden; /* מונע בעיות גלישה */
+}
+
+/* הגדרות חשובות לסרגל הצד ולאזור התוכן */
+.left-side-bar, main {
+  overflow-y: auto; /* מאפשר גלילה פנימית לכל עמודה בנפרד אם התוכן ארוך מדי */
+  height: 100%; /* מבטיח שהם ממלאים את הגובה שהוקצב להם */
+}

@@ -19,7 +19,7 @@ export function LeftSideBar() {
         loadStations()
     }, [])
 
-      function handleChange(ev) {
+    function handleChange(ev) {
         const { name, value } = ev.target;
         setFilterBy({ ...filterBy, [name]: value })
     }
@@ -49,7 +49,6 @@ export function LeftSideBar() {
         return (
             <div className="left-header">
                 <h3>Your Library</h3>
-                {searchBar()}
                 <button onClick={() => navigate('/stations/add')}><AddIcon /></button>
             </div>
         )
@@ -63,6 +62,7 @@ export function LeftSideBar() {
     return (
         <aside className="left-side-bar">
             {leftHeader()}
+            {searchBar()}
             <div className="library-list">
                 {filteredStations.map(station => (
                     <div key={station._id} className="library-item">
