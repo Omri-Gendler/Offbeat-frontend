@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { addStation, loadStations } from "../store/actions/station.actions";
-import { AddStationModal } from './AddStationModal.jsx'
+import { stationService } from "../services/station";
 
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from "react-router-dom";
@@ -83,14 +83,9 @@ export function LeftSideBar() {
             {stations.map(station => (
                 <div key={station._id}>
                     <img src={station.imgUrl} alt="" />
+                    <p>{station.name}</p>
                 </div>
             ))}
-
-            {/* <AddStationModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onAddStation={handleAddStation}
-            /> */}
         </aside>
     )
 }

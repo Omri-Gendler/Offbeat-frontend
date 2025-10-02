@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { stationService } from '../services/station';
 import { addStation } from '../store/actions/station.actions';
 
-// הקומפוננטה כבר לא מקבלת props לשליטה
 export function AddStationModal() {
     const [stationName, setStationName] = useState('')
     const navigate = useNavigate()

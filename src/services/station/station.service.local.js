@@ -301,7 +301,8 @@ async function save(station) {
             name: station.name,
             // Later, owner is set by the backend
             owner: userService.getLoggedinUser(),
-            msgs: []
+            msgs: [],
+            imgUrl: '/img/infected.jpg',
         }
         savedStation = await storageService.post(STORAGE_KEY, stationToSave)
     }

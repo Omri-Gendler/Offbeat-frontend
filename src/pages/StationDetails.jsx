@@ -28,7 +28,7 @@ export function StationDetails() {
 
   return (
     <section className="station-details">
-      <Link to="/station">Back to list</Link>
+      <Link to="/stations">Back to list</Link>
       <h1>Station Details</h1>
       {station && <div>
         <h3>{station.name}</h3>

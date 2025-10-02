@@ -10,6 +10,7 @@ function getEmptyStation() {
         _id: '',
         name: makeId(),
         msgs: [],
+        imgUrl: './assets/img/infected.jpg',
     }
 }
 
