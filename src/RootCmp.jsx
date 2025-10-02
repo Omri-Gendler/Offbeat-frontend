@@ -13,13 +13,16 @@ import { UserDetails } from './pages/UserDetails'
 import { AppHeader } from './cmps/AppHeader'
 import { AppFooter } from './cmps/AppFooter'
 import { UserMsg } from './cmps/UserMsg.jsx'
+import { LeftSideBar } from './cmps/LeftSideBar.jsx'
 import { LoginSignup, Login, Signup } from './pages/LoginSignup.jsx'
+
 
 
 export function RootCmp() {
     return (
         <div className="main-container">
             <AppHeader />
+            <LeftSideBar />
             <UserMsg />
 
             <main>

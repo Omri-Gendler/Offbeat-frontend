@@ -1,4 +1,4 @@
-import { stations } from '../store/station.js'
+import { stations } from '/public/data/station.js'
 export const storageService = {
     query,
     get,

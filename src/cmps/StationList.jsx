@@ -17,7 +17,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
                 <li key={station._id}>
                     {station.imgUrl && <img className="station-img" src={station.imgUrl} alt="" style={{ width: '100px', height: '100px' }} />}
                     <StationPreview station={station} />
-                    {shouldShowActionBtns(station) && <div className="actions">
+                    {<div className="actions">
                         <button onClick={() => onUpdateStation(station)}>Edit</button>
                         <button onClick={() => onRemoveStation(station._id)}>x</button>
                     </div>}
