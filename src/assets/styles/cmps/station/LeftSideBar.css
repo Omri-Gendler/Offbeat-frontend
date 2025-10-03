@@ -46,24 +46,35 @@
     .search-bar {
         display: flex;
         align-items: center;
-        margin: 10px 8px;
-        padding: 6px 12px;
         background-color: var(--gray2);
-        border-radius: 20px;
+        border-radius: 4px;
+        padding: 6px 12px;
+        cursor: pointer;
 
-        input {
-            flex: 1;
-            border: none;
-            background: none;
+        .search-icon {
             color: var(--clr4);
-            outline: none;
-            font-size: 12px;
-            padding-left: 8px;
+            font-size: 20px;
         }
 
-        svg {
-            font-size: 16px;
+        input {
+            width: 0;
+            padding: 0;
+            border: none;
+            background: none;
+            outline: none;
             color: var(--clr4);
+            font-size: 14px;
+            opacity: 0;
+
+            transition: width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+        }
+
+        &.expanded {
+            input {
+                width: 150px;
+                opacity: 1;
+                padding-left: 8px;
+            }
         }
     }
 
@@ -95,7 +106,7 @@
         font-size: 11px;
         cursor: pointer;
         transition: background-color 0.2s;
-        margin: -3px 48px 0 0;
+        margin-top: -7px;
 
         &:hover {
             background-color: #2a2a2a;
@@ -111,6 +122,14 @@
         justify-content: space-around;
         margin-top: 4px;
     }
+
+    .search-and-recent {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 8px;
+        margin-bottom: 8px;
+    }
 }
 
 .left-header {
@@ -119,7 +138,7 @@
     flex-wrap: wrap;
     /* padding: 2px; */
     font-size: 9.5px;
-    margin-left: 21px;
+    margin-left: 5px;
     margin-top: 5px;
 
 }

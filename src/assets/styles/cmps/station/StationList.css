@@ -1,8 +1,7 @@
 .station-list-container {
     padding: 1em;
     background-color: var(--gray1);
-    border-radius: 8px;
-    margin-top: -7px;
+    border-radius: 20px;
 }
 
 .station-list {

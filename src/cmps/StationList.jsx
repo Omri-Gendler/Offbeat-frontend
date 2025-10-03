@@ -11,18 +11,20 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
         return station.owner?._id === user._id
     }
 
-    return <section className="station-list-container">
-        <ul className="station-list">
-            {stations.map(station =>
-                <li key={station._id}>
-                    {<img className="station-img" src={station.imgUrl} alt="" />}
-                    <StationPreview station={station} />
-                    {<div className="actions">
-                        {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
-                        <button onClick={() => onRemoveStation(station._id)}>x</button>
-                    </div>}
-                </li>)
-            }
-        </ul>
-    </section>
+    return (
+        <section className="station-list-container">
+            <ul className="station-list">
+                {stations.map(station =>
+                    <li key={station._id}>
+                        {<img className="station-img" src={station.imgUrl} alt="" />}
+                        <StationPreview station={station} />
+                        {<div className="actions">
+                            {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
+                            <button onClick={() => onRemoveStation(station._id)}>x</button>
+                        </div>}
+                    </li>
+                )}
+            </ul>
+        </section>
+    )
 }

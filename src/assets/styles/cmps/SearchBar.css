@@ -1,5 +1,6 @@
 .search-input {
     background-color: var(--clr1);
-    border-radius: 25px;
-    border-color: 2px solid var(--white);
+    color: var(--clr4);
+    /* border-radius: 25px; */
+    border: 2px solid var(--clr4);
 }

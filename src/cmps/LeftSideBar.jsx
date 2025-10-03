@@ -3,17 +3,20 @@ import { useEffect, useState } from "react";
 import { loadStations } from "../store/actions/station.actions";
 import { useNavigate } from "react-router-dom";
 import { maxLength } from "../services/util.service";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 export function LeftSideBar() {
 
     const stations = useSelector(storeState => storeState.stationModule.stations)
     const [filterBy, setFilterBy] = useState({ txt: '' })
+    const [isSearchOpen, setIsSearchOpen] = useState(false)
 
     const navigate = useNavigate()
+    const inputRef = useRef(null);
 
     useEffect(() => {
         loadStations()
@@ -32,14 +35,33 @@ export function LeftSideBar() {
 
 
     function searchBar() {
+        const inputRef = useRef(null)
+
+        useEffect(() => {
+            if (isSearchOpen) {
+                inputRef.current?.focus()
+            }
+        }, [isSearchOpen])
+
         return (
-            <div className="search-bar">
-                <input
-                    type="text"
-                    name="txt"
-                    value={filterBy.txt}
-                    onChange={handleChange}
-                />
+            <div className={`search-container ${isSearchOpen ? 'expanded' : ''}`}>
+
+                <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} />
+
+                {isSearchOpen ? (
+                    <input
+                        className="search-input"
+                        ref={inputRef}
+                        type="text"
+                        name="txt"
+                        value={filterBy.txt}
+                        onChange={handleChange}
+                        placeholder="Search in Your Library"
+                        onBlur={() => setIsSearchOpen(false)}
+                    />
+                ) : (
+                    <span className="search-placeholder" onClick={() => setIsSearchOpen(true)} placeholder="Search..."></span>
+                )}
             </div>
         )
     }
@@ -70,19 +92,23 @@ export function LeftSideBar() {
     }, [])
 
     return (
-        <aside className="left-side-bar">
-            {leftHeader()}
-            {sortFilteredStations()}
-            {searchBar()}
-            <button>Recent</button>
-            <div className="library-list">
-                {filteredStations.map(station => (
-                    <div key={station._id} className="library-item">
-                        <img src={station.imgUrl} alt="" />
-                        <p>{maxLength(station.name, 10)}</p>
-                    </div>
-                ))}
-            </div>
-        </aside>
+        <section className="left-side-bar">
+            <aside className="station-list-container">
+                {leftHeader()}
+                {sortFilteredStations()}
+                <section className="search-and-recent">
+                    {searchBar()}
+                    <button>Recent</button>
+                </section>
+                <div className="library-list">
+                    {filteredStations.map(station => (
+                        <div key={station._id} className="library-item">
+                            <img src={station.imgUrl} alt="" />
+                            <p>{maxLength(station.name, 10)}</p>
+                        </div>
+                    ))}
+                </div>
+            </aside>
+        </section>
     )
 }
