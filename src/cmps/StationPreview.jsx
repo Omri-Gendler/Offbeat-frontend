@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 export function StationPreview({ station }) {
     return <article className="station-preview">
         <header>
-            <Link to={`/station/${station._id}`}>{station.name}</Link>
+            <Link to={`/stations/${station._id}`}>{station.name}</Link>
         </header>
 
         {station.owner && <p>Owner: <span>{station.owner.fullname}</span></p>}

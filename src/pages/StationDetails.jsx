@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { SongsList } from '../cmps/SongsList.jsx'
 
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { loadStation, addStationMsg } from '../store/actions/station.actions'
@@ -15,28 +16,32 @@ export function StationDetails() {
   useEffect(() => {
     loadStation(stationId)
   }, [stationId])
+    
 
-  async function onAddStationMsg(stationId) {
-    try {
-        await addStationMsg(stationId, 'bla bla ' + parseInt(Math.random()*10))
-        showSuccessMsg(`Station msg added`)
-    } catch (err) {
-        showErrorMsg('Cannot add station msg')
-    }        
 
-}
 
   return (
     <section className="station-details">
-      <Link to="/stations">Back to list</Link>
-      <h1>Station Details</h1>
-      {station && <div>
-        <h3>{station.name}</h3>
-        <pre> {JSON.stringify(station, null, 2)} </pre>
+      {/* <Link to="/stations">Back to list</Link> */}
+      {station &&
+      <> 
+       <div className="content-spacing">
+        <div className='station-details-container flex align-center'>
+        <img className="station-img" src={station.songs[0].imgUrl} alt="station cover" />
+        <div className="station-details-text flex column">
+        <span>public Playlist</span>
+        <h1 className=''>{station.name}</h1>
+        <p className='details'>
+        <span>created by </span> <a href="">{station.createdBy.fullname}</a>  . <span>{station.songs.length} songs </span>
+        </p>
+        </div>
+        {/* <pre> {JSON.stringify(station, null, 2)} </pre> */}
       </div>
-      }
-      <button onClick={() => { onAddStationMsg(station._id) }}>Add station msg</button>
-
+      </div>
+        <SongsList station={station} />
+    </>
+}
     </section>
+      
   )
 }

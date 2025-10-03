@@ -1,0 +1,51 @@
+/* .station-details-container {
+   
+    
+} */
+.content-spacing {
+    padding: 0 2em;
+    height: 298px;
+}
+.station-details-text{ 
+    vertical-align: baseline;
+
+    margin-left: 2em;
+    gap: 0.5em;
+    height: 273px;
+   
+    justify-content: flex-end;
+    align-items: flex-start;
+    
+}
+.station-img {
+    max-width: 232px;
+    height: 232px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 4px 60px rgba(0, 0, 0, .5);
+    align-self: flex-end;
+    
+}
+
+ .station-details-text p{
+    margin: 0;
+    font-size: 18px;
+    color: var(--clr4);
+    place-content: end;
+}   
+
+.station-details-text h1 {
+    margin: 0;
+    font-size: 80px;
+    color: var(--clr4);
+    line-height: 1.1;
+    text-transform: none;
+    font-family: var(--encore-title-font-stack);
+    font-weight: 900;
+    visibility: visible;
+    width: 100%;
+    white-space: nowrap;
+}
+.station-details-text p.details a {
+    font-weight: 600;
+}
