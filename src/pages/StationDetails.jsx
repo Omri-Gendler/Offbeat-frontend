@@ -22,20 +22,26 @@ export function StationDetails() {
 
   return (
     <section className="station-details">
-      <Link to="/stations">Back to list</Link>
-      <h1>Station Details</h1>
-      {station && <div className="station-card">
-        <div className='station-header grid'>
+      {/* <Link to="/stations">Back to list</Link> */}
+      {station &&
+      <> 
+       <div className="content-spacing">
+        <div className='station-details-container flex align-center'>
         <img className="station-img" src={station.songs[0].imgUrl} alt="station cover" />
-        <h3>{station.name}</h3>
-        <h4>created by: {station.createdBy.fullname}</h4>
-        <h4>{station.songs.length} songs</h4>
+        <div className="station-details-text flex column">
+        <span>public Playlist</span>
+        <h1 className=''>{station.name}</h1>
+        <p className='details'>
+        <span>created by </span> <a href="">{station.createdBy.fullname}</a>  . <span>{station.songs.length} songs </span>
+        </p>
         </div>
         {/* <pre> {JSON.stringify(station, null, 2)} </pre> */}
+      </div>
+      </div>
         <SongsList station={station} />
-      </div>}
-      
-
+    </>
+}
     </section>
+      
   )
 }
