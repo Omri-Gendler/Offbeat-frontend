@@ -11,7 +11,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
         return station.owner?._id === user._id
     }
 
-    return <section>
+    return <section className="station-list-container">
         <ul className="station-list">
             {stations.map(station =>
                 <li key={station._id}>

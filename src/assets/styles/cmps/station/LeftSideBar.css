@@ -1,8 +1,7 @@
 .left-side-bar {
     grid-column: 1 / 2;
     background-color: var(--gray1);
-    /* margin: 7px; */
-    border-radius: 7px;
+    border-radius: 20px;
     max-width: 100%;
 
     display: flex;
@@ -42,9 +41,75 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+    }
 
+    .search-bar {
+        display: flex;
+        align-items: center;
+        margin: 10px 8px;
+        padding: 6px 12px;
+        background-color: var(--gray2);
+        border-radius: 20px;
 
+        input {
+            flex: 1;
+            border: none;
+            background: none;
+            color: var(--clr4);
+            outline: none;
+            font-size: 12px;
+            padding-left: 8px;
+        }
 
+        svg {
+            font-size: 16px;
+            color: var(--clr4);
+        }
+    }
+
+    button {
+        background: none;
+        border: none;
+        color: var(--clr4);
+        cursor: pointer;
+        font-size: 12px;
+        padding: 6px 12px;
+        text-align: left;
+        background-color: var(--gray2);
+        border-radius: 20px;
+
+        &:hover {
+            background-color: #2a2a2a;
+        }
+    }
+
+    .create-station-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background-color: var(--gray2);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin: -3px 48px 0 0;
+
+        &:hover {
+            background-color: #2a2a2a;
+        }
+
+        svg {
+            font-size: 16px;
+        }
+    }
+
+    .sort-by {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 4px;
     }
 }
 
@@ -57,27 +122,4 @@
     margin-left: 21px;
     margin-top: 5px;
 
-    .create-station-btn {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        background-color: #1db954;
-        color: white;
-        border: none;
-        border-radius: 20px;
-        padding: 6px 12px;
-        font-size: 11px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        margin: -3px 48px 0 0;
-        background-color: var(--gray5);
-
-        &:hover {
-            background-color: #1ed760;
-        }
-
-        svg {
-            font-size: 16px;
-        }
-    }
 }

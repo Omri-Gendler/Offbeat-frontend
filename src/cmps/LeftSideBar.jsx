@@ -54,6 +54,16 @@ export function LeftSideBar() {
         )
     }
 
+    function sortFilteredStations() {
+        return (
+            <div className="sort-by">
+                <button>Albums</button>
+                <button>Artists</button>
+                <button>Playlist</button>
+            </div>
+        )
+    }
+
 
     useEffect(() => {
         loadStations()
@@ -62,7 +72,9 @@ export function LeftSideBar() {
     return (
         <aside className="left-side-bar">
             {leftHeader()}
+            {sortFilteredStations()}
             {searchBar()}
+            <button>Recent</button>
             <div className="library-list">
                 {filteredStations.map(station => (
                     <div key={station._id} className="library-item">
