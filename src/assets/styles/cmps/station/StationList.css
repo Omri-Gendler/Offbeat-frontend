@@ -4,6 +4,7 @@
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: .5em;
     background-color: var(--gray1);
+    margin: 0;
 
     & li {
         display: grid;

@@ -1,7 +1,7 @@
 .left-side-bar {
     grid-column: 1 / 2;
     background-color: var(--gray1);
-    margin: 7px;
+    /* margin: 7px; */
     border-radius: 7px;
     max-width: 100%;
 
@@ -50,7 +50,34 @@
 
 .left-header {
     display: flex;
+    justify-content: space-between;
     flex-wrap: wrap;
-    padding: 2px;
-    font-size: 12px;
+    /* padding: 2px; */
+    font-size: 9.5px;
+    margin-left: 21px;
+    margin-top: 5px;
+
+    .create-station-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background-color: #1db954;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 11px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin: -3px 48px 0 0;
+        background-color: var(--gray5);
+
+        &:hover {
+            background-color: #1ed760;
+        }
+
+        svg {
+            font-size: 16px;
+        }
+    }
 }
