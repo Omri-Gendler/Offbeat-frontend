@@ -29,7 +29,7 @@ export function StationDetails() {
         <div className='station-details-container flex align-center'>
         <img className="station-img" src={station.songs[0].imgUrl} alt="station cover" />
         <div className="station-details-text flex column">
-        <span>public Playlist</span>
+        <span>Public Playlist</span>
         <h1 className=''>{station.name}</h1>
         <p className='details'>
         <span>created by </span> <a href="">{station.createdBy.fullname}</a>  . <span>{station.songs.length} songs </span>
