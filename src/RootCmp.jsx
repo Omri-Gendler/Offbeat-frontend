@@ -36,7 +36,7 @@ export function RootCmp() {
                     <Route path="stations" element={<StationIndex />} >
                         <Route path="add" element={<AddStationModal />} />
                     </Route>
-                    <Route path="station/:stationId" element={<StationDetails />} />
+                    <Route path="stations/:stationId" element={<StationDetails />} />
                     <Route path="user/:id" element={<UserDetails />} />
                     <Route path="review" element={<ReviewIndex />} />
                     <Route path="admin" element={<AdminIndex />} />
