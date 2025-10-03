@@ -1,29 +1,24 @@
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { loadStations } from "../store/actions/station.actions";
 import { useNavigate } from "react-router-dom";
 import { maxLength } from "../services/util.service";
-import { useMemo, useRef } from "react";
 
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
-
 export function LeftSideBar() {
-
     const stations = useSelector(storeState => storeState.stationModule.stations)
     const [filterBy, setFilterBy] = useState({ txt: '' })
     const [isSearchOpen, setIsSearchOpen] = useState(false)
-
     const navigate = useNavigate()
-    const inputRef = useRef(null);
 
     useEffect(() => {
-        loadStations()
-    }, [])
+        loadStations();
+    }, []);
 
     function handleChange(ev) {
-        const { name, value } = ev.target;
+        const { name, value } = ev.target
         setFilterBy({ ...filterBy, [name]: value })
     }
 
@@ -33,9 +28,8 @@ export function LeftSideBar() {
         return stations.filter(station => regex.test(station.name))
     }, [stations, filterBy])
 
-
     function searchBar() {
-        const inputRef = useRef(null)
+        const inputRef = useRef(null);
 
         useEffect(() => {
             if (isSearchOpen) {
@@ -45,9 +39,7 @@ export function LeftSideBar() {
 
         return (
             <div className={`search-container ${isSearchOpen ? 'expanded' : ''}`}>
-
                 <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} />
-
                 {isSearchOpen ? (
                     <input
                         className="search-input"
@@ -60,12 +52,13 @@ export function LeftSideBar() {
                         onBlur={() => setIsSearchOpen(false)}
                     />
                 ) : (
-                    <span className="search-placeholder" onClick={() => setIsSearchOpen(true)} placeholder="Search..."></span>
+                    <span className="search-placeholder" onClick={() => setIsSearchOpen(true)}>
+                        
+                    </span>
                 )}
             </div>
-        )
+        );
     }
-
 
     function leftHeader() {
         return (
@@ -73,7 +66,7 @@ export function LeftSideBar() {
                 <h3>Your Library</h3>
                 <button className="create-station-btn" onClick={() => navigate('/stations/add')}><AddIcon /> Create</button>
             </div>
-        )
+        );
     }
 
     function sortFilteredStations() {
@@ -83,13 +76,8 @@ export function LeftSideBar() {
                 <button>Artists</button>
                 <button>Playlist</button>
             </div>
-        )
+        );
     }
-
-
-    useEffect(() => {
-        loadStations()
-    }, [])
 
     return (
         <section className="left-side-bar">
@@ -103,12 +91,12 @@ export function LeftSideBar() {
                 <div className="library-list">
                     {filteredStations.map(station => (
                         <div key={station._id} className="library-item">
-                            <img src={station.imgUrl} alt="" />
+                            <img src={station.imgUrl} alt={station.name} />
                             <p>{maxLength(station.name, 10)}</p>
                         </div>
                     ))}
                 </div>
             </aside>
         </section>
-    )
+    );
 }

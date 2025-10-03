@@ -7,14 +7,14 @@
 .station-list {
     --min-column-size: 220px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: .5em;
     background-color: var(--gray1);
     margin: 0;
 
     & li {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 
         background-color: #181818;
         padding: 1em;
