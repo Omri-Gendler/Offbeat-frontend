@@ -139,7 +139,7 @@
         display: flex;
         align-items: center;
         gap: 4px;
-        background-color: var(--gray2);
+        background-color: var(--gray3);
         color: white;
         border: none;
         border-radius: 20px;
