@@ -3,7 +3,7 @@
     min-height: 3.5rem;
 
     background-color: var(--clr1);
-    /* padding: .8rem 1rem; */
+    padding: 0rem 0.5rem;
 
     & nav {
         display: flex;
@@ -22,20 +22,49 @@
             color: var(--clr4);
         }
 
-        .logo {
+        /* .logo {
             font-size: 1.4em;
             font-weight: bold;
             margin-inline-end: 2em;
-        }
+        } */
+        .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        
+        padding: 0;
+        height: 72px;
+        width: 72px;
+    }
 
         .login-link {
             margin-inline-start: auto;
         }
 
         & button {
-            margin-inline-end: 0;
+            margin: 0;
+            margin-top: 0.3em;
+            padding:0;
+            height: 50px;
+            width: 50px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+
+            
         }
+
+        
     }
+    
+   .app-header-logo {
+            height: 32px;
+            width: fit-content;
+            cursor: pointer;
+           
+            
+        }
 
     .user-info {
         display: flex;

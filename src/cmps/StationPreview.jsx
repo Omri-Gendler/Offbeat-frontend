@@ -1,9 +1,9 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 export function StationPreview({ station }) {
     return <article className="station-preview">
         <header>
-            <Link to={`/stations/${station._id}`}>{station.name}</Link>
+            <NavLink to={`/${station._id}`}>{station.name}</NavLink>
         </header>
 
         {station.owner && <p>Owner: <span>{station.owner.fullname}</span></p>}
