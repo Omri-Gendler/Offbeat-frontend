@@ -1,5 +1,5 @@
 .station-list-container {
-    padding: 1em;
+    padding: 8px;
     background-color: var(--gray1);
     border-radius: 20px;
 }

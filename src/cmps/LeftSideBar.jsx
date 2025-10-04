@@ -6,6 +6,7 @@ import { maxLength } from "../services/util.service";
 
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import GridViewIcon from '@mui/icons-material/GridView';
 
 export function LeftSideBar() {
     const stations = useSelector(storeState => storeState.stationModule.stations)
@@ -39,7 +40,7 @@ export function LeftSideBar() {
 
         return (
             <div className={`search-container ${isSearchOpen ? 'expanded' : ''}`}>
-                <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} />
+                <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} style={{ cursor: 'pointer', height: '24px' }} />
                 {isSearchOpen ? (
                     <input
                         className="search-input"
@@ -53,7 +54,7 @@ export function LeftSideBar() {
                     />
                 ) : (
                     <span className="search-placeholder" onClick={() => setIsSearchOpen(true)}>
-                        
+
                     </span>
                 )}
             </div>
@@ -86,13 +87,19 @@ export function LeftSideBar() {
                 {sortFilteredStations()}
                 <section className="search-and-recent">
                     {searchBar()}
-                    <button>Recent</button>
+                    <div className="recent-btn">
+                        <button>Recent</button>
+                        <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
+                    </div>
                 </section>
                 <div className="library-list">
                     {filteredStations.map(station => (
-                        <div key={station._id} className="library-item">
-                            <img src={station.imgUrl} alt={station.name} />
-                            <p>{maxLength(station.name, 10)}</p>
+                        <div key={station._id} className="library-item" onClick={() => navigate(`/station/${station._id}`)}>
+                            <img src={station.imgUrl || '/img/react.svg'} alt={station.name} />
+                            <div className="station-info">
+                                <p>{maxLength(station.name, 20)}</p>
+                                <p className="station-type">Playlist</p>
+                            </div>
                         </div>
                     ))}
                 </div>
