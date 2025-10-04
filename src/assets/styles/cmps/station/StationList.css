@@ -28,7 +28,7 @@
 
 .station-list-recents {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: 152px 152px 152px 152px;
     /* gap: 16px; */
     margin-bottom: 32px;
 }
@@ -87,6 +87,7 @@
     a {
         font-size: 12px;
     }
+    
 
 }
 
@@ -106,21 +107,6 @@ button {
 
     &:active {
         background-color: var(--gray3);
-    }
-}
-
-.station-img {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 16px;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-
-    &:hover {
-        transform: scale(1.05);
     }
 }
 
