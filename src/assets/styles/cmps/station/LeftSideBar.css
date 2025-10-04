@@ -11,13 +11,14 @@
     .library-list {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        padding: 8px;
+        /* gap: 6px; */
+        padding: 4px;
         flex-grow: 1;
         overflow-y: scroll;
         max-height: calc(100vh - 200px);
         width: 100%;
         box-sizing: border-box;
+        margin-top: -11px;
 
         /* Hide scrollbar for webkit browsers */
         &::-webkit-scrollbar {
@@ -28,6 +29,8 @@
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
+
+
 
     .library-item {
         display: flex;
@@ -121,13 +124,15 @@
         background-color: var(--gray2);
         border-radius: 20px;
 
-        .recent-btn {
-            margin-top: -7px;
-        }
-
         &:hover {
             background-color: #2a2a2a;
         }
+    }
+
+    .recent-btn {
+        display: flex;
+        align-items: center;
+        margin-top: -7px;
     }
 
     .create-station-btn {
