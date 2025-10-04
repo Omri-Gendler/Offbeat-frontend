@@ -34,10 +34,9 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     }, [stations])
 
     return (
-        
         <section className="station-list-container" style={{ background: dynamicBgColor }}>
 
-        <div>
+        <div className='main-station-list-filters'>
             <button>All</button>
             <button>Music</button>
         </div>

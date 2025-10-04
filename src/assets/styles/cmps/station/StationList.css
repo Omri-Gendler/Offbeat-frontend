@@ -1,3 +1,19 @@
+.main-station-list-container {
+    margin: -22px;
+}
+
+.main-station-list-filters {
+    button {
+        width: 40px;
+        height: 25px;
+        text-align: center;
+
+        &:hover {
+            background-color: #2a2a2a;
+        }
+    }
+}
+
 .station-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -15,6 +31,10 @@
     grid-template-columns: 1fr 1fr 1fr auto;
     /* gap: 16px; */
     margin-bottom: 32px;
+}
+
+.station-list-filters {
+    display: flex;
 }
 
 .recent-item {
