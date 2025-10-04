@@ -3,16 +3,18 @@ import { StationPreview } from './StationPreview'
 
 export function StationList({ stations, onRemoveStation, onUpdateStation }) {
 
-    function shouldShowActionBtns(station) {
-        const user = userService.getLoggedinUser()
-
-        if (!user) return false
-        if (user.isAdmin) return true
-        return station.owner?._id === user._id
-    }
 
     return (
         <section className="station-list-container">
+            <div className='station-list-recents'>
+                {stations.slice(0, 6).map(station => (
+                    <button key={station._id} className="recent-item">
+                        <img src={station.imgUrl} alt={station.name} />
+                        <span>{station.name}</span>
+                    </button>
+                ))}
+            </div>
+
             <ul className="station-list">
                 {stations.map(station =>
                     <li key={station._id}>
