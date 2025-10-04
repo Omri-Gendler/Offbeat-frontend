@@ -36,6 +36,12 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     return (
         
         <section className="station-list-container" style={{ background: dynamicBgColor }}>
+
+        <div>
+            <button>All</button>
+            <button>Music</button>
+        </div>
+
             <div className='station-list-recents'>
                 {stations.slice(0, 6).map(station => (
                     <button key={station._id} className="recent-item">
