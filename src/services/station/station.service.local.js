@@ -52,7 +52,7 @@ function _createStations() {
                 _id: 'station001',
                 name: '80s Rock Anthems',
                 tags: ['Rock', '80s', 'Classic'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=1',
                 createdBy: {
                     _id: 'u102',
                     fullname: 'Muki Levi',
@@ -83,7 +83,7 @@ function _createStations() {
                 _id: 'station002',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=2',
 
                 createdBy: {
                     _id: 'u103',
@@ -117,7 +117,7 @@ function _createStations() {
                 _id: 'station003',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=3',
 
                 createdBy: {
                     _id: 'u103',
@@ -151,7 +151,7 @@ function _createStations() {
                 _id: 'station004',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=4',
 
                 createdBy: {
                     _id: 'u103',
@@ -185,7 +185,7 @@ function _createStations() {
                 _id: 'station005',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=5',
 
                 createdBy: {
                     _id: 'u103',
@@ -219,7 +219,7 @@ function _createStations() {
                 _id: 'station006',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=6',
 
                 createdBy: {
                     _id: 'u103',
