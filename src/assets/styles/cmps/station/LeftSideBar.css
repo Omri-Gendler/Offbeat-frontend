@@ -35,7 +35,6 @@
     .library-item {
         display: flex;
         flex-direction: column;
-        background-color: #181818;
         padding: 8px;
         border-radius: 6px;
         cursor: pointer;
@@ -45,6 +44,8 @@
 
         &:hover {
             background-color: #282828;
+            transform: scale(1.05);
+
         }
 
         img {
@@ -177,7 +178,7 @@
     flex-wrap: wrap;
     /* padding: 2px; */
     font-size: 9.5px;
-    margin-left: 12px;
-    margin-top: 5px;
+    margin-left: 19px;
+    margin-top: 17px;
 
 }
