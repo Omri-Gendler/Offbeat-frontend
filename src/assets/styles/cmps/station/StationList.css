@@ -18,12 +18,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 24px;
-
-    margin: 0;
     padding: 0;
+    margin: 0;
     list-style: none;
-
-
+    margin-left: 29px;
 }
 
 .station-list-recents {
@@ -31,6 +29,7 @@
     grid-template-columns: 152px 152px 152px 152px;
     /* gap: 16px; */
     margin-bottom: 32px;
+    margin-left: 21px;
 }
 
 .station-list-filters {
@@ -129,4 +128,9 @@ button {
     &:hover {
         transform: scale(1.05);
     }
+}
+
+.main-station-list-filters {
+    margin-top: 12px;
+    margin-left: 15px;
 }
