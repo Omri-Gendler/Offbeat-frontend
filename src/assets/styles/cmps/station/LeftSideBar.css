@@ -128,6 +128,12 @@
         &:hover {
             background-color: #2a2a2a;
         }
+
+        &:active {
+            transform: translateY(2px);
+        }
+
+
     }
 
     .recent-btn {
@@ -181,4 +187,9 @@
     margin-left: 19px;
     margin-top: 17px;
 
+}
+
+.filter-btn.selected {
+    background-color: white;
+    color: black;
 }

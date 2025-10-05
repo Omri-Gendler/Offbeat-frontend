@@ -40,6 +40,7 @@ export function LeftSideBar() {
             stationsToShow.sort((a, b) => a.name.localeCompare(b.name))
         }
 
+
         return stationsToShow
     }, [stations, filterBy, sortBy])
 
@@ -88,13 +89,14 @@ export function LeftSideBar() {
         <section className="left-side-bar">
             <aside className="station-list-container">
                 {leftHeader()}
-                <button onClick={() => setSortBy('albums')}>Albums</button>
-                <button onClick={() => setSortBy('artists')}>Artists</button>
-                <button onClick={() => setSortBy('playlists')}>Playlists</button>
+
+                <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
+                <button className={`filter-btn ${sortBy === 'artists' ? 'selected' : ''}`} onClick={() => setSortBy('artists')}>Artists</button>
+                <button className={`filter-btn ${sortBy === 'playlists' ? 'selected' : ''}`} onClick={() => setSortBy('playlists')}>Playlists</button>
                 <section className="search-and-recent">
                     {searchBar()}
                     <div className="recent-btn">
-                        <button onClick={() => setSortBy('recent')}>Recent</button>
+                        <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button>
                         <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
                     </div>
                 </section>
