@@ -36,7 +36,7 @@
 
 .station-list-recents {
     display: grid;
-    grid-template-columns: 152px 152px 152px 152px;
+    grid-template-columns: 221px 221px 221px 221px;
     /* gap: 16px; */
     margin-bottom: 32px;
     margin-left: 21px;
