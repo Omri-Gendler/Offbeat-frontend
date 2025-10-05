@@ -1,5 +1,15 @@
 .main-station-list-container {
     margin: -22px;
+
+}
+
+.station-list-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin-left: 41px;
+    margin-top: 78px;
+    margin-bottom: 10px;
 }
 
 .main-station-list-filters {

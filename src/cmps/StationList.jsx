@@ -50,6 +50,8 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
                 ))}
             </div>
 
+            <h2 className='station-list-title'>All Stations</h2>
+
             <ul className="station-list">
                 {stations.map(station =>
                     <li key={station._id}>
