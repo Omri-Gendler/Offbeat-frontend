@@ -20,12 +20,10 @@
         box-sizing: border-box;
         margin-top: -11px;
 
-        /* Hide scrollbar for webkit browsers */
         &::-webkit-scrollbar {
             display: none;
         }
 
-        /* Hide scrollbar for Firefox */
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
@@ -192,4 +190,51 @@
 .filter-btn.selected {
     background-color: white;
     color: black;
+}
+
+.library-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 4px;
+    flex-grow: 1;
+    overflow-y: scroll;
+    max-height: calc(100vh - 200px);
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: -11px;
+
+    &.list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .library-item {
+            flex-direction: row;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 8px;
+
+            &:hover {
+                transform: none;
+            }
+
+            img {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 0;
+                border-radius: 2px;
+            }
+
+            .station-info {
+                p {
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+
+                .station-type {
+                    font-size: 12px;
+                }
+            }
+        }
+    }
 }

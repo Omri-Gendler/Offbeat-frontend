@@ -7,12 +7,14 @@ import { maxLength } from "../services/util.service";
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import GridViewIcon from '@mui/icons-material/GridView';
+import ViewListIcon from '@mui/icons-material/ViewList';
 
 export function LeftSideBar() {
     const stations = useSelector(storeState => storeState.stationModule.stations)
     const [filterBy, setFilterBy] = useState({ txt: '' })
     const [sortBy, setSortBy] = useState('recent')
     const [isSearchOpen, setIsSearchOpen] = useState(false)
+    const [viewMode, setViewMode] = useState('grid') 
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -26,33 +28,26 @@ export function LeftSideBar() {
 
     const stationsToDisplay = useMemo(() => {
         let stationsToShow = [...stations]
-
         if (sortBy === 'albums' || sortBy === 'artists' || sortBy === 'station') {
             stationsToShow = stationsToShow.filter(station => station.type === sortBy)
         }
-
         if (filterBy.txt) {
             const regex = new RegExp(filterBy.txt, 'i')
             stationsToShow = stationsToShow.filter(station => regex.test(station.name))
         }
-
         if (sortBy !== 'recent') {
             stationsToShow.sort((a, b) => a.name.localeCompare(b.name))
         }
-
-
         return stationsToShow
     }, [stations, filterBy, sortBy])
 
     function searchBar() {
         const inputRef = useRef(null)
-
         useEffect(() => {
             if (isSearchOpen) {
                 inputRef.current?.focus()
             }
         }, [isSearchOpen])
-
         return (
             <div className={`search-container ${isSearchOpen ? 'expanded' : ''}`}>
                 <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} style={{ cursor: 'pointer', height: '24px' }} />
@@ -68,9 +63,7 @@ export function LeftSideBar() {
                         onBlur={() => setIsSearchOpen(false)}
                     />
                 ) : (
-                    <span className="search-placeholder" onClick={() => setIsSearchOpen(true)}>
-
-                    </span>
+                    <span className="search-placeholder" onClick={() => setIsSearchOpen(true)}></span>
                 )}
             </div>
         );
@@ -82,7 +75,7 @@ export function LeftSideBar() {
                 <h3>Your Library</h3>
                 <button className="create-station-btn" onClick={() => navigate('/stations/add')}><AddIcon /> Create</button>
             </div>
-        );
+        )
     }
 
     return (
@@ -93,14 +86,21 @@ export function LeftSideBar() {
                 <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
                 <button className={`filter-btn ${sortBy === 'artists' ? 'selected' : ''}`} onClick={() => setSortBy('artists')}>Artists</button>
                 <button className={`filter-btn ${sortBy === 'playlists' ? 'selected' : ''}`} onClick={() => setSortBy('playlists')}>Playlists</button>
+
                 <section className="search-and-recent">
                     {searchBar()}
                     <div className="recent-btn">
                         <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button>
-                        <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
+                        <button onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')} className="view-toggle-btn">
+                            {viewMode === 'grid'
+                                ? <ViewListIcon style={{ fontSize: '18px', color: 'var(--clr4)' }} />
+                                : <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
+                            }
+                        </button>
                     </div>
                 </section>
-                <div className="library-list">
+
+                <div className={`library-list ${viewMode}`}>
                     {stationsToDisplay.map(station => (
                         <div key={station._id} className="library-item" onClick={() => navigate(`/station/${station._id}`)}>
                             <img src={station.imgUrl || '/img/react.svg'} alt={station.name} />
@@ -114,4 +114,4 @@ export function LeftSideBar() {
             </aside>
         </section>
     )
-} 
+}
