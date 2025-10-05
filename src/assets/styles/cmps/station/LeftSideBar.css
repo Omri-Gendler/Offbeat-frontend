@@ -1,31 +1,51 @@
 .left-side-bar {
     grid-column: 1 / 2;
     background-color: var(--gray1);
-    border-radius: 20px;
+    border-radius: 5px;
     max-width: 100%;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    /* overflow: hidden; */
 
     .library-list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 16px;
-
+        grid-template-columns: repeat(3, 1fr);
+        /* gap: 6px; */
+        padding: 4px;
         flex-grow: 1;
-        overflow-y: auto;
+        overflow-y: scroll;
+        max-height: calc(100vh - 200px);
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: -11px;
+
+        /* Hide scrollbar for webkit browsers */
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for Firefox */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
+
+
 
     .library-item {
         display: flex;
         flex-direction: column;
-        background-color: #181818;
-        padding: 16px;
-        border-radius: 8px;
+        padding: 8px;
+        border-radius: 6px;
         cursor: pointer;
         transition: background-color 0.3s ease;
+        min-width: 0;
+        max-width: 100%;
 
         &:hover {
             background-color: #282828;
+            transform: scale(1.05);
+
         }
 
         img {
@@ -33,18 +53,29 @@
             height: auto;
             aspect-ratio: 1 / 1;
             object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 16px;
+            border-radius: 4px;
+            margin-bottom: 8px;
         }
 
-        p {
-            font-size: 16px;
-            font-weight: 700;
-            margin: 0;
+        .station-info {
+            min-width: 0;
 
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            p {
+                font-size: 12px;
+                font-weight: 600;
+                margin: 0 0 2px 0;
+                color: white;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .station-type {
+                font-size: 10px;
+                color: #b3b3b3;
+                margin: 0;
+                font-weight: 400;
+            }
         }
     }
 
@@ -90,7 +121,6 @@
         color: var(--clr4);
         cursor: pointer;
         font-size: 12px;
-        padding: 6px 12px;
         text-align: left;
         background-color: var(--gray2);
         border-radius: 20px;
@@ -98,21 +128,33 @@
         &:hover {
             background-color: #2a2a2a;
         }
+
+        &:active {
+            transform: translateY(2px);
+        }
+
+
+    }
+
+    .recent-btn {
+        display: flex;
+        align-items: center;
+        margin-top: -7px;
     }
 
     .create-station-btn {
         display: flex;
         align-items: center;
         gap: 4px;
-        background-color: var(--gray2);
+        background-color: var(--gray3);
         color: white;
         border: none;
         border-radius: 20px;
-        padding: 6px 12px;
         font-size: 11px;
         cursor: pointer;
         transition: background-color 0.2s;
         margin-top: -7px;
+        margin-right: 35px;
 
         &:hover {
             background-color: #2a2a2a;
@@ -125,8 +167,6 @@
 
     .sort-by {
         display: flex;
-        justify-content: space-around;
-        margin-top: 4px;
     }
 
     .search-and-recent {
@@ -144,7 +184,12 @@
     flex-wrap: wrap;
     /* padding: 2px; */
     font-size: 9.5px;
-    margin-left: 5px;
-    margin-top: 5px;
+    margin-left: 19px;
+    margin-top: 17px;
 
+}
+
+.filter-btn.selected {
+    background-color: white;
+    color: black;
 }

@@ -52,7 +52,8 @@ function _createStations() {
                 _id: 'station001',
                 name: '80s Rock Anthems',
                 tags: ['Rock', '80s', 'Classic'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=1',
+                type: 'station',
                 createdBy: {
                     _id: 'u102',
                     fullname: 'Muki Levi',
@@ -83,7 +84,8 @@ function _createStations() {
                 _id: 'station002',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=2',
+                type: 'station',
 
                 createdBy: {
                     _id: 'u103',
@@ -117,7 +119,8 @@ function _createStations() {
                 _id: 'station003',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=3',
+                type: 'station',
 
                 createdBy: {
                     _id: 'u103',
@@ -151,7 +154,8 @@ function _createStations() {
                 _id: 'station004',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=4',
+                type: 'station',
 
                 createdBy: {
                     _id: 'u103',
@@ -185,7 +189,8 @@ function _createStations() {
                 _id: 'station005',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=5',
+                type: 'station',
 
                 createdBy: {
                     _id: 'u103',
@@ -219,7 +224,8 @@ function _createStations() {
                 _id: 'station006',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                imgUrl: './img/infected.jpg',
+                imgUrl: 'https://picsum.photos/300/300?random=6',
+                type: 'station',
 
                 createdBy: {
                     _id: 'u103',
@@ -259,6 +265,8 @@ function _createStations() {
                     _id: 'u103',
                     fullname: 'Shuki Cohen',
                     imgUrl: 'http://some-photo/shuki.jpg',
+                    type: 'station',
+                    
                 },
                 likedByUsers: ['u102', 'u104'],
                 songs: [

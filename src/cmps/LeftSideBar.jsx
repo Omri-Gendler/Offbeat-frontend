@@ -6,30 +6,46 @@ import { maxLength } from "../services/util.service";
 
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import GridViewIcon from '@mui/icons-material/GridView';
 
 export function LeftSideBar() {
     const stations = useSelector(storeState => storeState.stationModule.stations)
     const [filterBy, setFilterBy] = useState({ txt: '' })
+    const [sortBy, setSortBy] = useState('recent')
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const navigate = useNavigate()
 
     useEffect(() => {
-        loadStations();
-    }, []);
+        loadStations()
+    }, [])
 
     function handleChange(ev) {
         const { name, value } = ev.target
         setFilterBy({ ...filterBy, [name]: value })
     }
 
-    const filteredStations = useMemo(() => {
-        if (!filterBy.txt) return stations
-        const regex = new RegExp(filterBy.txt, 'i')
-        return stations.filter(station => regex.test(station.name))
-    }, [stations, filterBy])
+    const stationsToDisplay = useMemo(() => {
+        let stationsToShow = [...stations]
+
+        if (sortBy === 'albums' || sortBy === 'artists' || sortBy === 'station') {
+            stationsToShow = stationsToShow.filter(station => station.type === sortBy)
+        }
+
+        if (filterBy.txt) {
+            const regex = new RegExp(filterBy.txt, 'i')
+            stationsToShow = stationsToShow.filter(station => regex.test(station.name))
+        }
+
+        if (sortBy !== 'recent') {
+            stationsToShow.sort((a, b) => a.name.localeCompare(b.name))
+        }
+
+
+        return stationsToShow
+    }, [stations, filterBy, sortBy])
 
     function searchBar() {
-        const inputRef = useRef(null);
+        const inputRef = useRef(null)
 
         useEffect(() => {
             if (isSearchOpen) {
@@ -39,7 +55,7 @@ export function LeftSideBar() {
 
         return (
             <div className={`search-container ${isSearchOpen ? 'expanded' : ''}`}>
-                <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} />
+                <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} style={{ cursor: 'pointer', height: '24px' }} />
                 {isSearchOpen ? (
                     <input
                         className="search-input"
@@ -53,7 +69,7 @@ export function LeftSideBar() {
                     />
                 ) : (
                     <span className="search-placeholder" onClick={() => setIsSearchOpen(true)}>
-                        
+
                     </span>
                 )}
             </div>
@@ -69,34 +85,33 @@ export function LeftSideBar() {
         );
     }
 
-    function sortFilteredStations() {
-        return (
-            <div className="sort-by">
-                <button>Albums</button>
-                <button>Artists</button>
-                <button>Playlist</button>
-            </div>
-        );
-    }
-
     return (
         <section className="left-side-bar">
             <aside className="station-list-container">
                 {leftHeader()}
-                {sortFilteredStations()}
+
+                <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
+                <button className={`filter-btn ${sortBy === 'artists' ? 'selected' : ''}`} onClick={() => setSortBy('artists')}>Artists</button>
+                <button className={`filter-btn ${sortBy === 'playlists' ? 'selected' : ''}`} onClick={() => setSortBy('playlists')}>Playlists</button>
                 <section className="search-and-recent">
                     {searchBar()}
-                    <button>Recent</button>
+                    <div className="recent-btn">
+                        <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button>
+                        <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
+                    </div>
                 </section>
                 <div className="library-list">
-                    {filteredStations.map(station => (
-                        <div key={station._id} className="library-item">
-                            <img src={station.imgUrl} alt={station.name} />
-                            <p>{maxLength(station.name, 10)}</p>
+                    {stationsToDisplay.map(station => (
+                        <div key={station._id} className="library-item" onClick={() => navigate(`/station/${station._id}`)}>
+                            <img src={station.imgUrl || '/img/react.svg'} alt={station.name} />
+                            <div className="station-info">
+                                <p>{maxLength(station.name, 20)}</p>
+                                <p className="station-type">Playlist</p>
+                            </div>
                         </div>
                     ))}
                 </div>
             </aside>
         </section>
-    );
-}
+    )
+} 
