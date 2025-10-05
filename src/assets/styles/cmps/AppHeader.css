@@ -193,7 +193,7 @@
                 &:hover,
                 &:focus {
                     background-color: var(--background-elevated-highlight); /* <-- light gray */
-                    box-shadow: inset 0 0 0 2px var(--clr4);
+                   
                 }
             }
         }
