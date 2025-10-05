@@ -6,7 +6,6 @@ export function HomePage() {
         <section className="home">
             {/* <MusicPlayerSlider /> */}
             <div>
-              <h2>stations</h2>
               <StationIndex/>
             </div>
         </section >

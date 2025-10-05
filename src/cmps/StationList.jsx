@@ -1,6 +1,6 @@
 import { userService } from '../services/user'
 import { StationPreview } from './StationPreview'
-// import { FastAverageColor } from 'fast-average-color';
+import { FastAverageColor } from 'fast-average-color';
 
 import { useState, useEffect } from 'react'
 
