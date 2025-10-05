@@ -9,7 +9,7 @@ import { userService } from '../services/user'
 import { Outlet } from 'react-router-dom'
 
 import { StationList } from '../cmps/StationList'
-import { StationFilter } from '../cmps/StationFilter'
+
 
 export function StationIndex() {
 
@@ -53,7 +53,7 @@ export function StationIndex() {
 
     return (
         <section className="station-index">
-            <StationFilter filterBy={filterBy} setFilterBy={setFilterBy} />
+            
             <header>
                 {userService.getLoggedinUser() && <button onClick={onAddStation}>Add a Station</button>}
             </header>
