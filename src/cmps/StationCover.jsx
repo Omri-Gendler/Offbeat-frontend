@@ -6,11 +6,11 @@ export default
 function StationCover({ station, onChangeUrl }) {
   const [isHover, setIsHover] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState(station?.imgUrl || '')
+  const [previewUrl, setPreviewUrl] = useState('/img/unnamed-song.png')
   const inputRef = useRef(null)
 
   useEffect(() => {
-    setPreviewUrl(station?.imgUrl || '')
+    setPreviewUrl('/img/unnamed-song.png')
   }, [station?.imgUrl])
 
   function openFileDialog() {
