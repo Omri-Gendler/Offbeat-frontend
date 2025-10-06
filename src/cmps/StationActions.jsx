@@ -1,4 +1,4 @@
-import {IconPlay24, IconDownloadCircle24, IconMoreHorizontal24} from  '../cmps/Icon.jsx'
+import {IconPlay24, IconDownloadCircle24, IconMoreHorizontal24, IconAddCircle24} from  '../cmps/Icon.jsx'
 
 export function StationActions({station}) {
   return (
@@ -8,9 +8,10 @@ export function StationActions({station}) {
               <span><IconPlay24 className="play" /></span>
             </button>
 
-            <button className="tertiary-btn" aria-label="Download">
-              <IconDownloadCircle24 className="icon" />
+            <button className="tertiary-btn" aria-label="add to your library">
+              <IconAddCircle24 className="icon" />
             </button>
+
 
             <button className="tertiary-btn" aria-label="More options">
               <IconMoreHorizontal24 className="icon" />
