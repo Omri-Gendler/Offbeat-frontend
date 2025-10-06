@@ -1,16 +1,16 @@
 import { userService } from '../services/user'
 import { StationPreview } from './StationPreview'
 import { FastAverageColor } from 'fast-average-color';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 
-
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 export function StationList({ stations, onRemoveStation, onUpdateStation }) {
 
     const [dynamicBgColor, setDynamicBgColor] = useState('#121212')
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!stations || !stations.length || !stations[0].imgUrl) {
