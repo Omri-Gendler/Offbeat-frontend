@@ -63,7 +63,7 @@ function _createStations() {
                     {
                         id: 'lDK9QqIzhwk',
                         title: "Bon Jovi - Livin' On A Prayer",
-                        url: 'youtube/song.mp4',
+                        imgUrl: 'https://picsum.photos/300/300?random=2',
                         addedBy: 'u102',
                         likedBy: ['u101'],
                         addedAt: 162521765262,
@@ -72,7 +72,7 @@ function _createStations() {
                         id: '1w7OgIMMRc4',
                         title: "Guns N' Roses - Sweet Child O' Mine",
                         url: 'youtube/song.mp4',
-                        imgUrl: 'https://i.ytimg.com/vi/1w7OgIMMRc4/mqdefault.jpg',
+                        imgUrl: 'https://picsum.photos/300/300?random=3',
                         addedBy: 'u101',
                         likedBy: [],
                         addedAt: 162531765262,
@@ -90,7 +90,7 @@ function _createStations() {
                 createdBy: {
                     _id: 'u103',
                     fullname: 'Shuki Cohen',
-                    imgUrl: 'http://some-photo/shuki.jpg',
+                    imgUrl: 'https://picsum.photos/300/300?random=1',
                 },
                 likedByUsers: ['u102', 'u104'],
                 songs: [
@@ -98,7 +98,7 @@ function _createStations() {
                         id: '5AEbq6XbSO0',
                         title: 'lofi hip hop radio - beats to relax/study to',
                         url: 'youtube/song.mp4',
-                        imgUrl: 'https://i.ytimg.com/vi/5AEbq6XbSO0/mqdefault.jpg',
+                        imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: ['u102', 'u104'],
                         addedAt: 162541765262,
@@ -107,7 +107,7 @@ function _createStations() {
                         id: 'DWcJFNfaw9c',
                         title: 'Affection - Jinsang',
                         url: 'youtube/song.mp4',
-                        imgUrl: 'https://i.ytimg.com/vi/DWcJFNfaw9c/mqdefault.jpg',
+                        imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: [],
                         addedAt: 162551765262,
@@ -297,25 +297,29 @@ function _createStations() {
 }
 
 async function save(station) {
-    var savedStation
-    if (station._id) {
-        const stationToSave = {
-            _id: station._id,
-            name: station.name,
-        }
-        savedStation = await storageService.put(STORAGE_KEY, stationToSave)
-    } else {
-        const stationToSave = {
-            name: station.name,
-            // Later, owner is set by the backend
-            owner: userService.getLoggedinUser(),
-            msgs: [],
-            imgUrl: '/img/infected.jpg',
-        }
-        savedStation = await storageService.post(STORAGE_KEY, stationToSave)
+  let savedStation
+
+  if (station._id) {
+    // Include all fields you want to persist (not just name)
+    const stationToSave = {
+      ...station, // keep name, imgUrl, songs, etc.
     }
-    return savedStation
+
+    savedStation = await storageService.put(STORAGE_KEY, stationToSave)
+  } else {
+    const stationToSave = {
+      name: station.name,
+      owner: userService.getLoggedinUser(),
+      msgs: [],
+      imgUrl: station.imgUrl || '/img/infected.jpg',
+    }
+
+    savedStation = await storageService.post(STORAGE_KEY, stationToSave)
+  }
+
+  return savedStation
 }
+
 
 async function addStationMsg(stationId, txt) {
     // Later, this is all done by the backend

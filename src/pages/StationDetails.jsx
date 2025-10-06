@@ -1,47 +1,76 @@
-import { useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useEffect,useState , useCallback } from 'react'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { FastAverageColor } from 'fast-average-color'
+
+
+import StationCover from '../cmps/StationCover.jsx'
 import { SongsList } from '../cmps/SongsList.jsx'
-
-import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
-import { loadStation, addStationMsg } from '../store/actions/station.actions'
-
+import { loadStation, updateStation } from '../store/actions/station.actions'
+import { StationActions } from '../cmps/StationActions.jsx'
 
 export function StationDetails() {
-
-  const {stationId} = useParams()
-  const station = useSelector(storeState => storeState.stationModule.station)
+  const { stationId } = useParams()
+  const station = useSelector(s => s.stationModule.station)
 
   useEffect(() => {
-    loadStation(stationId)
+    if (stationId) loadStation(stationId)
   }, [stationId])
-    
 
+  const [dynamicBg, setDynamicBg] = useState('#121212')
 
+  useEffect(() => {
+    const fac = new FastAverageColor()
+    const imageUrl = station?.imgUrl
+    if (!imageUrl) {
+      setDynamicBg('#121212')
+      return
+    }
+
+    fac.getColorAsync(imageUrl, { algorithm: 'dominant', crossOrigin: 'anonymous' })
+      .then(({ hex }) => {
+        setDynamicBg(`linear-gradient(${hex} 0%, #121212 350px)`)
+      })
+      .catch(() => setDynamicBg('#121212'))
+
+    return () => fac.destroy()
+  }, [station?.imgUrl])
+
+  const handleCoverChange = useCallback((newUrl) => {
+    if (station) updateStation({ ...station, imgUrl: newUrl })
+  }, [station])
+
+  if (!station) {
+    return (
+      <section className="station-details">
+        <div className="content-spacing">Loading station…</div>
+      </section>
+    )
+  }
 
   return (
-    <section className="station-details">
-      {/* <Link to="/stations">Back to list</Link> */}
-      {station &&
-      <> 
-       <div className="content-spacing">
-        <div className='station-details-container flex align-center'>
-        <img className="station-img" src={station.songs[0].imgUrl} alt="station cover" />
-        <div className="station-details-text flex column">
-        <span>Public Playlist</span>
-        <h1 className=''>{station.name}</h1>
-        <p className='details'>
-        <span>created by </span> <a href="">{station.createdBy.fullname}</a>  . <span>{station.songs.length} songs </span>
-        </p>
+    <section className="station-details" style={{ background: dynamicBg }}>
+      <div className="content-spacing">
+        <header className="station-header flex align-center">
+          <StationCover station={station} onChangeUrl={handleCoverChange} />
+          <div className="station-meta">
+            <span className="station-type">Playlist</span>
+            <h1 className="station-title">{station?.name ?? 'NEW station'}</h1>
+            <div className="station-byline">
+              <a className="station-owner" href="">{station?.createdBy?.fullname ?? 'Unknown'}</a>
+              <span className="dot">•</span>
+              <span className="station-stats">{station?.songs?.length ?? 0} songs</span>
+            </div>
+
+            {/* Simple, clean action bar (don’t paste Spotify’s raw DOM) */}
+          </div>
+        </header>
+        <StationActions station={station} />
+
+        <div className="station-tracks">
+          <SongsList station={station} />
         </div>
-        {/* <pre> {JSON.stringify(station, null, 2)} </pre> */}
       </div>
-      </div>
-        <SongsList station={station} />
-    </>
-}
     </section>
-      
   )
 }
