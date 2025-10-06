@@ -85,7 +85,7 @@ export function LeftSideBar() {
 
                 <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
                 <button className={`filter-btn ${sortBy === 'artists' ? 'selected' : ''}`} onClick={() => setSortBy('artists')}>Artists</button>
-                <button className={`filter-btn ${sortBy === 'playlists' ? 'selected' : ''}`} onClick={() => setSortBy('playlists')}>Playlists</button>
+                <button className={`filter-btn ${sortBy === 'stations' ? 'selected' : ''}`} onClick={() => setSortBy('stations')}>stations</button>
 
                 <section className="search-and-recent">
                     {searchBar()}
@@ -106,7 +106,7 @@ export function LeftSideBar() {
                             <img src={station.imgUrl || '/img/react.svg'} alt={station.name} />
                             <div className="station-info">
                                 <p>{maxLength(station.name, 20)}</p>
-                                <p className="station-type">Playlist</p>
+                                <p className="station-type">station</p>
                             </div>
                         </div>
                     ))}

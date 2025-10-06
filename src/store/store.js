@@ -1,4 +1,5 @@
 import { legacy_createStore as createStore, combineReducers } from 'redux'
+import thunk from 'redux-thunk'
 
 import { stationReducer } from './reducers/station.reducer'
 import { userReducer } from './reducers/user.reducer'

@@ -1,25 +1,34 @@
-export const uploadService = {
-	uploadImg,
-}
+export const uploadService = { uploadImg }
 
-async function uploadImg(ev) {
-	const CLOUD_NAME = 'dklhy0he2'
-	const UPLOAD_PRESET = 'car_preset'
-	const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`
+async function uploadImg(file) {
+  const CLOUD_NAME = 'dklhy0he2'          // <- verify this exactly matches your Cloudinary cloud name
+  const UPLOAD_PRESET = 'car_preset'      // <- verify this preset exists and is UNSIGNED
+  const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`
 
-	const formData = new FormData()
-	
-    // Building the request body
-	formData.append('file', ev.target.files[0])
-	formData.append('upload_preset', UPLOAD_PRESET)
-	
-    // Sending a post method request to Cloudinary API
-	try {
-		const res = await fetch(UPLOAD_URL, { method: 'POST', body: formData })
-		const imgData = await res.json()
-		return imgData
-	} catch (err) {
-		console.error(err)
-		throw err
-	}
+  if (!(file instanceof Blob)) {
+    throw new Error('uploadImg: expected a File/Blob')
+  }
+
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', UPLOAD_PRESET)
+
+  const res = await fetch(UPLOAD_URL, { method: 'POST', body: formData })
+
+  // Read the JSON body even on failure to see Cloudinary’s error
+  let data
+  try {
+    data = await res.json()
+  } catch {
+    // if non-JSON for some reason
+    throw new Error(`Upload failed (HTTP ${res.status})`)
+  }
+
+  if (!res.ok) {
+    // Cloudinary typically returns: { error: { message: "..."} }
+    const msg = data?.error?.message || `Upload failed (HTTP ${res.status})`
+    throw new Error(msg)
+  }
+
+  return data
 }
