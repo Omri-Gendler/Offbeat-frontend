@@ -20,7 +20,7 @@ export function AddStationModal() {
 
         try {
             const savedStation = await addStation(newStation)
-            navigate(`/station/${savedStation._id}`)
+            navigate(`/${savedStation._id}`)
         } catch (err) {
             console.error('Failed to add station', err)
         }

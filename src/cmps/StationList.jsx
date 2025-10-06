@@ -3,10 +3,13 @@ import { StationPreview } from './StationPreview'
 import { FastAverageColor } from 'fast-average-color';
 
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export function StationList({ stations, onRemoveStation, onUpdateStation }) {
 
     const [dynamicBgColor, setDynamicBgColor] = useState('#121212')
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!stations || !stations.length || !stations[0].imgUrl) {
@@ -36,14 +39,14 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     return (
         <section className="station-list-container" style={{ background: dynamicBgColor }}>
 
-        <div className='main-station-list-filters'>
-            <button>All</button>
-            <button>Music</button>
-        </div>
+            <div className='main-station-list-filters'>
+                <button>All</button>
+                <button>Music</button>
+            </div>
 
             <div className='station-list-recents'>
                 {stations.slice(0, 6).map(station => (
-                    <button key={station._id} className="recent-item">
+                    <button onClick={() => navigate(`/station/${station._id}`)} key={station._id} className="recent-item">
                         <img src={station.imgUrl} alt={station.name} />
                         <span>{station.name}</span>
                     </button>
@@ -55,7 +58,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
             <ul className="station-list">
                 {stations.map(station =>
                     <li key={station._id}>
-                        {<img className="station-img" src={station.imgUrl} alt="" />}
+                        {<img onClick={() => navigate(`/station/${station._id}`)} className="station-img" src={station.imgUrl} alt="" />}
                         <StationPreview station={station} />
                         {<div className="actions">
                             {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
