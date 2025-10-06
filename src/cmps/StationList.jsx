@@ -59,7 +59,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
             <ul className="station-list">
                 {stations.map(station =>
                     <li key={station._id}>
-                        {<img className="station-img" src={station.imgUrl} alt="" />}
+                        {<img onClick={() => navigate(`/station/${station._id}`)} className="station-img" src={station.imgUrl} alt="" />}
                         <StationPreview station={station} />
                         {<div className="actions">
                             {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}

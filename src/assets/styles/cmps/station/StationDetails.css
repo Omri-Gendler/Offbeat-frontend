@@ -1,46 +1,44 @@
+.station-details {
+  padding: 32px 0;
+  flex-direction: column;
 
- .station-details {
-    padding: 32px 0;
-    flex-direction: column;
+  position: relative;
 
-    position: relative;
-    
-    background-color: transparent;
-    min-height: calc(100vh - 160px); /* Adjust based on header/footer height */
+  background-color: transparent;
+  min-height: calc(100vh - 160px);
+  /* Adjust based on header/footer height */
 }
+
 .content-spacing {
-  
+
   margin: 0 auto;
-  padding: 0 20px; /* smaller left padding */
+  /* padding: 0 20px; smaller left padding */
   background-color: var(--background-base);
-  background-image: linear-gradient(
-    to bottom,
-    var(--background-base-min-contrast),
-    transparent
-  );
+  background-image: linear-gradient(to bottom,
+      var(--background-base-min-contrast),
+      transparent);
 }
 
 
 .station-header.flex.align-center {
-    display: flex;
-    align-items: flex-end;
-    gap: 24px;
-    margin-bottom: 32px;
-    min-height: 232px; /* Match the cover height */
-  
-   
-
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 32px;
+  min-height: 232px;
+  /* Match the cover height */
+  margin-left: 25px;
 }
 
 
 .station-meta {
   display: flex;
-  flex: 1 1 auto;           
-  flex-direction: column;    
-  justify-content: flex-end;   
-  gap: 25px;                   
-  z-index: 0;                 
-  min-width: 0;              
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 25px;
+  z-index: 0;
+  min-width: 0;
 }
 
 
@@ -77,12 +75,23 @@
   text-overflow: ellipsis;
 }
 
-.station-byline .dot { opacity: .6; }
-.station-owner { font-weight: 600; text-decoration: none; }
-.station-owner:hover { text-decoration: underline; }
+.station-byline .dot {
+  opacity: .6;
+}
+
+.station-owner {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.station-owner:hover {
+  text-decoration: underline;
+}
 
 /* optional hover polish */
-.station-header:hover .station-cover img { filter: brightness(0.95); }
+.station-header:hover .station-cover img {
+  filter: brightness(0.95);
+}
 
 /* responsive: stack vertically on small screens */
 @media (max-width: 700px) {
@@ -91,10 +100,12 @@
     align-items: flex-start;
     gap: 16px;
   }
+
   .station-cover {
     width: min(65vw, 280px);
     flex: 0 0 auto;
   }
+
   .station-title {
     font-size: clamp(24px, 9vw, 48px);
   }
@@ -107,16 +118,19 @@
   position: relative;
   gap: 16px;
   padding: 20px 0;
-  
-  
+  margin-left: 25px;
+  margin-top: -27px;
+
 }
-.station-actions{
+
+.station-actions {
   display: flex;
   align-items: center;
   width: 100%;
   gap: 16px;
 }
-.station-actions-play-btn{
+
+.station-actions-play-btn {
   background-color: var(--clr3);
   margin: 0;
   border: none;
@@ -129,56 +143,79 @@
   cursor: pointer;
   transition: inherit;
   position: relative;
-  
+
   & svg {
     fill: var(--clr1);
     width: 24px;
     height: 24px;
   }
 }
+
 .station-actions-play-btn:hover {
   background-color: var(--clr3);
   transform: scale(1.06);
 }
 
 .tertiary-btn {
-    box-sizing: border-box;
-    background-color: transparent;
-    color: transparent;
-    border: 0px;
-   
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    
-    
-    user-select: none;
-    vertical-align: middle;
-    will-change: transform;
-    
-    min-inline-size: 0px;
+  box-sizing: border-box;
+  background-color: transparent;
+  color: transparent;
+  border: 0px;
 
-    padding-inline: 0px;
-    display: inline-flex
-;
-    
-   
-    align-items: center;
-   
-    justify-content: center;
-    transition-property: color, transform;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
 
-    & svg {
-      fill: var(--clr5);
-      width: 24px;
-      height: 24px;
 
-    }
+  user-select: none;
+  vertical-align: middle;
+  will-change: transform;
+
+  min-inline-size: 0px;
+
+  padding-inline: 0px;
+  display: inline-flex;
+
+
+  align-items: center;
+
+  justify-content: center;
+  transition-property: color, transform;
+
+  & svg {
+    fill: var(--clr5);
+    width: 24px;
+    height: 24px;
+
   }
-  .tertiary-btn:hover {
-    background-color: transparent;
-    & svg {
-      fill: var(--clr4);
-    }
-    
+}
+
+.tertiary-btn:hover {
+  background-color: transparent;
+
+  & svg {
+    fill: var(--clr4);
   }
+
+}
+
+.song-index {
+  margin-left: 25px;
+}
+
+.song-preview {
+  margin-left: 25px;
+}
+
+.song-img {
+  height: 40px;
+  width: 40px;
+}
+
+.song-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 25px;
+  padding: 8px 0;
+}
