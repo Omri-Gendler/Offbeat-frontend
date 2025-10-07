@@ -156,3 +156,8 @@ button {
     top: 0;
     z-index: 10;
 } */
+
+.station-list .station-preview header{
+    display: flex;
+    flex-direction: column;
+}
