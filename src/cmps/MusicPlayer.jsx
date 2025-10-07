@@ -1,15 +1,24 @@
 import React, { useState, useRef } from 'react';
+import { useEffect } from 'react';
 
 import DoneIcon from '@mui/icons-material/Done';
-import { buttonGroupClasses } from '@mui/material';
 
 export function MusicPlayer({ station }) {
     const audioRef = useRef(null)
     const [isPlaying, setIsPlaying] = useState(false)
     const [duration, setDuration] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
+    const progressBarRef = useRef(null)
 
     const songSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+
+    useEffect(() => {
+        const progressPercent = duration ? (currentTime / duration) * 100 : 0;
+
+        if (progressBarRef.current) {
+            progressBarRef.current.style.setProperty('--progress-percent', `${progressPercent}%`);
+        }
+    }, [currentTime, duration])
 
     const togglePlayPause = () => {
         setIsPlaying(prev => {
@@ -60,6 +69,7 @@ export function MusicPlayer({ station }) {
                 <div className="progress-bar-container">
                     <span className="time-stamp">{formatTime(currentTime)}</span>
                     <input
+                        ref={progressBarRef}
                         type="range"
                         value={currentTime}
                         max={duration}
