@@ -49,7 +49,7 @@ export function LeftSideBar() {
             }
         }, [isSearchOpen])
         return (
-            <div className={`search-container ${isSearchOpen ? 'expanded' : ''}`}>
+            <div className={`search-container-left-side-bar ${isSearchOpen ? 'expanded' : ''}`}>
                 <SearchIcon className="search-icon" onClick={() => setIsSearchOpen(true)} style={{ cursor: 'pointer', height: '24px' }} />
                 {isSearchOpen ? (
                     <input
