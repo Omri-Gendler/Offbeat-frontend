@@ -2,6 +2,10 @@ import React, { useState, useRef } from 'react';
 import { useEffect } from 'react';
 
 import DoneIcon from '@mui/icons-material/Done';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 
 export function MusicPlayer({ station }) {
     const audioRef = useRef(null)
@@ -60,11 +64,11 @@ export function MusicPlayer({ station }) {
 
             <div className="player-center">
                 <div className="player-controls">
-                    <button className="control-btn">Prev</button>
+                    <button className="control-btn"><SkipPreviousIcon style={{ fontSize: '25px', marginLeft: '2px' }} /></button>
                     <button className="control-btn play-pause-btn" onClick={togglePlayPause}>
-                        {isPlaying ? 'Pause' : 'Play'}
+                        {isPlaying ? <PauseIcon style={{ fontSize: '25px', marginLeft: '2px' }} /> : <PlayArrowIcon style={{ fontSize: '25px', marginLeft: '2px' }} />}
                     </button>
-                    <button className="control-btn">Next</button>
+                    <button className="control-btn"><SkipNextIcon style={{ fontSize: '25px', marginLeft: '2px' }} /></button>
                 </div>
                 <div className="progress-bar-container">
                     <span className="time-stamp">{formatTime(currentTime)}</span>
