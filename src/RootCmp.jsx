@@ -9,7 +9,7 @@ import { AdminIndex } from './pages/AdminIndex.jsx'
 
 import { StationDetails } from './pages/StationDetails'
 import { UserDetails } from './pages/UserDetails'
-
+import { Browser} from './pages/Browser.jsx'
 import { AppHeader } from './cmps/AppHeader'
 import { AppFooter } from './cmps/AppFooter'
 import { UserMsg } from './cmps/UserMsg.jsx'
@@ -31,6 +31,8 @@ export function RootCmp() {
                 <Routes>
                     <Route path="" element={<HomePage />} />
                     <Route path="/station/:stationId" element={<StationDetails />} />
+                    <Route path="/search" element={<Browser />} />
+                    <Route path="/search/:input" element={<Browser />} />
                     <Route path="about" element={<AboutUs />}>
                         <Route path="team" element={<AboutTeam />} />
                         <Route path="vision" element={<AboutVision />} />
