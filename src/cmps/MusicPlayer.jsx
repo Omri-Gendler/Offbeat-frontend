@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
 
+import DoneIcon from '@mui/icons-material/Done';
+import { buttonGroupClasses } from '@mui/material';
+
 export function MusicPlayer({ station }) {
     const audioRef = useRef(null)
     const [isPlaying, setIsPlaying] = useState(false)
@@ -28,6 +31,12 @@ export function MusicPlayer({ station }) {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
     }
 
+    function handleLengthChange() {
+        setDuration(audioRef.current.duration)
+        setCurrentTime(audioRef.current.currentTime)
+    }
+
+
     return (
         <footer className="music-player">
             <div className="player-left">
@@ -35,7 +44,9 @@ export function MusicPlayer({ station }) {
                 <div className="player-song-info">
                     <span className="song-title">{station?.name}</span>
                     <span className="song-artist">{station?.artist}</span>
+                    <span className='created-by'>{station?.createdBy.fullname}</span>
                 </div>
+                <span><DoneIcon style={{ color: '#ffffff', marginLeft: '20px' }} /></span>
             </div>
 
             <div className="player-center">
@@ -51,11 +62,11 @@ export function MusicPlayer({ station }) {
                     <input
                         type="range"
                         value={currentTime}
-                        max={duration || 0}
+                        max={duration}
                         onChange={handleSeek}
                         className="progress-bar"
                     />
-                    <span className="time-stamp">4:20</span>
+                    <span className="time-stamp">{formatTime(duration) || '4:20'}</span>
                 </div>
             </div>
 
@@ -65,7 +76,7 @@ export function MusicPlayer({ station }) {
             <audio
                 ref={audioRef}
                 src={songSrc}
-                onLoadedMetadata={() => setDuration(audio - Ref.current.duration)}
+                onLoadedMetadata={() => setDuration(audioRef.current.duration)}
                 onTimeUpdate={() => setCurrentTime(audioRef.current.currentTime)}
                 onEnded={() => setIsPlaying(false)}
             />
