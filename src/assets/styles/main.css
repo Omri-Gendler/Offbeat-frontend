@@ -22,9 +22,10 @@
 @import "cmps/station/StationList";
 @import "cmps/station/StationPreview";
 @import "cmps/station/StationFilter";
-@import "cmps/station/LeftSideBar.css";
+@import "cmps/station/LeftSideBar";
 @import "cmps/station/StationDetails";
 @import "cmps/station/StationCover";
+@import "cmps/station/MusicPlayer";
 
 
 

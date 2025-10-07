@@ -2,11 +2,11 @@ import { useSelector } from 'react-redux'
 import { MusicPlayer } from './MusicPlayer'
 
 export function AppFooter() {
-	const count = useSelector(storeState => storeState.userModule.count)
+	const station = useSelector(storeState => storeState.stationModule.station)
 
 	return (
 		<footer className="app-footer full">
-			<MusicPlayer />
+			<MusicPlayer station={station} />
 		</footer>
 	)
 }
