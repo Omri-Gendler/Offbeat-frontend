@@ -9,10 +9,14 @@ import { SongsList } from '../cmps/SongsList.jsx'
 import { loadStation, updateStation } from '../store/actions/station.actions'
 import { StationActions } from '../cmps/StationActions.jsx'
 import { CompositeCover } from '../cmps/CompositeCover.jsx'
+import { EditStationModal } from '../cmps/EditStationModal.jsx'
+
 
 export function StationDetails() {
   const { stationId } = useParams()
   const station = useSelector(s => s.stationModule.station)
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     if (stationId) loadStation(stationId)
@@ -49,6 +53,15 @@ export function StationDetails() {
     )
   }
 
+  async function handleSaveDetails(stationToSave) {
+    try {
+      await updateStation(stationToSave)
+      setIsModalOpen(false)
+    } catch (err) {
+      console.error('Failed to update station:', err)
+    }
+  }
+
   const hasCustomCover = !!station.imgUrl
   const canGenerateCover = station.songs && station.songs.length >= 2
 
@@ -68,7 +81,9 @@ export function StationDetails() {
           {/* <StationCover station={station} onChangeUrl={handleCoverChange} /> */}
           <div className="station-meta">
             <span className="station-type">Public Playlist</span>
-            <h1 className="station-title">{station?.name ?? 'NEW station'}</h1>
+            <h1 className="station-title editable" onClick={() => setIsModalOpen(true)}>
+              {station?.name ?? 'NEW station'}
+            </h1>
             <div className="station-byline">
               <a className="station-owner" href="">{station?.createdBy?.fullname ?? 'Unknown'}</a>
               <span className="dot">•</span>
@@ -77,7 +92,14 @@ export function StationDetails() {
               <span className="station-total">{station?.length ?? '1 hr 25 min'}</span>
             </div>
 
-            {/* Simple, clean action bar (don’t paste Spotify’s raw DOM) */}
+            {isModalOpen && (
+              <EditStationModal
+                station={station}
+                onSave={handleSaveDetails}
+                onClose={() => setIsModalOpen(false)}
+              />
+            )}
+
           </div>
         </header>
         <StationActions station={station} />
