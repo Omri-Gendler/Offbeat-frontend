@@ -67,7 +67,7 @@ export function StationDetails() {
           )}
           {/* <StationCover station={station} onChangeUrl={handleCoverChange} /> */}
           <div className="station-meta">
-            <span className="station-type">Playlist</span>
+            <span className="station-type">Public Playlist</span>
             <h1 className="station-title">{station?.name ?? 'NEW station'}</h1>
             <div className="station-byline">
               <a className="station-owner" href="">{station?.createdBy?.fullname ?? 'Unknown'}</a>

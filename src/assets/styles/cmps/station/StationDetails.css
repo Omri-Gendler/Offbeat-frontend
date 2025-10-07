@@ -1,5 +1,4 @@
 .station-details {
-  padding: 32px 0;
   flex-direction: column;
 
   position: relative;
@@ -36,21 +35,21 @@
   flex: 1 1 auto;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 25px;
+  /* gap: 25px; */
   z-index: 0;
   min-width: 0;
 }
 
 
-.station-type {
-  text-transform: uppercase;
+.station-details .station-type {
+  /* text-transform: uppercase; */
   font-size: 12px;
   letter-spacing: .12em;
   color: var(--clr4);
   opacity: .85;
 }
 
-.station-title {
+.station-details .station-title {
   margin: 0;
   color: var(--clr4);
   font-family: var(--encore-title-font-stack);
@@ -60,6 +59,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.sr-only {
+  font-size: 80px;
+  font-weight: bold;
 }
 
 

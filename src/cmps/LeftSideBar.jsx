@@ -14,7 +14,7 @@ export function LeftSideBar() {
     const [filterBy, setFilterBy] = useState({ txt: '' })
     const [sortBy, setSortBy] = useState('recent')
     const [isSearchOpen, setIsSearchOpen] = useState(false)
-    const [viewMode, setViewMode] = useState('grid') 
+    const [viewMode, setViewMode] = useState('grid')
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -80,25 +80,30 @@ export function LeftSideBar() {
 
     return (
         <section className="left-side-bar">
+
+
             <aside className="station-list-container">
-                {leftHeader()}
+                <div className="library-filters">
 
-                <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
-                <button className={`filter-btn ${sortBy === 'artists' ? 'selected' : ''}`} onClick={() => setSortBy('artists')}>Artists</button>
-                <button className={`filter-btn ${sortBy === 'stations' ? 'selected' : ''}`} onClick={() => setSortBy('stations')}>stations</button>
+                    {leftHeader()}
 
-                <section className="search-and-recent">
-                    {searchBar()}
-                    <div className="recent-btn">
-                        <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button>
-                        <button onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')} className="view-toggle-btn">
-                            {viewMode === 'grid'
-                                ? <ViewListIcon style={{ fontSize: '18px', color: 'var(--clr4)' }} />
-                                : <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
-                            }
-                        </button>
-                    </div>
-                </section>
+                    <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
+                    <button className={`filter-btn ${sortBy === 'artists' ? 'selected' : ''}`} onClick={() => setSortBy('artists')}>Artists</button>
+                    <button className={`filter-btn ${sortBy === 'stations' ? 'selected' : ''}`} onClick={() => setSortBy('stations')}>stations</button>
+
+                    <section className="search-and-recent">
+                        {searchBar()}
+                        <div className="recent-btn">
+                            <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button>
+                            <button onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')} className="view-toggle-btn">
+                                {viewMode === 'grid'
+                                    ? <ViewListIcon style={{ fontSize: '18px', color: 'var(--clr4)' }} />
+                                    : <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
+                                }
+                            </button>
+                        </div>
+                    </section>
+                </div>
 
                 <div className={`library-list ${viewMode}`}>
                     {stationsToDisplay.map(station => (
@@ -112,6 +117,6 @@ export function LeftSideBar() {
                     ))}
                 </div>
             </aside>
-        </section>
+        </section >
     )
 }

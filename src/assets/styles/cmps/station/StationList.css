@@ -150,3 +150,9 @@ button {
     margin-top: 12px;
     margin-left: 15px;
 }
+
+/* .main-station-list-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+} */

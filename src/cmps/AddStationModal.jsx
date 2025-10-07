@@ -36,11 +36,11 @@ export function AddStationModal() {
                     <StationCover station={{ imgUrl: unnamedImg }} isEditable={false} />
 
                     <div className="station-meta">
-                        <span className="station-type">Playlist</span>
+                        <span className="station-type">Public Playlist</span>
 
                         <form onSubmit={handleSubmit} className="new-station-form">
-                            <label htmlFor="stationName" className="sr-only">Station Name</label>
-                            <input
+                            <label htmlFor="stationName" className="sr-only">My Playlist {`#`}</label>
+                            {/* <input
                                 type="text"
                                 id="stationName"
                                 value={stationName}
@@ -48,8 +48,8 @@ export function AddStationModal() {
                                 placeholder="My New Playlist"
                                 autoFocus
                                 className="station-title-input"
-                            />
-                            <button type="submit" className="create-btn">Create</button>
+                            /> */}
+                            {/* <button type="submit" className="create-btn">Create</button> */}
                         </form>
 
                         <div className="station-byline">

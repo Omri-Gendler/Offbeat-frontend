@@ -3,12 +3,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 232px;
-  height: 232px;
+  width: 210px;
+  height: 210px;
   margin: 0;
   padding: 0;
 
-  background-color: #282828;
   border: none;
   border-radius: 8px;
   cursor: pointer;

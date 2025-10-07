@@ -40,20 +40,23 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     return (
         <section className="station-list-container" style={{ background: dynamicBgColor }}>
 
-            <div className='main-station-list-filters'>
-                <button>All</button>
-                <button>Music</button>
-            </div>
+            <div className='main-station-list-header'>
 
-            <div className='station-list-recents'>
-                {stations.slice(0, 6).map(station => (
-                    <button onClick={() => navigate(`/station/${station._id}`)} key={station._id} className="recent-item">
-                        <img src={station.imgUrl} alt={station.name} />
-                        <span>{station.name}</span>
-                    </button>
-                ))}
-            </div>
+                <div className='main-station-list-filters'>
+                    <button>All</button>
+                    <button>Music</button>
+                </div>
 
+                <div className='station-list-recents'>
+                    {stations.slice(0, 6).map(station => (
+                        <button onClick={() => navigate(`/station/${station._id}`)} key={station._id} className="recent-item">
+                            <img src={station.imgUrl} alt={station.name} />
+                            <span>{station.name}</span>
+                        </button>
+                    ))}
+                </div>
+
+            </div>
             <h2 className='station-list-title'>All Stations</h2>
 
             <ul className="station-list">
