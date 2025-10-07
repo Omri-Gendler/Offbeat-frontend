@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { StationPreview } from '../cmps/StationPreview.jsx' // create if you don’t have it
 import { StationList } from '../cmps/StationList.jsx'
+import { Categories } from '../cmps/Categories.jsx'
 
 export function Browser() {
   const { input } = useParams()
@@ -18,12 +19,14 @@ export function Browser() {
 
   return (
     <section className="browser">
+      {!searchQuery ? <Categories/> : null}
+    
 
-      {filteredStations.length ? (
+      {filteredStations.length && searchQuery ? (
         <StationList 
         stations={filteredStations}/>
       ) : (
-        <p>No stations found.</p>
+        null
       )}
     </section>
   )
