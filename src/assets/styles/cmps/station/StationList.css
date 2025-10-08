@@ -34,6 +34,7 @@
     margin-left: 29px;
 
     img {
+        max-width: 165px;
         width: 100%;
         height: auto;
     }

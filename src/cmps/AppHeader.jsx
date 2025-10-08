@@ -32,17 +32,17 @@ export function AppHeader() {
 				<div className='logo-container'>
 					<img className='app-header-logo' src="/img/spotify-white-icon.webp" alt="Offbeat Logo" onClick={() => navigate('')} />
 				</div>
-			
-				<button className="home-btn" title="Home" onClick={() => navigate('/')}>
-				{isActive ? (
-					<HomeFilledIcon size={24} color="#fff" />
-				) : (
-					<HomeOutlineIcon size={24} color="#b3b3b3" />
-				)}
-				</button>
+				<div className='middle-app-header flex'>
+					<button className="home-btn" title="Home" onClick={() => navigate('/')}>
+					{isActive ? (
+						<HomeFilledIcon size={24} color="#fff" />
+					) : (
+						<HomeOutlineIcon size={24} color="#b3b3b3" />
+					)}
+					</button>
 
-				<StationFilter filterBy={filterBy} setFilterBy={setFilterBy} />
-				
+					<StationFilter filterBy={filterBy} setFilterBy={setFilterBy} />
+				</div>
 
 				{user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 

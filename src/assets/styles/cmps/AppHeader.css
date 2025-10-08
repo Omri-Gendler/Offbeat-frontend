@@ -1,8 +1,9 @@
 .app-header {
     display: flex;
     min-height: 3.2rem;
-
+    
     background-color: var(--clr1);
+    
    
     padding: 8px;
     height: 64px;
@@ -11,6 +12,7 @@
         display: flex;
         width: 100%;
         align-items: center;
+        justify-content: space-between;
         
 
         font-size: .8em;
@@ -35,9 +37,7 @@
         width: 72px;
         }
 
-        .login-link {
-            margin-inline-start: auto;
-        }
+  
 
         & button {
             margin: 0;
@@ -81,7 +81,7 @@
     .user-info {
         display: flex;
         align-items: center;
-        margin-inline-start: auto;
+        margin-inline-end: auto;
 
         color: var(--clr1);
 
