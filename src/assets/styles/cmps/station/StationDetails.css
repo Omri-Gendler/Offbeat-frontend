@@ -5,7 +5,8 @@
 
   background-color: transparent;
   min-height: calc(100vh - 160px);
-  /* Adjust based on header/footer height */
+  --content-spacing: clamp(16px, 16px + (var(--main-view-grid-width) - 600px) / 424 * 8, 24px);
+  
 }
 
 .content-spacing {
@@ -216,10 +217,91 @@
   width: 40px;
 }
 
-.song-row {
-  display: flex;
+.songs-list-content-spacing{
+    max-width: var(--content-max-width);
+    padding: 0 var(--content-spacing);
+    width: 100%;
+}
+
+
+.songs-list-container{
+  position: relative;
+}
+.songs-list-grid{
+    --placeholder-image: url(https://open-exp.spotifycdn.com/cdn/images/tracklist-placeholder.b256dae9.webp);
+    --placeholder-image-compact: url(https://open-exp.spotifycdn.com/cdn/images/tracklist-placeholder-compact.c14407f1.webp);
+    --row-height: 56px;
+    --col1-min-width: 180px;
+    --col2-min-width: 120px;
+    --col3-min-width: 120px;
+    --col4-min-width: 120px;
+    --col1: 40.52684903748734fr;
+    --col2: 27.051671732522795fr;
+    --col3: 20.26342451874367fr;
+    --col4: 12.158054711246201fr;
+    border-bottom: 1px solid hsla(0, 0%, 100%, .1);
+    color: var(--text-subdued, #b3b3b3);
+    height: 36px;
+}
+.songs-list-header{
+     grid-template-columns: [index] var(--tracklist-index-column-width, 16px) [first] minmax(var(--col1-min-width), var(--col1, 6fr)) [var1] minmax(var(--col2-min-width), var(--col2, 4fr)) [var2] minmax(var(--col3-min-width), var(--col3, 3fr)) [last] minmax(var(--col4-min-width), var(--col4, 1fr));
+    column-gap: 16px;
+}
+.songs-list-header{
+  display: grid;
+  height: 36px;
+
+}
+
+.songs-list-header-spacing{
+border-bottom: 1px solid transparent;
+    box-sizing: content-box;
+    height: 36px;
+    margin: 0 calc(var(--content-spacing) * -1) calc(var(--content-spacing) - 8px);
+    padding: 0 var(--content-spacing);
+    position: sticky;
+    top: 64px;
+    z-index: 2;
+  }
+
+
+  .title-container{
+    align-items: center;
+  }
+  .column-header-context-menu{
+   margin-inline-end: 12px;
+  }
+  .column-header-item{
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    font-size: 16px;
+  }
+  .header-spacer{
+    cursor: col-resize;
+    height: 50%;
+    margin-inline-start: auto;
+    width: 8px;
+  }
+  .duration{
+    margin-inline-end: 32px;
+    & svg{
+      fill: #b3b3b3;
+    }
+  }
+.duration-container{
+  grid-column: 5;
+  justify-content: flex-end;
   align-items: center;
-  gap: 12px;
-  margin-left: 25px;
-  padding: 8px 0;
+}
+.date-added-container{
+  grid-column: 4;
+}
+.index{
+
+  grid-column: 0;
+  padding: 4px 0;
+  align-content: center;
+  justify-content: center;
+ 
 }
