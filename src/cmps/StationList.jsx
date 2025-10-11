@@ -49,7 +49,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
 
                 <div className='station-list-recents'>
                     {stations.slice(0, 6).map(station => (
-                        <button onClick={() => navigate(`/station/${station._id}`)} key={station._id} className="recent-item">
+                        <button onClick={() => navigate(`/station/${station._id}`)} key={station._id} className="recent-item-list">
                             <img src={station.imgUrl} alt={station.name} />
                             <span>{station.name}</span>
                         </button>
@@ -57,19 +57,22 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
                 </div>
 
             </div>
-            <h2 className='station-list-title'>All Stations</h2>
+            <div className="station-list-content">
 
-            <ul className="station-list">
-                {stations.map(station =>
-                    <li key={station._id}>
-                        <StationPreview station={station} />
-                        {<div className="actions">
-                            {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
-                            {/* <button onClick={() => onRemoveStation(station._id)}>x</button> */}
-                        </div>}
-                    </li>
-                )}
-            </ul>
+                <h2 className='station-list-title'>All Stations</h2>
+
+                <ul className="station-list">
+                    {stations.map(station =>
+                        <li key={station._id}>
+                            <StationPreview station={station} />
+                            {<div className="actions">
+                                {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
+                                {/* <button onClick={() => onRemoveStation(station._id)}>x</button> */}
+                            </div>}
+                        </li>
+                    )}
+                </ul>
+            </div >
         </section>
     )
 }
