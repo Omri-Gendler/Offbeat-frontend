@@ -7,6 +7,10 @@
 
   --white: var(--white);
 
+  --text-base: var(#fff);
+
+  --text-shadow: hsla(0, 0%, 100%, .1);
+
   --clr1-light: color-mix(in lab, var(--clr1), white 15%);
 
   --gray1: #121212;
