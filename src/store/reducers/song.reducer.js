@@ -13,7 +13,7 @@ const initialState = {
   positionMs: 0,
 };
 
-export function playerReducer(state = initialState, action = {}) {
+export function songReducer(state = initialState, action = {}) {
   switch (action.type) {
     case PLAY_SONG: {
       const { stationId, songId, positionMs = 0 } = action.payload;

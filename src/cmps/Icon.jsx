@@ -1,8 +1,7 @@
 // icons.js
 export function IconPlay24(props) {
   return (
-    <svg
-      onClick={() => toggleSong()} 
+    <svg 
       aria-hidden="true"
       viewBox="0 0 24 24"
       role="img"
