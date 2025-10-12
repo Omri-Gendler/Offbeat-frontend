@@ -2,6 +2,7 @@
 export function IconPlay24(props) {
   return (
     <svg
+      onClick={() => toggleSong()} 
       aria-hidden="true"
       viewBox="0 0 24 24"
       role="img"
@@ -11,6 +12,14 @@ export function IconPlay24(props) {
       <path d="m7.05 3.606 13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606"></path>
     </svg>
   )
+}
+
+export function IconPause24(props) {
+  return (
+    <svg role="img" aria-hidden="true" viewBox="0 0 24 24" className="icon" {...props}>
+      <path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7z"></path>
+    </svg>
+  );
 }
 
 export function IconDownloadCircle24(props) {
@@ -167,3 +176,27 @@ export function DurationIcon({ size = 16, className }) {
     </svg>
   );
 }
+
+// In Icon.jsx (JS version)
+export function IconKebab16({ size = 16, title, className }) {
+  const ariaProps = title
+    ? { role: "img", "aria-label": title }
+    : { "aria-hidden": true };
+
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      width={size}
+      height={size}
+      className={className || "icon"}
+      {...ariaProps}
+    >
+      <path
+        d="M3 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m6.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0M16 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
+
+

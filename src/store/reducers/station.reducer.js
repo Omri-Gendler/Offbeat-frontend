@@ -10,6 +10,7 @@ const initialState = {
     station: null
 }
 
+
 export function stationReducer(state = initialState, action) {
     var newState = state
     var stations
@@ -32,6 +33,7 @@ export function stationReducer(state = initialState, action) {
             stations = state.stations.map(station => (station._id === action.station._id) ? action.station : station)
             newState = { ...state, stations }
             break
+
         case ADD_STATION_MSG:
             if (action.msg && state.station) {
                 newState = { ...state, station: { ...state.station, msgs: [...state.station.msgs || [], action.msg] } }

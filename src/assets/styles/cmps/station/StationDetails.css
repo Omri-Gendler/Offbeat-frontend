@@ -11,12 +11,17 @@
 
 .content-spacing {
 
-  padding-top: 30px;
+ 
   /* padding: 0 20px; smaller left padding */
   background-color: var(--background-base);
   background-image: linear-gradient(to bottom,
       var(--background-base-min-contrast),
       transparent);
+}
+
+.station-cover-img{
+  max-width: 208px;
+  max-height: 208px;
 }
 
 
@@ -212,10 +217,15 @@
   margin-left: 25px;
 }
 
-.song-img {
+.thumb {
   height: 40px;
   width: 40px;
+  border-radius: 4px;
+  margin-inline-end: 12px;
+  background-color: #282828;
+  flex-shrink: 0;
 }
+
 
 .songs-list-content-spacing{
     max-width: var(--content-max-width);
@@ -243,34 +253,65 @@
     color: var(--text-subdued, #b3b3b3);
     height: 36px;
 }
-.songs-list-header{
+.songs-list-header,.songs-list-grid, .song-list-row{
      grid-template-columns: [index] var(--tracklist-index-column-width, 16px) [first] minmax(var(--col1-min-width), var(--col1, 6fr)) [var1] minmax(var(--col2-min-width), var(--col2, 4fr)) [var2] minmax(var(--col3-min-width), var(--col3, 3fr)) [last] minmax(var(--col4-min-width), var(--col4, 1fr));
     column-gap: 16px;
 }
 .songs-list-header{
   display: grid;
+  align-items: center;
   height: 36px;
 
 }
+.song-list-row{
+  display: grid;
+  
+  height: 38px;
+  height: calc(100% );
+}
+.cell.index{
+  grid-column: 0;
+}
+.cell.title{
+  grid-column: 2;
 
-.songs-list-header-spacing{
+    align-items: center;
+    padding-inline-end: 8px;
+}
+
+.songs-list, ul{
+  margin: 0;
+}
+
+.songs-list-header{
 border-bottom: 1px solid transparent;
     box-sizing: content-box;
-    height: 36px;
+    height: 37px;
     margin: 0 calc(var(--content-spacing) * -1) calc(var(--content-spacing) - 8px);
     padding: 0 var(--content-spacing);
     position: sticky;
-    top: 64px;
+    
     z-index: 2;
   }
 
 
-  .title-container{
+  .cell.title{
+    display: flex;
     align-items: center;
+    .song-meta{
+      font-family:var(--encore-title-font-stack);
+
+      .track-link{
+      font-size: 20px;
+      color: var(--clr4);
+    }
+      
+      .artists{
+        font-size: 16px;
+      }
+    }
   }
-  .column-header-context-menu{
-   margin-inline-end: 12px;
-  }
+
   .column-header-item{
     justify-content: center;
     align-items: center;
@@ -292,6 +333,7 @@ border-bottom: 1px solid transparent;
 .duration-container{
   grid-column: 5;
   justify-content: flex-end;
+  margin-inline-end: 8px;
   align-items: center;
 }
 .date-added-container{
@@ -305,3 +347,95 @@ border-bottom: 1px solid transparent;
   justify-content: center;
  
 }
+
+
+/* index cell layout */
+.cell.index { position: relative; }
+.index-inner { display: flex; align-items: center; gap: 8px; }
+
+/* keep number width stable so things don’t jump */
+.index-number {
+  width: 16px;  
+  display: flex;            /* match icon width */
+  text-align: right;
+  transition: opacity 120ms ease;
+  
+}
+
+/* play button hidden by default */
+.play-btn {
+  display: none;
+  /* background: none; border: 0; padding: 4px; cursor: pointer;
+  opacity: 0; visibility: hidden; pointer-events: none; */
+  margin: 0;
+  padding: 0;
+ 
+  transform: scale(0.9);
+  fill: var(--clr4);
+ 
+}
+
+.songs-list-pre{
+    contain: layout size;
+    position: relative;
+    height: 4312px;
+}
+.cell.added{
+  font-family: var(--encore-body-font-stack);
+  font-size: 16px;
+}
+
+.songs-list-body-pre{
+  height: 1008px;
+      pointer-events: none;
+    position: absolute;
+    width: 100%;
+   font-size: 16px;
+}
+
+/* reveal on hover or keyboard focus */
+.row:hover .play-btn,
+.row:focus-within .play-btn,
+.play-btn:focus-visible {
+  display: flex;
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transform: scale(1);
+  transition: opacity 120ms ease, transform 120ms ease, visibility 0s;
+}
+
+/* fade the number out when showing the play button */
+.row:hover .index-number,
+.row:focus-within .index-number,
+.play-btn:focus-visible ~ .index-number {
+  display: none;
+}
+
+/* icon sizing */
+.play-btn svg { width: 16px; height: 16px;fill: var(--clr4); }
+.cell.duration svg { width: 16px; height: 16px;fill: var(--clr4); }
+.cell.button{
+  background-color: transparent;
+}
+
+.cell{
+  display: flex;
+  align-items: center;
+  height: 56px;
+}
+
+.cell.duration button{
+  background-color: transparent;
+
+}
+.cell.duration{
+  justify-content: flex-end;
+}
+.song-row:hover{
+  background-color: var(--clr3);
+}
+
+  .more-btn{
+    justify-content: flex-end;
+    padding: 8px 0;
+    margin: 0;
+  }

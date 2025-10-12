@@ -149,17 +149,17 @@
             .browse .button {
                 border: none;
                 background-color: transparent;
-                
+                position: absolute;
                 width: 40px;
                 height: 28px;
-                padding-left: 12px;
+                padding-left: 16px;
                 border-radius: 0;
                 border-left: 1px solid var(--clr5);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                
+                right: 12px;
                 &:hover {
                     .browse-svg {
                         fill: var(--clr4);
