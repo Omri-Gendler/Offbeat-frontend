@@ -92,7 +92,8 @@ function _createStations() {
                 songs: [
                     {
                         id: 'lDK9QqIzhwk',
-                        title: "Bon Jovi - Livin' On A Prayer",
+                        title: "Livin' On A Prayer",
+                        artists: 'Bon Jovi',
                         imgUrl: 'https://picsum.photos/300/300?random=2',
                         addedBy: 'u102',
                         likedBy: ['u101'],
@@ -100,8 +101,8 @@ function _createStations() {
                     },
                     {
                         id: '1w7OgIMMRc4',
-                        title: "Guns N' Roses - Sweet Child O' Mine",
-                        url: 'youtube/song.mp4',
+                        title: "Sweet Child O' Mine",
+                        artists: "Guns N' Roses",
                         imgUrl: 'https://picsum.photos/300/300?random=3',
                         addedBy: 'u101',
                         likedBy: [],
@@ -126,8 +127,8 @@ function _createStations() {
                 songs: [
                     {
                         id: '5AEbq6XbSO0',
-                        title: 'lofi hip hop radio - beats to relax/study to',
-                        url: 'youtube/song.mp4',
+                        title: 'lofi hip hop radio',
+                        artists: ['beats to relax/study to'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: ['u102', 'u104'],
@@ -135,8 +136,8 @@ function _createStations() {
                     },
                     {
                         id: 'DWcJFNfaw9c',
-                        title: 'Affection - Jinsang',
-                        url: 'youtube/song.mp4',
+                        title: 'Affection',
+                        artists: ['jinsang'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: [],
@@ -161,8 +162,8 @@ function _createStations() {
                 songs: [
                     {
                         id: '5AEbq6XbSO0',
-                        title: 'lofi hip hop radio - beats to relax/study to',
-                        url: 'youtube/song.mp4',
+                        title: 'lofi hip hop radio',
+                        artists: ['beats to relax/study to'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: ['u102', 'u104'],
@@ -170,8 +171,8 @@ function _createStations() {
                     },
                     {
                         id: 'DWcJFNfaw9c',
-                        title: 'Affection - Jinsang',
-                        url: 'youtube/song.mp4',
+                        title: 'Affection',
+                        artists: ['jinsang'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: [],
@@ -196,8 +197,8 @@ function _createStations() {
                 songs: [
                     {
                         id: '5AEbq6XbSO0',
-                        title: 'lofi hip hop radio - beats to relax/study to',
-                        url: 'youtube/song.mp4',
+                        title: 'lofi hip hop radio',
+                        artists: ['beats to relax/study to'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: ['u102', 'u104'],
@@ -205,8 +206,8 @@ function _createStations() {
                     },
                     {
                         id: 'DWcJFNfaw9c',
-                        title: 'Affection - Jinsang',
-                        url: 'youtube/song.mp4',
+                        title: 'Affection',
+                        artists: ['jinsang'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: [],
@@ -231,8 +232,8 @@ function _createStations() {
                 songs: [
                     {
                         id: '5AEbq6XbSO0',
-                        title: 'lofi hip hop radio - beats to relax/study to',
-                        url: 'youtube/song.mp4',
+                        title: 'lofi hip hop radio',
+                        artists: ['beats to relax/study to'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: ['u102', 'u104'],
@@ -240,8 +241,8 @@ function _createStations() {
                     },
                     {
                         id: 'DWcJFNfaw9c',
-                        title: 'Affection - Jinsang',
-                        url: 'youtube/song.mp4',
+                        title: 'Affection',
+                        artists: ['jinsang'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: [],
@@ -266,7 +267,8 @@ function _createStations() {
                 songs: [
                     {
                         id: '5AEbq6XbSO0',
-                        title: 'lofi hip hop radio - beats to relax/study to',
+                        title: 'beats to relax/study to',
+                        artist: 'lofi hip hop radio',
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: ['u102', 'u104'],
@@ -274,8 +276,8 @@ function _createStations() {
                     },
                     {
                         id: 'DWcJFNfaw9c',
-                        title: 'Affection - Jinsang',
-                        imgUrl: 'https://picsum.photos/300/300?random=1',
+                        title: 'Affection',
+                        artists: ['jinsang'],
                         addedBy: 'u103',
                         likedBy: [],
                         addedAt: 162551765262,
@@ -300,8 +302,8 @@ function _createStations() {
                 songs: [
                     {
                         id: '5AEbq6XbSO0',
-                        title: 'lofi hip hop radio - beats to relax/study to',
-                        url: 'youtube/song.mp4',
+                        title: 'beats to relax/study to',
+                        artist: 'lofi hip hop radio',
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: ['u102', 'u104'],
@@ -309,7 +311,8 @@ function _createStations() {
                     },
                     {
                         id: 'DWcJFNfaw9c',
-                        title: 'Affection - Jinsang',
+                        title: 'Affection',
+                        artists: ['jinsang'],
                         imgUrl: 'https://picsum.photos/300/300?random=1',
                         addedBy: 'u103',
                         likedBy: [],
