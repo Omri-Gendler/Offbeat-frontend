@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
+import { updateStation } from '../store/actions/station.actions';
+import { useNavigate } from 'react-router-dom';
 
-export function EditStationModal({ station, onSave, onClose }) {
+export function EditStationModal({ station, onClose }) {
+
+    const navigate = useNavigate()
     const [details, setDetails] = useState({
         name: '',
         description: ''
@@ -22,8 +26,15 @@ export function EditStationModal({ station, onSave, onClose }) {
     }
 
     function onSaveStation(ev) {
-        ev.preventDefault()
-        onSave(details)
+        try {
+            ev.preventDefault()
+            handleChange({ target: { name: 'name', value: '' } })
+            handleChange({ target: { name: 'description', value: '' } })
+            onClose()
+            navigate('/station/' + station._id)
+        } catch (err) {
+            console.error('Failed to update station:', err)
+        }
     }
 
     if (!station) return null

@@ -5,6 +5,7 @@
     height: 100vh;
     overflow: hidden;
     column-gap: 7px;
+    margin-left: 7px;
 
     .app-header {
         grid-column: 1 / -1;
