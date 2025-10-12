@@ -87,14 +87,14 @@ export function LeftSideBar() {
 
                     {leftHeader()}
 
-                    <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
+                    {/* <button className={`filter-btn ${sortBy === 'albums' ? 'selected' : ''}`} onClick={() => setSortBy('albums')}>Albums</button>
                     <button className={`filter-btn ${sortBy === 'artists' ? 'selected' : ''}`} onClick={() => setSortBy('artists')}>Artists</button>
-                    <button className={`filter-btn ${sortBy === 'stations' ? 'selected' : ''}`} onClick={() => setSortBy('stations')}>stations</button>
+                    <button className={`filter-btn ${sortBy === 'stations' ? 'selected' : ''}`} onClick={() => setSortBy('stations')}>stations</button> */}
 
                     <section className="search-and-recent">
                         {searchBar()}
                         <div className="recent-btn">
-                            <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button>
+                            {/* <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button> */}
                             <button onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')} className="view-toggle-btn">
                                 {viewMode === 'grid'
                                     ? <ViewListIcon style={{ fontSize: '18px', color: 'var(--clr4)' }} />
