@@ -22,6 +22,7 @@
     .library-list {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: max-content;
         /* gap: 6px; */
         padding: 4px;
         flex-grow: 1;
