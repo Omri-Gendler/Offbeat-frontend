@@ -57,7 +57,7 @@ export function MusicPlayer({ station }) {
                 <div className="player-song-info">
                     <span className="song-title">{station?.name}</span>
                     <span className="song-artist">{station?.artist}</span>
-                    <span className='created-by'>{station?.createdBy.fullname}</span>
+                    <span className='created-by'>{station?.createdBy?.fullname}</span>
                 </div>
                 <span><DoneIcon style={{ color: '#ffffff', marginLeft: '20px' }} /></span>
             </div>
