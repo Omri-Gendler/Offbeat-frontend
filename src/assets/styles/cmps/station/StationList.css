@@ -47,7 +47,7 @@
 
 .station-list-recents {
     display: grid;
-    grid-template-columns: 240px 240px 240px 240px;
+    grid-template-columns: 240px 240px 240px;
     /* gap: 16px; */
     /* margin-bottom: 32px; */
     margin-left: 21px;

@@ -2,16 +2,22 @@ import { Delete } from '@mui/icons-material'
 import { IconPlay24, IconMoreHorizontal24, IconAddCircle24 } from '../cmps/Icon.jsx'
 import { stationService } from '../services/station/station.service.local.js'
 import { useNavigate } from 'react-router'
+import { useDispatch } from 'react-redux'
+import { removeStation } from '../store/actions/station.actions.js'
 
 export function StationActions({ station }) {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   async function handleDelete(ev) {
-    ev.stopPropagation()
-    console.log('Deleting station:', station._id)
-    await stationService.remove(station._id)
-    navigate('/stations')
+    ev.stopPropagation();
+    try {
+      removeStation(station._id)
+      navigate('/stations')
+    } catch (err) {
+      console.error('Failed to remove station:', err)
+    }
   }
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { FastAverageColor } from 'fast-average-color'
 
@@ -15,8 +15,9 @@ import { EditStationModal } from '../cmps/EditStationModal.jsx'
 export function StationDetails() {
   const { stationId } = useParams()
   const station = useSelector(s => s.stationModule.station)
-
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const dispatch = useDispatch()
+
 
   useEffect(() => {
     if (stationId) loadStation(stationId)
@@ -53,13 +54,10 @@ export function StationDetails() {
     )
   }
 
-  async function handleSaveDetails(stationToSave) {
-    try {
-      await updateStation(stationToSave)
-      setIsModalOpen(false)
-    } catch (err) {
-      console.error('Failed to update station:', err)
-    }
+  const handleSaveDetails = (updatedDetails) => {
+    const stationToUpdate = { ...station, ...updatedDetails }
+    dispatch(updateStation(stationToUpdate))
+    setIsModalOpen(false)
   }
 
   const hasCustomCover = !!station.imgUrl

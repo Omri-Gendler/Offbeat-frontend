@@ -15,7 +15,7 @@ export function stationReducer(state = initialState, action) {
     var newState = state
     var stations
     var likedSongsStation
-    
+
     switch (action.type) {
         case SET_STATIONS:
             newState = { ...state, stations: action.stations }
@@ -24,9 +24,8 @@ export function stationReducer(state = initialState, action) {
             newState = { ...state, station: action.station }
             break
         case REMOVE_STATION:
-            const lastRemovedStation = state.stations.find(station => station._id === action.stationId)
-            stations = state.stations.filter(station => station._id !== action.stationId)
-            newState = { ...state, stations, lastRemovedStation }
+            const stationsAfterRemove = state.stations.filter(station => station._id !== action.stationId)
+            newState = { ...state, stations: stationsAfterRemove }
             break
         case ADD_STATION:
             newState = { ...state, stations: [...state.stations, action.station] }
