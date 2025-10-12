@@ -19,7 +19,11 @@ export function AddStationModal() {
 
         const newStation = stationService.getEmptyStation()
         newStation.name = stationName
-
+        newStation.imgUrl = '/img/unnamed.png'
+        // newStation._id = stationName.toLowerCase().replace(/\s+/g, '-')
+        newStation.createdBy = {
+            fullname: 'You',
+        }
 
         try {
             const savedStation = await addStation(newStation)
@@ -40,16 +44,16 @@ export function AddStationModal() {
 
                         <form onSubmit={handleSubmit} className="new-station-form">
                             <label htmlFor="stationName" className="sr-only">My Playlist {`#`}</label>
-                            {/* <input
+                            <input
                                 type="text"
-                                id="stationName"
+                                id={stationName}
                                 value={stationName}
                                 onChange={(ev) => setStationName(ev.target.value)}
                                 placeholder="My New Playlist"
                                 autoFocus
                                 className="station-title-input"
-                            /> */}
-                            {/* <button type="submit" className="create-btn">Create</button> */}
+                            />
+                            <button type="submit" className="create-btn">Create</button>
                         </form>
 
                         <div className="station-byline">

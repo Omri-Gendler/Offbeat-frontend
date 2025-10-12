@@ -53,11 +53,11 @@ export function MusicPlayer({ station }) {
     return (
         <footer className="music-player">
             <div className="player-left">
-                <img src={station?.imgUrl} alt="Album Cover" className="player-album-cover" style={{ width: '50px', height: '50px' }} />
+                <img src={station?.imgUrl || '/img/unnamed-song.png'} alt="Album Cover" className="player-album-cover" style={{ width: '50px', height: '50px' }} />
                 <div className="player-song-info">
                     <span className="song-title">{station?.name}</span>
                     <span className="song-artist">{station?.artist}</span>
-                    <span className='created-by'>{station?.createdBy.fullname}</span>
+                    <span className='created-by'>{station?.createdBy?.fullname}</span>
                 </div>
                 <span><DoneIcon style={{ color: '#ffffff', marginLeft: '20px' }} /></span>
             </div>

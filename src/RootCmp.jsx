@@ -9,7 +9,7 @@ import { AdminIndex } from './pages/AdminIndex.jsx'
 
 import { StationDetails } from './pages/StationDetails'
 import { UserDetails } from './pages/UserDetails'
-import { Browser} from './pages/Browser.jsx'
+import { Browser } from './pages/Browser.jsx'
 import { AppHeader } from './cmps/AppHeader'
 import { AppFooter } from './cmps/AppFooter'
 import { UserMsg } from './cmps/UserMsg.jsx'
@@ -22,34 +22,37 @@ import { SpatialTracking } from '@mui/icons-material'
 
 export function RootCmp() {
     return (
-        <div className="main-container">
-            <AppHeader />
-            <LeftSideBar />
-            <UserMsg />
+        <div className="main-content-wrapper">
 
-            <main className="main-content">
-                <Routes>
-                    <Route path="" element={<HomePage />} />
-                    <Route path="/station/:stationId" element={<StationDetails />} />
-                    <Route path="/search" element={<Browser />} />
-                    <Route path="/search/:input" element={<Browser />} />
-                    <Route path="about" element={<AboutUs />}>
-                        <Route path="team" element={<AboutTeam />} />
-                        <Route path="vision" element={<AboutVision />} />
-                    </Route>
-                    <Route path="stations" element={<StationIndex />} />
-                    <Route path="/stations/add" element={<AddStationModal />} />
-                    {/* <Route path="stations/:stationId" element={<StationDetails />} /> */}
-                    <Route path="user/:id" element={<UserDetails />} />
-                    <Route path="review" element={<ReviewIndex />} />
-                    <Route path="admin" element={<AdminIndex />} />
-                    <Route path="auth" element={<LoginSignup />}>
-                        <Route path="login" element={<Login />} />
-                        <Route path="signup" element={<Signup />} />
-                    </Route>
-                </Routes>
-            </main>
-            <AppFooter />
+            <div className="main-container">
+                <AppHeader />
+                <LeftSideBar />
+                <UserMsg />
+
+                <main className="main-content">
+                    <Routes>
+                        <Route path="" element={<HomePage />} />
+                        <Route path="/station/:stationId" element={<StationDetails />} />
+                        <Route path="/search" element={<Browser />} />
+                        <Route path="/search/:input" element={<Browser />} />
+                        <Route path="about" element={<AboutUs />}>
+                            <Route path="team" element={<AboutTeam />} />
+                            <Route path="vision" element={<AboutVision />} />
+                        </Route>
+                        <Route path="stations" element={<StationIndex />} />
+                        <Route path="/stations/add" element={<AddStationModal />} />
+                        {/* <Route path="stations/:stationId" element={<StationDetails />} /> */}
+                        <Route path="user/:id" element={<UserDetails />} />
+                        <Route path="review" element={<ReviewIndex />} />
+                        <Route path="admin" element={<AdminIndex />} />
+                        <Route path="auth" element={<LoginSignup />}>
+                            <Route path="login" element={<Login />} />
+                            <Route path="signup" element={<Signup />} />
+                        </Route>
+                    </Routes>
+                </main>
+                <AppFooter />
+            </div>
         </div>
     )
 }

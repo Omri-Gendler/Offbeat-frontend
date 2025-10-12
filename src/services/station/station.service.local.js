@@ -4,6 +4,7 @@ import { makeId, loadFromStorage, saveToStorage } from '../util.service'
 import { userService } from '../user'
 
 const STORAGE_KEY = 'station'
+const LIKED_SONGS_KEY = 'likedSongsStation'
 _createStations()
 
 // const img = '/img/infected.jpg'
@@ -13,7 +14,8 @@ export const stationService = {
     getById,
     save,
     remove,
-    addStationMsg
+    addStationMsg,
+    getLikedSongsStation
 }
 window.cs = stationService
 
@@ -42,6 +44,34 @@ function getById(stationId) {
 async function remove(stationId) {
     // throw new Error('Nope')
     await storageService.remove(STORAGE_KEY, stationId)
+}
+
+function getLikedSongsStation() {
+    let station = loadFromStorage(LIKED_SONGS_KEY)
+    if (!station) {
+        station = { ...likedSongsStationTemplate }
+        saveToStorage(LIKED_SONGS_KEY, station)
+    }
+    return station
+}
+
+function saveLikedSongsStation(station) {
+    saveToStorage(LIKED_SONGS_KEY, station)
+}
+
+export async function addLikedSong(song) {
+    const station = getLikedSongsStation()
+    station.songs.push(song)
+    saveLikedSongsStation(station)
+}
+
+export async function removeLikedSong(songId) {
+    const station = getLikedSongsStation()
+    const songIdx = station.songs.findIndex(song => song.id === songId)
+    if (songIdx !== -1) {
+        station.songs.splice(songIdx, 1)
+        saveLikedSongsStation(station)
+    }
 }
 
 function _createStations() {
@@ -266,7 +296,7 @@ function _createStations() {
                     fullname: 'Shuki Cohen',
                     imgUrl: 'https://picsum.photos/300/300?random=1',
                     type: 'station',
-                    
+
                 },
                 likedByUsers: ['u102', 'u104'],
                 songs: [
@@ -296,28 +326,39 @@ function _createStations() {
     }
 }
 
+export const likedSongsStationTemplate = {
+    _id: 'liked-songs-station',
+    name: 'Liked Songs',
+    songs: [],
+    imgUrl: '/img/liked-songs.jpeg',
+    isLikedSongs: true,
+    createdBy: {
+        fullname: 'You'
+    }
+}
+
 async function save(station) {
-  let savedStation
+    let savedStation
 
-  if (station._id) {
-    // Include all fields you want to persist (not just name)
-    const stationToSave = {
-      ...station, // keep name, imgUrl, songs, etc.
+    if (station._id) {
+        // Include all fields you want to persist (not just name)
+        const stationToSave = {
+            ...station, // keep name, imgUrl, songs, etc.
+        }
+
+        savedStation = await storageService.put(STORAGE_KEY, stationToSave)
+    } else {
+        const stationToSave = {
+            name: station.name,
+            owner: userService.getLoggedinUser(),
+            msgs: [],
+            imgUrl: station.imgUrl || '/img/infected.jpg',
+        }
+
+        savedStation = await storageService.post(STORAGE_KEY, stationToSave)
     }
 
-    savedStation = await storageService.put(STORAGE_KEY, stationToSave)
-  } else {
-    const stationToSave = {
-      name: station.name,
-      owner: userService.getLoggedinUser(),
-      msgs: [],
-      imgUrl: station.imgUrl || '/img/infected.jpg',
-    }
-
-    savedStation = await storageService.post(STORAGE_KEY, stationToSave)
-  }
-
-  return savedStation
+    return savedStation
 }
 
 

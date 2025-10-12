@@ -110,6 +110,11 @@ export function LeftSideBar() {
                         <div key={station._id} className="library-item" onClick={() => navigate(`/station/${station._id}`)}>
                             <img src={station.imgUrl || '/img/react.svg'} alt={station.name} />
                             <div className="station-info">
+                                <div className="play-button">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8 5V19L19 12L8 5Z" fill="black" />
+                                    </svg>
+                                </div>
                                 <p>{maxLength(station.name, 20)}</p>
                                 <p className="station-type">station</p>
                             </div>
