@@ -104,12 +104,12 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
 
                         </button>
                     ))}
+                    <h2 className='station-list-title'>All Stations</h2>
                 </div>
 
             </div>
             <div className="station-list-content">
 
-                <h2 className='station-list-title'>All Stations</h2>
 
                 <ul className="station-list">
                     {stations.map(station => (

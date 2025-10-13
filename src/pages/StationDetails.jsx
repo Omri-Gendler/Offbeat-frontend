@@ -88,17 +88,16 @@ export function StationDetails() {
               <span className="station-stats">{station?.songs?.length ?? 0} songs</span>
               <span className="dot">•</span>
               <span className="station-total">{station?.length ?? '1 hr 25 min'}</span>
+
             </div>
-
-            {isModalOpen && (
-              <EditStationModal
-                station={station}
-                onSave={handleSaveDetails}
-                onClose={() => setIsModalOpen(false)}
-              />
-            )}
-
           </div>
+          {isModalOpen && (
+            <EditStationModal
+              station={station}
+              onSave={handleSaveDetails}
+              onClose={() => setIsModalOpen(false)}
+            />
+          )}
         </header>
         <StationActions station={station} />
 
