@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;;
-    min-height: 3.5rem;
+    /* min-height: 3.5rem; */
 
     /* padding: .8rem 1rem; */
     background-color: var(--clr1);
