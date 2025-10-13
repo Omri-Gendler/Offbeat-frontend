@@ -29,7 +29,7 @@
         overflow-y: auto;
         grid-area: left-sidebar;
         max-width: 430px;
-        
+        width: 100%;
 
         /* Scrollbar styling for sidebar */
         &::-webkit-scrollbar {
