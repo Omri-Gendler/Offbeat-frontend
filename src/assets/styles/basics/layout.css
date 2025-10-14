@@ -1,7 +1,7 @@
 .main-container {
     display: grid;
     grid-template-rows: auto 1fr auto;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 312px 1fr;
     height: 100vh;
     overflow: hidden;
     column-gap: 7px;

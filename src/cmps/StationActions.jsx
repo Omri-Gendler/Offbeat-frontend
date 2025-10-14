@@ -9,7 +9,7 @@ import { removeStation } from '../store/actions/station.actions.js'
 export function StationActions({ station }) {
     const [playingId, setPlayingId] = useState(null)
     const [isPlaying, setIsPlaying] = useState(false)
-    const song = station.songs[0]
+    const song = station.songs?.[0]
     const onTogglePlay = (song) => {
       if (playingId === song.id) {
         setIsPlaying((p) => !p);

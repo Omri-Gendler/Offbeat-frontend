@@ -34,7 +34,7 @@
 }
 
 .station-list {
-    display: grid;
+    display: flex;
     overflow-x: auto;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     grid-gap: 25px;
