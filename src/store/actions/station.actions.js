@@ -1,7 +1,7 @@
 // import { stationService } from '../../services/station'
 import { stationService } from '../../services/station/station.service.local'
 import { store } from '../store'
-import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG ,} from '../reducers/station.reducer'
+import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, ADD_SONG_TO_LIKED } from '../reducers/station.reducer'
 
 export async function loadStations(filterBy) {
     try {
@@ -21,6 +21,10 @@ export async function loadStation(stationId) {
         console.log('Cannot load station', err)
         throw err
     }
+}
+
+export function addSongToLikedAction(song) {
+    return { type: ADD_SONG_TO_LIKED, song }
 }
 
 

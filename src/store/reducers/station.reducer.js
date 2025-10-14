@@ -5,6 +5,7 @@ export const ADD_STATION = 'ADD_STATION'
 export const UPDATE_STATION = 'UPDATE_STATION'
 export const ADD_STATION_MSG = 'ADD_STATION_MSG'
 export const TOGGLE_LIKE_STATION = 'TOGGLE_LIKE_STATION'
+export const ADD_SONG_TO_LIKED = 'ADD_SONG_TO_LIKED'
 
 const initialState = {
     stations: [],
@@ -50,6 +51,16 @@ export function stationReducer(state = initialState, action) {
                 newState = { ...state, station: { ...state.station, msgs: [...state.station.msgs || [], action.msg] } }
                 break
             }
+        // station.reducer.js
+
+        case ADD_SONG_TO_LIKED:
+            const likedStationIdx = state.stations.findIndex(station => station._id === 'liked-songs-station')
+            if (likedStationIdx === -1) return state
+            const updatedLikedStation = { ...state.stations[likedStationIdx] }
+            updatedLikedStation.songs.push(action.song)
+            const newStations = [...state.stations]
+            newStations[likedStationIdx] = updatedLikedStation
+            return { ...state, stations: newStations }
         default:
     }
     return newState

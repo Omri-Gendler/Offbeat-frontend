@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import DoneIcon from '@mui/icons-material/Done';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -9,6 +10,8 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { showSuccessMsg } from '../services/event-bus.service';
 
+import { addSongToLikedAction } from '../store/actions/station.actions';
+
 export function MusicPlayer({ station }) {
     const audioRef = useRef(null)
     const [isPlaying, setIsPlaying] = useState(false)
@@ -16,6 +19,8 @@ export function MusicPlayer({ station }) {
     const [currentTime, setCurrentTime] = useState(0)
     const [isAdded, setIsAdded] = useState(false)
     const progressBarRef = useRef(null)
+
+    const dispatch = useDispatch()
 
     const songSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
 
@@ -35,14 +40,42 @@ export function MusicPlayer({ station }) {
         })
     }
 
-    const handleAddClick = () => {
-        setIsAdded(!isAdded)
+    function addSongToLiked(songToAdd) {
+        const stations = JSON.parse(localStorage.getItem('station')) || []
 
-        if (!isAdded) {
-            showSuccessMsg('Added to Your Library')
-        } else {
-            showSuccessMsg('Removed from Your Library')
+        if (!stations.length) {
+            return
         }
+
+        const likedSongsArray = stations[0].songs
+
+        const songExists = likedSongsArray.some(song => song.id === songToAdd.id)
+        if (songExists) {
+            return
+        }
+
+        likedSongsArray.push(songToAdd)
+        localStorage.setItem('station', JSON.stringify(stations))
+    }
+
+    const handleAddClick = () => {
+        const currentSong = station?.songs?.[0]
+        if (!currentSong) return
+
+        setIsAdded(prevIsAdded => {
+            const newIsAdded = !prevIsAdded
+
+            if (newIsAdded) {
+                // אם המצב החדש הוא "נוסף" (true)
+                showSuccessMsg('Added to Your Library')
+                addSongToLiked(currentSong)
+                dispatch(addSongToLikedAction(currentSong))
+            } else {
+                showSuccessMsg('Removed from Your Library')
+            }
+
+            return newIsAdded
+        })
     }
 
     const handleSeek = (e) => {
