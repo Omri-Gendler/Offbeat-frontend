@@ -19,7 +19,7 @@ export function AddStationModal() {
 
         const newStation = stationService.getEmptyStation()
         newStation.name = stationName
-        newStation.imgUrl = '/img/unnamed.png'
+        newStation.imgUrl = '/img/unnamed-song.png'
         // newStation._id = stationName.toLowerCase().replace(/\s+/g, '-')
         newStation.createdBy = {
             fullname: 'You',

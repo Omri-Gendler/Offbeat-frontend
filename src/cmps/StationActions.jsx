@@ -9,7 +9,7 @@ import { removeStation } from '../store/actions/station.actions.js'
 export function StationActions({ station }) {
     const [playingId, setPlayingId] = useState(null)
     const [isPlaying, setIsPlaying] = useState(false)
-    const song = station.songs?.[0]
+    // const song = station.songs?[0]
     const onTogglePlay = (song) => {
       if (playingId === song.id) {
         setIsPlaying((p) => !p);
@@ -35,7 +35,7 @@ export function StationActions({ station }) {
   return (
     <div className="station-actions-space">
       <div className="station-actions flex ">
-      
+{/*       
             <button
               className="station-actions-play-btn"
               onClick={() => onTogglePlay(song)}
@@ -53,7 +53,7 @@ export function StationActions({ station }) {
               ) : (
                 <IconPlay24 />
               )}
-          </button>
+          </button> */}
                   
 
         <button className="tertiary-btn" aria-label="add to your library">

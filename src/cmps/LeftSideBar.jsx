@@ -108,7 +108,7 @@ export function LeftSideBar() {
                 <div className={`library-list ${viewMode}`}>
                     {stationsToDisplay.map(station => (
                         <div key={station._id} className="library-item" onClick={() => navigate(`/station/${station._id}`)}>
-                            <img src={station.imgUrl || '/img/react.svg'} alt={station.name} />
+                            <img src={station.imgUrl ? station.imgUrl : '/img/unnamed-song.png'} alt={station.name} />
                             <div className="station-info">
                                 <div className="play-button">
                                     <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
