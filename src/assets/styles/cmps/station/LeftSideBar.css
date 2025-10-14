@@ -12,16 +12,18 @@
 
     background-color: var(--gray1);
     border-radius: 9px;
-    
-  
+
+
     height: 100%;
     display: flex;
     flex-direction: column;
     /* overflow: hidden; */
 
     h3 {
+        display: flex;
         font-size: 16px;
         color: white;
+        align-items: center;
     }
 
     .library-list {
@@ -29,7 +31,7 @@
         grid-template-columns: repeat(3, 1fr);
         grid-template-rows: max-content;
         /* gap: 6px; */
-        
+
         flex-grow: 1;
         width: 100%;
         box-sizing: border-box;
@@ -158,25 +160,28 @@
     }
 
     .create-station-btn {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        background-color: var(--gray3);
-        color: white;
+        background-color: var(--gray2, #2a2a2a);
         border: none;
-        border-radius: 20px;
-        font-size: 11px;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        color: #b3b3b3;
         cursor: pointer;
-        transition: background-color 0.2s;
-        margin-top: -7px;
-        margin-right: 35px;
+        padding: 0;
+        transition: all 0.2s ease;
 
         &:hover {
-            background-color: #2a2a2a;
+            background-color: #3e3e3e;
+            color: white;
+            transform: scale(1.05);
         }
 
         svg {
-            font-size: 16px;
+            font-size: 25px !important;
         }
     }
 
@@ -188,8 +193,19 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 8px;
-        margin-bottom: 8px;
+        padding: 0 16px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+
+    }
+
+    .view-toggle-btn {
+        background-color: transparent;
+
+        &:hover {
+            background-color: transparent;
+        }
+
     }
 }
 
@@ -200,6 +216,7 @@
     /* padding: 2px; */
     font-size: 9.5px;
     margin-left: 19px;
+    margin-right: 19px;
     margin-top: 17px;
 
 }
@@ -246,7 +263,7 @@
             flex-direction: row;
             align-items: center;
             gap: 12px;
-            padding: 4px 8px; 
+            padding: 4px 8px;
 
             .station-info {
                 p {
@@ -263,9 +280,11 @@
 }
 
 .library-filters {
+    display: grid;
     position: sticky;
     top: 0;
     z-index: 10;
+    gap: 0px;
 }
 
 .search-container-left-side-bar {
@@ -317,7 +336,7 @@
 .library-item:hover .play-button {
     opacity: 1;
     transform: translateY(0);
-    pointer-events: auto; 
+    pointer-events: auto;
 }
 
 .library-item .play-button svg {

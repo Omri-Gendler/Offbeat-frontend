@@ -7,7 +7,7 @@ import { maxLength } from "../services/util.service";
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import GridViewIcon from '@mui/icons-material/GridView';
-import ViewListIcon from '@mui/icons-material/ViewList';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 export function LeftSideBar() {
     const stations = useSelector(storeState => storeState.stationModule.stations)
@@ -97,7 +97,7 @@ export function LeftSideBar() {
                             {/* <button className={`filter-btn ${sortBy === 'recent' ? 'selected' : ''}`} onClick={() => setSortBy('recent')}>Recent</button> */}
                             <button onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')} className="view-toggle-btn">
                                 {viewMode === 'grid'
-                                    ? <ViewListIcon style={{ fontSize: '18px', color: 'var(--clr4)' }} />
+                                    ? <FormatListBulletedIcon style={{ fontSize: '18px', color: 'var(--clr4)' }} />
                                     : <GridViewIcon style={{ fontSize: '16px', color: 'var(--clr4)' }} />
                                 }
                             </button>
