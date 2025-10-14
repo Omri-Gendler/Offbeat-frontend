@@ -146,7 +146,7 @@ export function LeftSideBar() {
                                     </svg>
                                 </div>
                                 <p>{maxLength(station.name, 20)}</p>
-                                <p className="station-type">station</p>
+                                <p className="station-type">Playlist•{`${station.songs.length} songs`}</p>
                             </div>
                         </div>
                     ))}

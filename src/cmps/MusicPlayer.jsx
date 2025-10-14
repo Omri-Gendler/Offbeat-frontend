@@ -6,12 +6,15 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { showSuccessMsg } from '../services/event-bus.service';
 
 export function MusicPlayer({ station }) {
     const audioRef = useRef(null)
     const [isPlaying, setIsPlaying] = useState(false)
     const [duration, setDuration] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
+    const [isAdded, setIsAdded] = useState(false)
     const progressBarRef = useRef(null)
 
     const songSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
@@ -30,6 +33,16 @@ export function MusicPlayer({ station }) {
             else audioRef.current.pause()
             return !prev
         })
+    }
+
+    const handleAddClick = () => {
+        setIsAdded(!isAdded)
+
+        if (!isAdded) {
+            showSuccessMsg('Added to Your Library')
+        } else {
+            showSuccessMsg('Removed from Your Library')
+        }
     }
 
     const handleSeek = (e) => {
@@ -59,7 +72,12 @@ export function MusicPlayer({ station }) {
                     <span className="song-artist">{station?.artist}</span>
                     <span className='created-by'>{station?.createdBy?.fullname}</span>
                 </div>
-                <span><DoneIcon style={{ color: '#ffffff', marginLeft: '20px' }} /></span>
+                {
+                    <button className="tertiary-btn" aria-label="add to your library" onClick={handleAddClick}>
+                        {isAdded ? <DoneIcon style={{ color: 'green' }} /> : <AddCircleOutlineIcon className="icon" />}
+                    </button>
+
+                }
             </div>
 
             <div className="player-center">

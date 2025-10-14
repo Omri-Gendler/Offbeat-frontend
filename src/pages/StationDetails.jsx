@@ -18,9 +18,10 @@ export function StationDetails() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const dispatch = useDispatch()
 
-
   useEffect(() => {
-    if (stationId) loadStation(stationId)
+    if (stationId) {
+      loadStation(stationId)
+    }
   }, [stationId])
 
   const [dynamicBg, setDynamicBg] = useState('#121212')
@@ -74,7 +75,8 @@ export function StationDetails() {
     <section className="station-details" style={{ background: dynamicBg }}>
       <div className="content-spacing">
         <header className="station-header flex align-center">
-          {canGenerateCover ? (
+          <img src={station.imgUrl} alt={station.name} style={{ width: '200px', height: '200px' }} />
+          {/* {canGenerateCover ? (
             <CompositeCover
               images={station.songs.slice(0, 2).map(song => song.imgUrl)}
             />
@@ -82,7 +84,7 @@ export function StationDetails() {
             <StationCover station={station} onChangeUrl={handleCoverChange} />
           ) : (
             <StationCover station={{ imgUrl: '/img/unnamed-song.png' }} isEditable={false} />
-          )}
+          )} */}
           {/* <StationCover station={station} onChangeUrl={handleCoverChange} /> */}
           <div className="station-meta">
             <span className="station-type">Public Playlist</span>

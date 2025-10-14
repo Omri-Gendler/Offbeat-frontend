@@ -79,6 +79,39 @@ function _createStations() {
     if (!stations || !stations.length) {
         stations = [
             {
+                _id: 'station000',
+                name: 'Liked Songs',
+                tags: ['Rock', '80s', 'Classic'],
+                imgUrl: '/img/liked-songs.jpeg',
+                type: 'station',
+                createdBy: {
+                    _id: 'u102',
+                    fullname: 'Muki Levi',
+                },
+                likedByUsers: ['u101', 'u103'],
+                songs: [
+                    {
+                        id: 'lDK9QqIzhwk',
+                        title: "Livin' On A Prayer",
+                        artists: 'Bon Jovi',
+                        imgUrl: 'https://picsum.photos/300/300?random=2',
+                        addedBy: 'u102',
+                        likedBy: ['u101'],
+                        addedAt: 162521765262,
+                    },
+                    {
+                        id: '1w7OgIMMRc4',
+                        title: "Sweet Child O' Mine",
+                        artists: "Guns N' Roses",
+                        imgUrl: 'https://picsum.photos/300/300?random=3',
+                        addedBy: 'u101',
+                        likedBy: [],
+                        addedAt: 162531765262,
+                    },
+                ],
+                msgs: [{ id: 'm201', from: 'u103', txt: 'Classic!' }],
+            },
+            {
                 _id: 'station001',
                 name: '80s Rock Anthems',
                 tags: ['Rock', '80s', 'Classic'],
