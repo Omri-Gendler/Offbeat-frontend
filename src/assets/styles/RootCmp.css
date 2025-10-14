@@ -8,6 +8,7 @@ body,
   height: 100%;
   margin: 0;
   background-color: #000;
+  overflow: hidden;
 }
 
 .app-layout {
@@ -29,23 +30,8 @@ main {
   height: 100%;
 }
 
-/* סגנון ברירת המחדל (Mobile-First): עמודה אחת */
 .my-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-}
-
-/* עיצוב למסכי טאבלט ומעלה (768px ומעלה) */
-@media (min-width: 768px) {
-  .my-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* עיצוב למסכי לפטופ ומעלה (1024px ומעלה) */
-@media (min-width: 1024px) {
-  .my-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }

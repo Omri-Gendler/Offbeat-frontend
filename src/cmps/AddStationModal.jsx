@@ -23,6 +23,7 @@ export function AddStationModal() {
         // newStation._id = stationName.toLowerCase().replace(/\s+/g, '-')
         newStation.createdBy = {
             fullname: 'You',
+            songs: [],
         }
 
         try {
