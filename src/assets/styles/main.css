@@ -82,7 +82,6 @@
         .main-content {
             grid-column: 2;
             grid-row: 2;
-            overflow-y: auto;
             border-radius: 9px;
             
 
@@ -222,7 +221,6 @@
 
         .main-content {
             grid-area: main-view;
-            overflow-y: auto;
             container-type: size;
             border-radius: 9px;
             display: flex;

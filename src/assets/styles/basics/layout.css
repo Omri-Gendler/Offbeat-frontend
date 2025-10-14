@@ -52,7 +52,7 @@
 
     .main-content {
         grid-area: main-view;
-        overflow-y: auto;
+        overflow-y: hidden;
         container-type: size;
         /* background-color: black; */
         border-radius: 9px;
@@ -61,7 +61,7 @@
         flex: 1;
         min-height: 0;
         width: 100%;
-        padding-inline-end: 4px;
+        padding-inline-end: px;
 
         /* Scrollbar styling for main content */
         &::-webkit-scrollbar {
