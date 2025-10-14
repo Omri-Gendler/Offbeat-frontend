@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { stationService } from '../services/station';
 import { addStation } from '../store/actions/station.actions';
+import { SongsList } from '../cmps/SongsList.jsx';
 import StationCover from '../cmps/StationCover.jsx';
 
 export function AddStationModal() {
-    const unnamedImg = '/img/unnamed.png'
     const [stationName, setStationName] = useState('')
     const navigate = useNavigate()
 
@@ -20,10 +20,13 @@ export function AddStationModal() {
         const newStation = stationService.getEmptyStation()
         newStation.name = stationName
         newStation.imgUrl = '/img/unnamed-song.png'
+        newStation.songs = [
+            { id: 's101', title: 'Song A', artist: 'Artist 1', album: 'Album X', duration: '3:45', imgUrl: '/img/songA.jpg' },
+            { id: 's102', title: 'Song B', artist: 'Artist 2', album: 'Album Y', duration: '4:15', imgUrl: '/img/songB.jpg' }
+        ]
         // newStation._id = stationName.toLowerCase().replace(/\s+/g, '-')
         newStation.createdBy = {
             fullname: 'You',
-            songs: [],
         }
 
         try {
@@ -66,7 +69,9 @@ export function AddStationModal() {
                 </header>
 
                 <div className="station-tracks">
-                    <p className="no-songs-msg">Start adding songs to your new playlist!</p>
+                    <div className="station-tracks">
+                        <SongsList station={station} />
+                    </div>
                 </div>
             </div>
 

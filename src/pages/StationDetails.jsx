@@ -54,10 +54,17 @@ export function StationDetails() {
     )
   }
 
-  const handleSaveDetails = (updatedDetails) => {
+  const handleSaveDetails = async (updatedDetails) => {
     const stationToUpdate = { ...station, ...updatedDetails }
-    dispatch(updateStation(stationToUpdate))
-    setIsModalOpen(false)
+
+    try {
+      await stationService.save(stationToUpdate)
+      dispatch(updateStation(stationToUpdate))
+
+      setIsModalOpen(false)
+    } catch (err) {
+      console.error("Failed to save station:", err)
+    }
   }
 
   const hasCustomCover = !!station.imgUrl

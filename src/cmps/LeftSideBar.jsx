@@ -1,8 +1,9 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { loadStations } from "../store/actions/station.actions";
 import { useNavigate } from "react-router-dom";
 import { maxLength } from "../services/util.service";
+import { addStation } from "../store/actions/station.actions";
 
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,15 +12,42 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 export function LeftSideBar() {
     const stations = useSelector(storeState => storeState.stationModule.stations)
+    const navigate = useNavigate()
+
     const [filterBy, setFilterBy] = useState({ txt: '' })
     const [sortBy, setSortBy] = useState('recent')
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [viewMode, setViewMode] = useState('grid')
-    const navigate = useNavigate()
 
     useEffect(() => {
         loadStations()
     }, [])
+
+    const handleCreateStation = async () => {
+        try {
+            const playlistNumbers = stations
+                .map(s => s.name.match(/^My Playlist #(\d+)$/))
+                .filter(Boolean)
+                .map(match => parseInt(match[1]))
+
+            const nextNumber = playlistNumbers.length > 0 ? Math.max(...playlistNumbers) + 1 : 1
+
+            const newStation = {
+                name: `My Playlist #${nextNumber}`,
+                description: '',
+                imgUrl: '/img/unnamed-song.png',
+                songs: [],
+                createdBy: { fullname: 'You' }
+            }
+
+            const savedStation = await addStation(newStation)
+
+            navigate(`/station/${savedStation._id}`)
+
+        } catch (err) {
+            console.error('Failed to create station:', err)
+        }
+    }
 
     function handleChange(ev) {
         const { name, value } = ev.target
@@ -73,7 +101,9 @@ export function LeftSideBar() {
         return (
             <div className="left-header">
                 <h3>Your Library</h3>
-                <button className="create-station-btn" onClick={() => navigate('/stations/add')}><AddIcon /></button>
+                <button className="create-station-btn" onClick={handleCreateStation}>
+                    <AddIcon />
+                </button>
             </div>
         )
     }

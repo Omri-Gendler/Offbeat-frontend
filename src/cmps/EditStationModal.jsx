@@ -3,7 +3,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { updateStation } from '../store/actions/station.actions';
 import { useNavigate } from 'react-router-dom';
 
-export function EditStationModal({ station, onClose }) {
+export function EditStationModal({ station, onClose, onSave }) {
 
     const navigate = useNavigate()
     const [details, setDetails] = useState({
@@ -28,8 +28,7 @@ export function EditStationModal({ station, onClose }) {
     function onSaveStation(ev) {
         try {
             ev.preventDefault()
-            handleChange({ target: { name: 'name', value: '' } })
-            handleChange({ target: { name: 'description', value: '' } })
+            onSave(details)
             onClose()
             navigate('/station/' + station._id)
         } catch (err) {
