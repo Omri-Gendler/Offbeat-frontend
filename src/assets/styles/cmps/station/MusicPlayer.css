@@ -8,7 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 16px;
+    /* padding: 0 16px; */
     color: #fff;
 
     .player-left,
@@ -27,6 +27,9 @@
 
     .player-left {
         justify-content: flex-start;
+        align-items: center;
+        font-size: 14px;
+        margin-left: 4px;
     }
 
     .player-right {

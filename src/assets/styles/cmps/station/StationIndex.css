@@ -1,5 +1,6 @@
 .station-index {
     display: grid;
+    height: 100vh;
 
     & header {
         display: flex;

@@ -37,7 +37,7 @@
     display: flex;
     overflow-x: auto;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    grid-gap: 25px;
+    /* grid-gap: 25px; */
     padding: 0;
     margin: 0;
     list-style: none;
@@ -161,16 +161,12 @@ button {
     position: sticky;
     top: 0;
     z-index: 10;
-    padding-inline: 40px;
+    padding-inline: 10px;
 }
 
 .station-list .station-preview header {
     display: flex;
     flex-direction: column;
-}
-
-.station-list-content {
-    padding-inline: 31px;
 }
 
 .station-list-wrapper {
@@ -195,7 +191,7 @@ button {
 
 .station-list-wrapper .play-button {
     position: absolute;
-    bottom: 64px;
+    bottom: 49px;
     right: 15px;
 
     width: 50px;

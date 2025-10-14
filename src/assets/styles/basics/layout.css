@@ -1,5 +1,5 @@
 .main-container {
-   
+
     --left-sidebar-grid-area-z-index: 4;
     --above-everything-except-now-playing-bar-z-index: 5;
     --above-main-and-now-playing-view-grid-area-z-index: 6;
@@ -7,13 +7,12 @@
     --now-playing-bar-grid-area-z-index: calc(var(--above-everything-except-now-playing-bar-z-index) + 1);
     --onboarding-search-grid-area-z-index: calc(var(--above-everything-grid-area-z-index) + 1);
     background-color: #000;
-    display: grid
-;
+    display: grid;
     gap: var(--panel-gap);
     grid-template-areas:
         "top-banner top-banner"
         "left-sidebar main-view"
-        "now-playing-bar now-playing-bar" ;
+        "now-playing-bar now-playing-bar";
     grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr auto;
     height: 100vh;
@@ -21,16 +20,16 @@
     padding: var(--panel-gap);
     position: relative;
     min-width: 100vw;
-   
+
 
 
     .left-side-bar {
-        
+
         overflow-y: auto;
         grid-area: left-sidebar;
         max-width: 420px;
-           width: calc(var(--left-sidebar-width) * 1px);
-           z-index: var(--left-sidebar-grid-area-z-index);
+        width: calc(var(--left-sidebar-width) * 1px);
+        z-index: var(--left-sidebar-grid-area-z-index);
 
         /* Scrollbar styling for sidebar */
         &::-webkit-scrollbar {
@@ -55,14 +54,14 @@
         grid-area: main-view;
         overflow-y: auto;
         container-type: size;
-        /* padding: 24px; */
-        background-color: var(--gray1);
+        /* background-color: black; */
         border-radius: 9px;
         display: flex;
         position: relative;
         flex: 1;
         min-height: 0;
         width: 100%;
+        padding-inline-end: 4px;
 
         /* Scrollbar styling for main content */
         &::-webkit-scrollbar {
@@ -83,7 +82,7 @@
         }
 
     }
- 
+
 
     .user-msg {
         position: fixed;
@@ -97,11 +96,11 @@
 
 
 
-   .app-header{
-        grid-area: top-banner;
-    }
-    .app-footer{
-        grid-area: now-playing-bar;
-        width: 100%;
-    }
+.app-header {
+    grid-area: top-banner;
+}
 
+.app-footer {
+    grid-area: now-playing-bar;
+    width: 100%;
+}
