@@ -6,7 +6,7 @@
   background-color: transparent;
   min-height: calc(100vh - 160px);
   --content-spacing: clamp(16px, 16px + (var(--main-view-grid-width) - 600px) / 424 * 8, 24px);
-  
+  width: 100%;
 }
 
 .content-spacing {
