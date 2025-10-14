@@ -104,9 +104,9 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
 
                         </button>
                     ))}
-                    <h2 className='station-list-title'>All Stations</h2>
                 </div>
 
+                <h2 className='station-list-title'>All Stations</h2>
             </div>
             <div className="station-list-content">
 

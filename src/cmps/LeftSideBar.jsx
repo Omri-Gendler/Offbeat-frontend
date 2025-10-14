@@ -73,7 +73,7 @@ export function LeftSideBar() {
         return (
             <div className="left-header">
                 <h3>Your Library</h3>
-                <button className="create-station-btn" onClick={() => navigate('/stations/add')}><AddIcon /> Create</button>
+                <button className="create-station-btn" onClick={() => navigate('/stations/add')}><AddIcon /></button>
             </div>
         )
     }
