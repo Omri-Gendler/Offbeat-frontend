@@ -1,5 +1,5 @@
 .main-container {
-    
+   
     --left-sidebar-grid-area-z-index: 4;
     --above-everything-except-now-playing-bar-z-index: 5;
     --above-main-and-now-playing-view-grid-area-z-index: 6;
@@ -28,8 +28,9 @@
         
         overflow-y: auto;
         grid-area: left-sidebar;
-        max-width: 430px;
-        width: 100%;
+        max-width: 420px;
+           width: calc(var(--left-sidebar-width) * 1px);
+           z-index: var(--left-sidebar-grid-area-z-index);
 
         /* Scrollbar styling for sidebar */
         &::-webkit-scrollbar {

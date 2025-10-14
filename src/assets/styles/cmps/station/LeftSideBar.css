@@ -214,6 +214,7 @@
     width: 100%;
     box-sizing: border-box;
     margin-top: -11px;
+    padding: 0 8px 8px;
 
     &.list {
         display: flex;
