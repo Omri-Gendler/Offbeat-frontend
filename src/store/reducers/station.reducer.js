@@ -51,17 +51,20 @@ export function stationReducer(state = initialState, action) {
                 newState = { ...state, station: { ...state.station, msgs: [...state.station.msgs || [], action.msg] } }
                 break
             }
-        // station.reducer.js
-
         case ADD_SONG_TO_LIKED:
-            const likedStationIdx = state.stations.findIndex(station => station._id === 'liked-songs-station')
+            const likedStationIdx = state.stations.findIndex(station => station._id === 'station000')
             if (likedStationIdx === -1) return state
-            const updatedLikedStation = { ...state.stations[likedStationIdx] }
-            updatedLikedStation.songs.push(action.song)
+
             const newStations = [...state.stations]
+            const oldLikedStation = newStations[likedStationIdx]
+
+            const updatedLikedStation = {
+                ...oldLikedStation,
+                songs: [...oldLikedStation.songs, action.song]
+            }
+
             newStations[likedStationIdx] = updatedLikedStation
             return { ...state, stations: newStations }
-        default:
     }
     return newState
 }

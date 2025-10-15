@@ -2,6 +2,8 @@
 import { stationService } from '../../services/station/station.service.local'
 import { store } from '../store'
 import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, ADD_SONG_TO_LIKED } from '../reducers/station.reducer'
+import { showSuccessMsg } from '../../services/event-bus.service'
+import { Modal } from '@mui/material'
 
 export async function loadStations(filterBy) {
     try {
@@ -32,8 +34,10 @@ export async function removeStation(stationId) {
     try {
         await stationService.remove(stationId)
         store.dispatch(getCmdRemoveStation(stationId))
+        showSuccessMsg('Station removed')
     } catch (err) {
         console.log('Cannot remove station', err)
+        showSuccessMsg('Cannot remove station')
         throw err
     }
 }

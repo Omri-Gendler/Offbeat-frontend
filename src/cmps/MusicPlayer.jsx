@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import DoneIcon from '@mui/icons-material/Done';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -9,16 +9,24 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { showSuccessMsg } from '../services/event-bus.service';
+import { addLikedSong } from '../services/station/station.service.local';
 
-import { addSongToLikedAction } from '../store/actions/station.actions';
+import { addSongToLikedAction, updateStation } from '../store/actions/station.actions';
 
 export function MusicPlayer({ station }) {
     const audioRef = useRef(null)
     const [isPlaying, setIsPlaying] = useState(false)
     const [duration, setDuration] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
-    const [isAdded, setIsAdded] = useState(false)
     const progressBarRef = useRef(null)
+
+    const currentSong = station?.songs?.[0]
+
+    const isLiked = useSelector(storeState => {
+        const likedStation = storeState.stationModule.stations.find(s => s._id === 'liked-songs-station')
+        if (!likedStation || !currentSong) return false
+        return likedStation.songs.some(song => song.id === currentSong.id)
+    })
 
     const dispatch = useDispatch()
 
@@ -33,6 +41,8 @@ export function MusicPlayer({ station }) {
     }, [currentTime, duration])
 
     const togglePlayPause = () => {
+        const currentSong = station?.songs[0]
+        if (!currentSong) return
         setIsPlaying(prev => {
             if (!prev) audioRef.current.play()
             else audioRef.current.pause()
@@ -40,42 +50,20 @@ export function MusicPlayer({ station }) {
         })
     }
 
-    function addSongToLiked(songToAdd) {
-        const stations = JSON.parse(localStorage.getItem('station')) || []
 
-        if (!stations.length) {
-            return
-        }
-
-        const likedSongsArray = stations[0].songs
-
-        const songExists = likedSongsArray.some(song => song.id === songToAdd.id)
-        if (songExists) {
-            return
-        }
-
-        likedSongsArray.push(songToAdd)
-        localStorage.setItem('station', JSON.stringify(stations))
-    }
 
     const handleAddClick = () => {
         const currentSong = station?.songs?.[0]
         if (!currentSong) return
 
-        setIsAdded(prevIsAdded => {
-            const newIsAdded = !prevIsAdded
+        if (isLiked) {
+        } else {
+            showSuccessMsg('Added to Your Library')
 
-            if (newIsAdded) {
-                // אם המצב החדש הוא "נוסף" (true)
-                showSuccessMsg('Added to Your Library')
-                addSongToLiked(currentSong)
-                dispatch(addSongToLikedAction(currentSong))
-            } else {
-                showSuccessMsg('Removed from Your Library')
-            }
+            addLikedSong(currentSong)
 
-            return newIsAdded
-        })
+            dispatch(addSongToLikedAction(currentSong)) 
+        }
     }
 
     const handleSeek = (e) => {
@@ -107,7 +95,7 @@ export function MusicPlayer({ station }) {
                 </div>
                 {
                     <button className="tertiary-btn" aria-label="add to your library" onClick={handleAddClick}>
-                        {isAdded ? <DoneIcon style={{ color: 'green' }} /> : <AddCircleOutlineIcon className="icon" />}
+                        {isLiked ? <DoneIcon style={{ color: 'green' }} /> : <AddCircleOutlineIcon className="icon" />}
                     </button>
 
                 }
