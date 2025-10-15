@@ -21,23 +21,33 @@ window.cs = stationService
 
 
 async function query(filterBy = { txt: '' }) {
-    var stations = await storageService.query(STORAGE_KEY)
+    const stationsFromStorage = await storageService.query(STORAGE_KEY)
+    const likedStation = getLikedSongsStation()
     const { txt, sortField, sortDir } = filterBy
-    console.log('stations:', stations)
+
+    let allStations = [likedStation, ...stationsFromStorage]
 
     if (txt) {
-        const regex = new RegExp(filterBy.txt, 'i')
-        stations = stations.filter(station => regex.test(station.name) || regex.test(station.description))
+        const regex = new RegExp(txt, 'i')
+        allStations = allStations.filter(station => regex.test(station.name) || regex.test(station.description))
     }
 
     if (sortField === 'name') {
-        stations.sort((station1, station2) =>
-            station1[sortField].localeCompare(station2[sortField]) * +sortDir)
+        allStations.sort((station1, station2) =>
+            station1[sortField].localeCompare(station2[sortField]) * +sortDir
+        )
     }
-    return stations
+
+    return allStations
 }
 
+
+
 function getById(stationId) {
+
+    if (stationId === 'liked-songs-station') {
+        return getLikedSongsStation();
+    }
     return storageService.get(STORAGE_KEY, stationId)
 }
 
@@ -78,39 +88,39 @@ function _createStations() {
     let stations = loadFromStorage(STORAGE_KEY)
     if (!stations || !stations.length) {
         stations = [
-            {
-                _id: 'station000',
-                name: 'Liked Songs',
-                tags: ['Rock', '80s', 'Classic'],
-                imgUrl: '/img/liked-songs.jpeg',
-                type: 'station',
-                createdBy: {
-                    _id: 'u102',
-                    fullname: 'Muki Levi',
-                },
-                likedByUsers: ['u101', 'u103'],
-                songs: [
-                    {
-                        id: 'lDK9QqIzhwk',
-                        title: "Livin' On A Prayer",
-                        artists: 'Bon Jovi',
-                        imgUrl: 'https://picsum.photos/300/300?random=2',
-                        addedBy: 'u102',
-                        likedBy: ['u101'],
-                        addedAt: 162521765262,
-                    },
-                    {
-                        id: '1w7OgIMMRc4',
-                        title: "Sweet Child O' Mine",
-                        artists: "Guns N' Roses",
-                        imgUrl: 'https://picsum.photos/300/300?random=3',
-                        addedBy: 'u101',
-                        likedBy: [],
-                        addedAt: 162531765262,
-                    },
-                ],
-                msgs: [{ id: 'm201', from: 'u103', txt: 'Classic!' }],
-            },
+            // {
+            //     _id: 'station000',
+            //     name: 'Liked Songs',
+            //     tags: ['Rock', '80s', 'Classic'],
+            //     imgUrl: '/img/liked-songs.jpeg',
+            //     type: 'station',
+            //     createdBy: {
+            //         _id: 'u102',
+            //         fullname: 'Muki Levi',
+            //     },
+            //     likedByUsers: ['u101', 'u103'],
+            //     songs: [
+            //         {
+            //             id: 'lDK9QqIzhwk',
+            //             title: "Livin' On A Prayer",
+            //             artists: 'Bon Jovi',
+            //             imgUrl: 'https://picsum.photos/300/300?random=2',
+            //             addedBy: 'u102',
+            //             likedBy: ['u101'],
+            //             addedAt: 162521765262,
+            //         },
+            //         {
+            //             id: '1w7OgIMMRc4',
+            //             title: "Sweet Child O' Mine",
+            //             artists: "Guns N' Roses",
+            //             imgUrl: 'https://picsum.photos/300/300?random=3',
+            //             addedBy: 'u101',
+            //             likedBy: [],
+            //             addedAt: 162531765262,
+            //         },
+            //     ],
+            //     msgs: [{ id: 'm201', from: 'u103', txt: 'Classic!' }],
+            // },
             {
                 _id: 'station001',
                 name: '80s Rock Anthems',

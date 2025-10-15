@@ -1,0 +1,46 @@
+.volume-control-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 150px;
+
+    .MuiSvgIcon-root {
+        color: #b3b3b3;
+    }
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    cursor: pointer;
+    background: transparent;
+
+    &::-webkit-slider-runnable-track {
+        height: 4px;
+        border-radius: 4px;
+
+        background: linear-gradient(to right,
+                #1db954 var(--volume-progress),
+                #535353 var(--volume-progress)
+            );
+    }
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+
+        opacity: 0;
+
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #fff;
+        margin-top: -4px;
+        transition: opacity 0.2s;
+    }
+
+    &:hover::-webkit-slider-thumb {
+        opacity: 1;
+    }
+}

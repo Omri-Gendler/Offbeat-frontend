@@ -10,8 +10,14 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { showSuccessMsg } from '../services/event-bus.service';
 import { addLikedSong } from '../services/station/station.service.local';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
+import QueueMusicIcon from '@mui/icons-material/QueueMusic';
+import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
+import LaunchIcon from '@mui/icons-material/Launch';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
 import { addSongToLikedAction, updateStation } from '../store/actions/station.actions';
+import { VolumeControl } from './VolumeControl';
 
 export function MusicPlayer({ station }) {
     const audioRef = useRef(null)
@@ -62,7 +68,7 @@ export function MusicPlayer({ station }) {
 
             addLikedSong(currentSong)
 
-            dispatch(addSongToLikedAction(currentSong)) 
+            dispatch(addSongToLikedAction(currentSong))
         }
     }
 
@@ -124,6 +130,13 @@ export function MusicPlayer({ station }) {
             </div>
 
             <div className="player-right">
+                <button style={{ backgroundColor: 'transparent' }}><SlideshowIcon /></button>
+                <button style={{ backgroundColor: 'transparent' }}><QueueMusicIcon /></button>
+                <button style={{ backgroundColor: 'transparent' }}><TapAndPlayIcon /></button>
+                <button style={{ backgroundColor: 'transparent' }}><SlideshowIcon /></button>
+                
+                <VolumeControl audioRef={audioRef} />
+                <button style={{ backgroundColor: 'transparent' }}><FullscreenIcon /></button>
             </div>
 
             <audio

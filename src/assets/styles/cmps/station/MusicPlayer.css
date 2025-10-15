@@ -1,39 +1,39 @@
 .music-player {
-    /* position: fixed; */
     bottom: 0;
     left: 0;
     width: 100%;
     height: 90px;
-    background-color: black;
+    background-color: #121212;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    /* padding: 0 16px; */
+    padding: 0 16px;
     color: #fff;
+    gap: 16px;
 
     .player-left,
     .player-center,
     .player-right {
         display: flex;
         align-items: center;
-        flex: 1;
+    }
+
+    .player-left {
+        flex: 1 1 30%;
+        justify-content: flex-start;
+        min-width: 180px;
     }
 
     .player-center {
+        flex: 2 1 40%;
         flex-direction: column;
         justify-content: center;
         gap: 8px;
     }
 
-    .player-left {
-        justify-content: flex-start;
-        align-items: center;
-        font-size: 14px;
-        margin-left: 4px;
-    }
-
     .player-right {
+        flex: 1 1 30%;
         justify-content: flex-end;
+        min-width: 180px;
     }
 
     .player-album-cover {
@@ -45,11 +45,12 @@
     .player-song-info {
         display: flex;
         flex-direction: column;
+        gap: 4px;
     }
 
     .song-title {
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 500;
     }
 
     .song-artist {
@@ -69,10 +70,10 @@
         color: #b3b3b3;
         cursor: pointer;
         padding: 0;
-    }
 
-    .control-btn:hover {
-        color: #fff;
+        &:hover {
+            color: #fff;
+        }
     }
 
     .play-pause-btn {
@@ -84,11 +85,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-    }
 
-    .play-pause-btn:hover {
-        transform: scale(1.05);
-        color: #000;
+        &:hover {
+            transform: scale(1.05);
+            color: #000;
+        }
     }
 
     .progress-bar-container {
@@ -96,17 +97,18 @@
         align-items: center;
         gap: 8px;
         width: 100%;
-        max-width: 500px;
+        max-width: 600px;
     }
 
     .time-stamp {
         font-size: 12px;
         color: #b3b3b3;
+        min-width: 40px;
+        text-align: center;
     }
 
     .progress-bar {
         -webkit-appearance: none;
-        -moz-appearance: none;
         appearance: none;
         width: 100%;
         height: 4px;
@@ -114,6 +116,10 @@
         border-radius: 5px;
         outline: none;
         cursor: pointer;
+
+        &:hover {
+            background-color: #333;
+        }
     }
 
     .progress-bar::-webkit-slider-runnable-track {
@@ -123,12 +129,24 @@
         background: linear-gradient(to right,
                 #1DB954 var(--progress-percent, 0%),
                 #4d4d4d var(--progress-percent, 0%));
+
+        &:hover {
+            background: linear-gradient(to right,
+                    #1DB954 var(--progress-percent, 0%),
+                    #4d4d4d var(--progress-percent, 0%));
+        }
     }
 
+    .progress-bar::-webkit-slider-runnable-track:hover {
+        background: linear-gradient(to right,
+                #1DB954 var(--progress-percent, 0%),
+                #4d4d4d var(--progress-percent, 0%));
+    }
 
     .progress-bar::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
+        opacity: 0;
         width: 12px;
         height: 12px;
         background: #fff;
@@ -136,11 +154,7 @@
         margin-top: -4px;
     }
 
-    .progress-bar::-moz-range-thumb {
-        width: 12px;
-        height: 12px;
-        background: #fff;
-        border-radius: 50%;
-        border: none;
+    .progress-bar:hover::-webkit-slider-thumb {
+        opacity: 1;
     }
 }
