@@ -11,7 +11,7 @@ import GridViewIcon from '@mui/icons-material/GridView';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 export function LeftSideBar() {
-    const stations = useSelector(storeState => storeState.stationModule.stations)
+    const stations = useSelector(storeState => storeState.stationModule.stations) || []
     const navigate = useNavigate()
 
     const [filterBy, setFilterBy] = useState({ txt: '' })
@@ -146,7 +146,7 @@ export function LeftSideBar() {
                                     </svg>
                                 </div>
                                 <p>{maxLength(station.name, 20)}</p>
-                                <p className="station-type">Playlist•{`${station.songs.length} songs`}</p>
+                                {/* <p className="station-type">Playlist•{`${station.songs.length} songs`}</p> */}
                             </div>
                         </div>
                     ))}
