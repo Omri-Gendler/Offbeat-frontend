@@ -50,20 +50,6 @@ export function IconMoreHorizontal24(props) {
   )
 }
 
-export function IconAddCircle24(props) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      role="img"
-      aria-hidden="true"
-      focusable="false"
-      {...props}
-    >
-      <path d="M11.999 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-11 9c0-6.075 4.925-11 11-11s11 4.925 11 11-4.925 11-11 11-11-4.925-11-11"></path>
-      <path d="M17.999 12a1 1 0 0 1-1 1h-4v4a1 1 0 1 1-2 0v-4h-4a1 1 0 1 1 0-2h4V7a1 1 0 1 1 2 0v4h4a1 1 0 0 1 1 1"></path>
-    </svg>
-  )
-}
 
 export function HomeOutlineIcon({ size = 24, color = 'currentColor', title = 'Home' }) {
   return (
@@ -198,4 +184,50 @@ export function IconKebab16({ size = 16, title, className }) {
   );
 }
 
+export function IconSearch16({ className = "e-91000-icon e-91000-baseline", title }) {
+  const aria = title ? { role: "img", "aria-label": title } : { "aria-hidden": true };
+  return (
+    <svg viewBox="0 0 16 16" className={className} {...aria}>
+      <path d="M7 1.75a5.25 5.25 0 1 0 0 10.5 5.25 5.25 0 0 0 0-10.5M.25 7a6.75 6.75 0 1 1 12.096 4.12l3.184 3.185a.75.75 0 1 1-1.06 1.06L11.304 12.2A6.75 6.75 0 0 1 .25 7"></path>
+    </svg>
+  );
+}
+
+export function IconClose24({ className = "e-91000-icon e-91000-baseline", title = "Close" }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} role="img" aria-label={title}>
+      <path d="M3.293 3.293a1 1 0 0 1 1.414 0L12 10.586l7.293-7.293a1 1 0 1 1 1.414 1.414L13.414 12l7.293 7.293a1 1 0 0 1-1.414 1.414L12 13.414l-7.293 7.293a1 1 0 0 1-1.414-1.414L10.586 12 3.293 4.707a1 1 0 0 1 0-1.414"></path>
+    </svg>
+  );
+}
+
+export function IconAddCircle24(props) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      role="img"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
+      <path d="M11.999 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-11 9c0-6.075 4.925-11 11-11s11 4.925 11 11-4.925 11-11 11-11-4.925-11-11"></path>
+      <path d="M17.999 12a1 1 0 0 1-1 1h-4v4a1 1 0 1 1-2 0v-4h-4a1 1 0 1 1 0-2h4V7a1 1 0 1 1 2 0v4h4a1 1 0 0 1 1 1"></path>
+    </svg>
+  );
+}
+
+
+export function IconCheckCircle24(props) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      role="img"
+      aria-hidden="true"
+      focusable="false"
+      {...props}
+    >
+      <path d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12m16.398-2.38a1 1 0 0 0-1.414-1.413l-6.011 6.01-1.894-1.893a1 1 0 0 0-1.414 1.414l3.308 3.308z"></path>
+    </svg>
+  );
+}
 

@@ -30,11 +30,61 @@
     --content-max-width: 1955px;
     --content-spacing: clamp(16px, 16px + (var(--main-view-grid-width) - 600px) / 424 * 8, 24px);
     --main-view-grid-width: 100cqw;
-
-      
-
-
-
+    
+    .encore-layout-themes {
+        --encore-text-size-smaller-2: 0.75rem;
+        --encore-text-size-smaller: 0.875rem;
+        --encore-text-size-base: 1rem;
+        --encore-text-size-large: 1.25rem;
+        --encore-text-size-larger: 1.5rem;
+        --encore-text-size-larger-2: 2rem;
+        --encore-text-size-larger-3: 3rem;
+        --encore-text-size-larger-4: 4rem;
+        --encore-text-size-larger-5: 6rem;
+        --encore-border-width-hairline: 1px;
+        --encore-border-width-thin: 2px;
+        --encore-border-width-thick: 4px;
+        --encore-border-width-thicker: 8px;
+        --encore-border-width-focus: 3px;
+        --encore-graphic-size-decorative-smaller-2: 12px;
+        --encore-graphic-size-decorative-smaller: 16px;
+        --encore-graphic-size-decorative-base: 24px;
+        --encore-graphic-size-decorative-larger: 32px;
+        --encore-graphic-size-decorative-larger-2: 40px;
+        --encore-graphic-size-decorative-larger-3: 48px;
+        --encore-graphic-size-decorative-larger-4: 64px;
+        --encore-graphic-size-decorative-larger-5: 88px;
+        --encore-graphic-size-informative-smaller-2: 0.75rem;
+        --encore-graphic-size-informative-smaller: 1rem;
+        --encore-graphic-size-informative-base: 1.5rem;
+        --encore-graphic-size-informative-larger: 2rem;
+        --encore-graphic-size-informative-larger-2: 2.5rem;
+        --encore-graphic-size-informative-larger-3: 3rem;
+        --encore-graphic-size-informative-larger-4: 4rem;
+        --encore-graphic-size-informative-larger-5: 5.5rem;
+        --encore-spacing-tighter-5: 2px;
+        --encore-spacing-tighter-4: 4px;
+        --encore-spacing-tighter-3: 6px;
+        --encore-spacing-tighter-2: 8px;
+        --encore-spacing-tighter: 12px;
+        --encore-spacing-base: 16px;
+        --encore-spacing-looser: 24px;
+        --encore-spacing-looser-2: 32px;
+        --encore-spacing-looser-3: 48px;
+        --encore-spacing-looser-4: 64px;
+        --encore-spacing-looser-5: 96px;
+        --encore-spacing-looser-6: 128px;
+        --encore-control-size-smaller: 32px;
+        --encore-control-size-base: 48px;
+        --encore-control-size-larger: 56px;
+        --encore-layout-margin-tighter: 24px;
+        --encore-layout-margin-base: 32px;
+        --encore-layout-margin-looser: 64px;
+        --encore-corner-radius-smaller: 2px;
+        --encore-corner-radius-base: 4px;
+        --encore-corner-radius-larger: 6px;
+        --encore-corner-radius-larger-2: 8px;
+        --encore-corner-radius-larger-3: 16px;}
 }
 .standalone-ellipsis-one-line {
     white-space: unset;
@@ -46,3 +96,23 @@
     text-overflow: ellipsis;
 }
 
+.encore-text-body-small, .encore-text-body-small-bold {
+    font-family: var(--encore-body-font-stack);
+    font-size: var(--encore-text-size-smaller);
+}
+.encore-text-body-small {
+    font-weight: 400;
+}
+.e-91000-text {
+
+    box-sizing: border-box;
+
+    color: inherit;
+    margin-block: 0;}
+
+.encore-text-headline-large {
+    font-family: var(--encore-title-font-stack);
+    font-size: var(--encore-text-size-larger-5);
+    font-weight: 800;
+    text-wrap: balance;
+}

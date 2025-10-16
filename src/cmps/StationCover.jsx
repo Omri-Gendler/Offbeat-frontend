@@ -3,7 +3,7 @@ import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { uploadService } from '../services/upload.service'
 
 export default  
-function StationCover({ station, onChangeUrl }) {
+function StationCover({ station, onChangeUrl, likedSongs}) {
   const [isHover, setIsHover] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState(station?.imgUrl || '/img/unnamed-song.png')
@@ -68,37 +68,18 @@ try {
   function onDrop(ev) { ev.preventDefault(); setIsHover(false); handleFiles(ev.dataTransfer.files) }
 
   return (
-    <section className='station-cover-section'>
+   
     <div
-      className="station-cover"
-      onClick={openFileDialog}
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-      role="button"
-      aria-label="Change station image"
-      tabIndex={0}
-      onKeyDown={(e) =>{
-        if (e.key === 'Enter' || e.key === ' '){
-          e.preventDefault()
-         openFileDialog()}}}
+      className="station-cover-img-wrap"
+      draggable={false}
 
     >
-      <img src={previewUrl} alt=""  className={`cover-img ${isUploading ? 'uploading' : ''}`} />
-        <div className={`overlay ${isHover ? 'show' : ''}`}>
-        </div>
+      { likedSongs &&
+      <img aria-hidden="false" draggable="false" loading="eager" src="https://misc.scdn.co/liked-songs/liked-songs-300.jpg" alt="" className="station-cover-img" srcset="https://misc.scdn.co/liked-songs/liked-songs-300.jpg 150w, https://misc.scdn.co/liked-songs/liked-songs-300.jpg 300w" sizes="(min-width: 1280px) 232px, 192px"/>}
+      { !likedSongs &&
+      <img aria-hidden="false" draggable="false" loading="eager" src={station.imgUrl} alt="" className="station-cover-img" sizes="(min-width: 1280px) 232px, 192px"/>
+      }
 
-      <input
-        ref={inputRef}
-        id="imgUpload"
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={onInputChange}
-      />
     </div>
-    </section>
   )
 }
