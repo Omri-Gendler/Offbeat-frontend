@@ -19,6 +19,7 @@ export function StationDetails() {
   const station = useSelector(s => s.stationModule.station)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLikedSongs, setLikedSongs] = useState(false)
+  const [query, setQuery] = useState('')
 
   const dispatch = useDispatch()
 
@@ -138,10 +139,9 @@ export function StationDetails() {
         <SongsList station={station} />
 
         <StationSearch
-          // value={query}
-          // onChange={setQuery}
-          // onSubmit={handleSubmit}
-          // onClose={handleClose}
+          value={query}
+          onChange={setQuery}
+          onClose={() => setQuery('')}
         />
         </div>
         </div>

@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { playSong, toggleSong } from '../store/actions/song.actions.js'
 
 import { DurationIcon, IconPlay24, IconPause24, IconAddCircle24, IconKebab16 } from './Icon.jsx';
+import { addLikedSong } from '../services/station/station.service.local';
 
 export function SongsList({ station }) {
 
@@ -40,7 +41,7 @@ const isPlaying = useSelector(s => !!s.player?.isPlaying);
   }
 
   return (
-    <section className="songs-list-content-spacing">
+    <div className="songs-list-content-spacing">
       <div className="songs-list-container">
         <div
           role="grid"
@@ -174,6 +175,6 @@ const isPlaying = useSelector(s => !!s.player?.isPlaying);
         {/* closes .songs-list-grid */}
       </div>
       {/* closes .songs-list-container */}
-    </section>
-  );
+    </div>
+  )
 }

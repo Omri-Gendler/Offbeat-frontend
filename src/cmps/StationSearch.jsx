@@ -3,9 +3,8 @@ import { IconSearch16, IconClose24, SearchLensIcon } from "./Icon.jsx";
 export function StationSearch({
   value = "",
   onChange,
-  onClose,
-  onSubmit,          // optional: handle submit if you want
-  onClear,           // optional: handle clear if you want, else we'll just onChange("")
+  onClose,      
+  onClear,           
 }) {
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -21,7 +20,7 @@ export function StationSearch({
 
   return (
     <section className="song-list-search">
-      <div className="song-list-search-search-pre ">
+      <div className="song-list-search-pre ">
         <h2
           className="e-91000-text encore-text-title-small station-search-title"
           data-encore-id="text"
@@ -30,11 +29,10 @@ export function StationSearch({
           {"Let's find something for your playlist"}
         </h2>
 
-        <form
+        <div
           className="station-search-input-container"
           role="search"
           aria-labelledby="station-search-title"
-          onSubmit={handleSubmit}
         >
        
 
@@ -43,7 +41,7 @@ export function StationSearch({
             className="e-91000-text encore-text-body-small station-search-input"
             data-encore-id="text"
             type="search"
-            maxLength={90}
+            maxLength={80}
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck={false}
@@ -53,24 +51,13 @@ export function StationSearch({
             onKeyDown={handleKeyDown}
           />
 
-          <div className="search-icon-container" aria-hidden="true">
+          <div className="search-icon-container flex" aria-hidden="true">
             <span className="search-icon">
               <SearchLensIcon/>
             </span>
           </div>
 
-          {/* optional clear button if there's text */}
-          {value && (
-            <button
-              type="button"
-              className="clear-btn"
-              aria-label="Clear search"
-              onClick={() => (onClear ? onClear() : onChange(""))}
-            >
-              <IconClose24 />
-            </button>
-          )}
-        </form>
+        </div>
       </div>
 
       {/* <button
