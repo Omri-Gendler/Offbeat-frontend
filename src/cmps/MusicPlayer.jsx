@@ -15,15 +15,18 @@ import QueueMusicIcon from '@mui/icons-material/QueueMusic';
 import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
 import LaunchIcon from '@mui/icons-material/Launch';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import { QueueSidebar } from './QueueSidebar';
 
 import { addSongToLikedAction, updateStation } from '../store/actions/station.actions';
 import { VolumeControl } from './VolumeControl';
 
 export function MusicPlayer({ station }) {
+    const stations = useSelector(storeState => storeState.stationModule.stations)
     const audioRef = useRef(null)
     const [isPlaying, setIsPlaying] = useState(false)
     const [duration, setDuration] = useState(0)
     const [currentTime, setCurrentTime] = useState(0)
+    const [isQueueOpen, setIsQueueOpen] = useState(false)
     const progressBarRef = useRef(null)
 
     const currentSong = station?.songs?.[0]
@@ -133,8 +136,14 @@ export function MusicPlayer({ station }) {
                 <button style={{ backgroundColor: 'transparent' }}><SlideshowIcon /></button>
                 <button style={{ backgroundColor: 'transparent' }}><QueueMusicIcon /></button>
                 <button style={{ backgroundColor: 'transparent' }}><TapAndPlayIcon /></button>
-                <button style={{ backgroundColor: 'transparent' }}><SlideshowIcon /></button>
-                
+                <button
+                    onClick={() => setIsQueueOpen(true)}
+                    className="queue-btn"
+                    style={{ backgroundColor: 'transparent' }}
+                >
+                    <SlideshowIcon />
+                </button>
+
                 <VolumeControl audioRef={audioRef} />
                 <button style={{ backgroundColor: 'transparent' }}><FullscreenIcon /></button>
             </div>
@@ -146,6 +155,12 @@ export function MusicPlayer({ station }) {
                 onTimeUpdate={() => setCurrentTime(audioRef.current.currentTime)}
                 onEnded={() => setIsPlaying(false)}
             />
+            {isQueueOpen && (
+                <QueueSidebar
+                    stations={stations} 
+                    onClose={() => setIsQueueOpen(false)}
+                />
+            )}
         </footer>
     )
 }

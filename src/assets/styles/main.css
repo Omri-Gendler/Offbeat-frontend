@@ -30,6 +30,7 @@
 @import "cmps/station/EditStationModal";
 @import "cmps/station/SongsList";
 @import "cmps/station/VolumeControl";
+@import "cmps/station/QueueSidebar";
 
 
 
