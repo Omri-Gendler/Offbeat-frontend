@@ -18,7 +18,7 @@ export function QueueSidebar({ stations, onClose }) {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <header className="modal-header">
-                    <h2>התור הבא</h2>
+                    <h2>Next</h2>
                     <button className="close-btn" onClick={onClose}>&times;</button>
                 </header>
 
