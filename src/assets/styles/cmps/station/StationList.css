@@ -3,35 +3,25 @@
 
 }
 
-/* החלף את .station-list בקלאס של האלמנט הגולל שלך */
 .station-list::-webkit-scrollbar {
     height: 8px;
-    /* קובע את הגובה של פס גלילה אופקי */
     width: 8px;
-    /* קובע את הרוחב של פס גלילה אנכי */
 }
 
-/* המסילה שמאחורי הידית */
 .station-list::-webkit-scrollbar-track {
     background: transparent;
-    /* בדרך כלל רוצים שהרקע יהיה שקוף או בצבע הרקע הכללי */
     border-radius: 10px;
 }
 
-/* הידית הנגררת עצמה */
 .station-list::-webkit-scrollbar-thumb {
     background-color: #535353;
-    /* צבע אפור כהה, כמו בספוטיפיי */
     border-radius: 10px;
     border: 2px solid transparent;
-    /* יוצר רווח קטן סביב הידית */
     background-clip: content-box;
 }
 
-/* עיצוב הידית במעבר עכבר (hover) */
 .station-list::-webkit-scrollbar-thumb:hover {
     background-color: #6a6a6a;
-    /* צבע בהיר יותר */
 }
 
 .station-list-title {
@@ -71,7 +61,7 @@
     padding: 0;
     margin: 0;
     list-style: none;
-    margin-left: 29px;
+    margin-left: 1.9em;
 
 }
 
@@ -188,8 +178,8 @@ button {
 }
 
 .main-station-list-filters {
-    margin-top: 12px;
-    margin-left: 20px;
+    margin-top: 0.9em;
+    margin-left: 1.25em;
 }
 
 .main-station-list-header {

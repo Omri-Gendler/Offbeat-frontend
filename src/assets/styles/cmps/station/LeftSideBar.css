@@ -139,7 +139,7 @@
         border: none;
         color: var(--clr4);
         cursor: pointer;
-        font-size: 12px;
+        font-size: 0.8em;
         text-align: left;
         background-color: var(--gray2);
         border-radius: 20px;
@@ -317,7 +317,7 @@
 
 .library-item .play-button {
     position: absolute;
-    bottom: 55px;
+    bottom: 2.5em;
     right: 15px;
     width: 45px;
     height: 45px;

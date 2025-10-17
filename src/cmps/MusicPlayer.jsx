@@ -133,19 +133,19 @@ export function MusicPlayer({ station }) {
             </div>
 
             <div className="player-right">
-                <button style={{ backgroundColor: 'transparent' }}><SlideshowIcon /></button>
-                <button style={{ backgroundColor: 'transparent' }}><QueueMusicIcon /></button>
-                <button style={{ backgroundColor: 'transparent' }}><TapAndPlayIcon /></button>
+                {/* <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><SlideshowIcon /></button>
+                <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><QueueMusicIcon /></button>
+                <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><TapAndPlayIcon /></button> */}
                 <button
                     onClick={() => setIsQueueOpen(true)}
                     className="queue-btn"
-                    style={{ backgroundColor: 'transparent' }}
+                    style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}
                 >
                     <SlideshowIcon />
                 </button>
 
                 <VolumeControl audioRef={audioRef} />
-                <button style={{ backgroundColor: 'transparent' }}><FullscreenIcon /></button>
+                <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><FullscreenIcon /></button>
             </div>
 
             <audio
@@ -157,7 +157,7 @@ export function MusicPlayer({ station }) {
             />
             {isQueueOpen && (
                 <QueueSidebar
-                    stations={stations} 
+                    stations={stations}
                     onClose={() => setIsQueueOpen(false)}
                 />
             )}
