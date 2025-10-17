@@ -89,8 +89,9 @@ useEffect(() => {
             autoCapitalize="none"
             spellCheck={false}
           />
-          
+        
           <div className="browse">
+            
             <button
               data-testid="browse-button"
               className="button"
