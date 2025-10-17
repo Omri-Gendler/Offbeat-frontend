@@ -1,19 +1,19 @@
 .app-header {
     display: flex;
     min-height: 3.2rem;
-    
+
     background-color: var(--clr1);
-    
-   
+
+
     padding: 13.5px;
-    height: 64px;
+    /* height: 64px; */
 
     & nav {
         display: flex;
         width: 100%;
         align-items: center;
         justify-content: space-between;
-        
+
 
         font-size: .8em;
 
@@ -27,23 +27,23 @@
         }
 
         .logo-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        
-        padding: 0;
-        height: 72px;
-        width: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+
+            padding: 0;
+            /* height: 72px;
+            width: 72px; */
         }
 
-  
+
 
         & button {
             margin: 0;
             display: flex;
-            
-            padding:0;
+
+            padding: 0;
             height: 50px;
             width: 50px;
             border-radius: 50%;
@@ -63,20 +63,20 @@
                 width: 24px;
                 fill: var(--clr4);
             }
-            
-            
+
+
         }
 
-        
+
     }
-    
-   .app-header-logo {
-            height: 32px;
-            width: fit-content;
-            cursor: pointer;
-           
-            
-        }
+
+    .app-header-logo {
+        height: 32px;
+        width: fit-content;
+        cursor: pointer;
+
+
+    }
 
     .user-info {
         display: flex;
@@ -106,12 +106,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 10px;
+    margin-left: 0.625empx;
 
     .station-search-container {
         background-color: var(--clr1);
-        
-        
+
+
         height: 36px;
         display: flex;
         align-items: center;
@@ -123,29 +123,31 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            
+
             height: 52px;
-            
-            
+
+
 
             .search-svg {
-                height: 48px;
-                width: 48px;
-                left: 12px;
+                height: 3em;
+                width: 3em;
+                left: 0.75em;
                 position: absolute;
-                padding: 0 12px;
-                
+                padding: 0 0.75em;
+
                 display: block;
                 fill: var(--clr5);
             }
+
             .browse {
                 position: absolute;
                 width: 28px;
                 height: 41px;
-                right: 12px;
-                top: 12px;
-                
+                right: 0.75em;
+                top: 0.75em;
+
             }
+
             .browse .button {
                 border: none;
                 background-color: transparent;
@@ -160,12 +162,13 @@
                 justify-content: center;
                 cursor: pointer;
                 right: 12px;
+
                 &:hover {
                     .browse-svg {
                         fill: var(--clr4);
                     }
                 }
-            }   
+            }
 
             .browse-svg {
                 height: 24px;
@@ -180,12 +183,10 @@
                 background-color: var(--background-elevated-base);
                 transition: background-color 0.2s, box-shadow 0.2s;
                 color: var(--clr4);
-                font-size: 20px;
-                margin-left: 10px;
+                font-size: 0.875em;
+                margin-left: 0.625em;
                 outline: none;
-                width: 474px;
-                height: 52px;
-                padding: 12px 96px 12px 48px;
+                padding: 1.1875em;
                 border-radius: 500px;
                 font-family: var(--encore-body-font-stack);
 
@@ -193,23 +194,26 @@
                     color: var(--clr5);
                     opacity: 0.7;
                     font-family: var(--encore-body-font-stack);
-                    font-size: 20px;
+                    font-size: 0.875em;
                 }
+
                 &:hover,
                 &:focus {
-                    background-color: var(--background-elevated-highlight); /* <-- light gray */
-                   
+                    background-color: var(--background-elevated-highlight);
+                    /* <-- light gray */
+
                 }
             }
         }
     }
 }
 
- .station-filter input:focus {   
-    box-shadow:inset 0 0 0 2px var(--clr4);
+.station-filter input:focus {
+    box-shadow: inset 0 0 0 2px var(--clr4);
 }
+
 .station-filter-input:hover:not(:focus) {
-    box-shadow:inset 0 0 0 .5px var(--clr5);
+    box-shadow: inset 0 0 0 .5px var(--clr5);
 }
 
 button:hover {

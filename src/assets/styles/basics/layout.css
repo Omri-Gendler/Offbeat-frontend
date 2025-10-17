@@ -20,8 +20,7 @@
     padding: var(--panel-gap);
     position: relative;
     min-width: 100vw;
-
-
+    padding: 0.3125em;
 
     .left-side-bar {
 
