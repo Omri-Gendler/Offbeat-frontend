@@ -1,166 +1,216 @@
-import React, { useState, useRef } from 'react';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from 'react'
+import { useSelector, shallowEqual } from 'react-redux'
 
-import DoneIcon from '@mui/icons-material/Done';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { showSuccessMsg } from '../services/event-bus.service';
-import { addLikedSong } from '../services/station/station.service.local';
-import SlideshowIcon from '@mui/icons-material/Slideshow';
-import QueueMusicIcon from '@mui/icons-material/QueueMusic';
-import TapAndPlayIcon from '@mui/icons-material/TapAndPlay';
-import LaunchIcon from '@mui/icons-material/Launch';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import { QueueSidebar } from './QueueSidebar';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow'
+import PauseIcon from '@mui/icons-material/Pause'
+import SkipNextIcon from '@mui/icons-material/SkipNext'
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
+import SlideshowIcon from '@mui/icons-material/Slideshow'
+import QueueMusicIcon from '@mui/icons-material/QueueMusic'
+import TapAndPlayIcon from '@mui/icons-material/TapAndPlay'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
 
-import { addSongToLikedAction, updateStation } from '../store/actions/station.actions';
-import { VolumeControl } from './VolumeControl';
+import {
+  setQueueIfChanged,
+  setIndex,
+  setPlay,
+  nextTrack,
+  prevTrack,
+  togglePlay,
+  playContext
+  // playContext, // ← uncomment if you prefer seeding via playContext
+} from '../store/actions/player.actions'
+
+import { likeSong, unlikeSong } from '../store/actions/station.actions'
+import { QueueSidebar } from './QueueSidebar'
+import { VolumeControl } from './VolumeControl'
+import { IconAddCircle24, IconCheckCircle24 } from './Icon'
+
+const FALLBACK = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 
 export function MusicPlayer({ station }) {
-    const stations = useSelector(storeState => storeState.stationModule.stations)
-    const audioRef = useRef(null)
-    const [isPlaying, setIsPlaying] = useState(false)
-    const [duration, setDuration] = useState(0)
-    const [currentTime, setCurrentTime] = useState(0)
-    const [isQueueOpen, setIsQueueOpen] = useState(false)
-    const progressBarRef = useRef(null)
+  // stations
+  const stations = useSelector(s => s.stationModule.stations, shallowEqual)
+  const likedStation = stations.find(s => s._id === 'liked-songs-station') || null
 
-    const currentSong = station?.songs?.[0]
+  // player (correct slice is playerModule)
+  const { queue = [], index = 0, nowPlayingId = null, isPlaying = false } = useSelector(
+    s => s.playerModule || {},
+    shallowEqual
+  )
 
-    const isLiked = useSelector(storeState => {
-        const likedStation = storeState.stationModule.stations.find(s => s._id === 'liked-songs-station')
-        if (!likedStation || !currentSong) return false
-        return likedStation.songs.some(song => song.id === currentSong.id)
-    })
+useEffect(() => {
+  const tracks = Array.isArray(station?.songs) ? station.songs : []
+  const contextId = station?._id || null
+  const contextType = 'station'           // or 'album' | 'mix' | 'playlist' | null
+  setQueueIfChanged(tracks, 0, contextId, contextType)
+}, [station?._id, station?.songs?.length])
 
-    const dispatch = useDispatch()
+  // Derive current song
+  const safeIndex = Math.min(Math.max(index || 0, 0), Math.max(queue.length - 1, 0))
+  const currentSong = queue[safeIndex] || (nowPlayingId ? queue.find(t => t?.id === nowPlayingId) : null) || null
 
-    const songSrc = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+  const likedSongs = likedStation?.songs || []
+  const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
 
-    useEffect(() => {
-        const progressPercent = duration ? (currentTime / duration) * 100 : 0;
+  const audioRef = useRef(null)
+  const progressBarRef = useRef(null)
 
-        if (progressBarRef.current) {
-            progressBarRef.current.style.setProperty('--progress-percent', `${progressPercent}%`);
-        }
-    }, [currentTime, duration])
+  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [isQueueOpen, setIsQueueOpen] = useState(false)
 
-    const togglePlayPause = () => {
-        const currentSong = station?.songs[0]
-        if (!currentSong) return
-        setIsPlaying(prev => {
-            if (!prev) audioRef.current.play()
-            else audioRef.current.pause()
-            return !prev
-        })
+  // reflect store isPlaying into <audio>
+  useEffect(() => {
+    const el = audioRef.current
+    if (!el) return
+    if (isPlaying) el.play().catch(() => {})
+    else el.pause()
+  }, [isPlaying, currentSong?.id])
+
+  // visual progress %
+  useEffect(() => {
+    const pct = duration ? (currentTime / duration) * 100 : 0
+    progressBarRef.current?.style.setProperty('--progress-percent', `${pct}%`)
+  }, [currentTime, duration])
+
+  // reset timers on track change
+  useEffect(() => {
+    setCurrentTime(0)
+    setDuration(0)
+  }, [currentSong?.id])
+
+  // 🔁 Use the STORE toggle (no thunks)
+  const handleTogglePlay = () => {
+    if (!currentSong && queue.length > 0) {
+      setIndex(0)
+      setPlay(true)
+      return
     }
+    togglePlay() // single source of truth
+  }
 
+  const onNext = () => nextTrack()
+  const onPrev = () => prevTrack()
 
-
-    const handleAddClick = () => {
-        const currentSong = station?.songs?.[0]
-        if (!currentSong) return
-
-        if (isLiked) {
-        } else {
-            showSuccessMsg('Added to Your Library')
-
-            addLikedSong(currentSong)
-
-            dispatch(addSongToLikedAction(currentSong))
-        }
+  const handleSeek = e => {
+    const t = Number(e.target.value)
+    if (!Number.isFinite(t)) return
+    if (audioRef.current) {
+      audioRef.current.currentTime = t
+      setCurrentTime(t)
     }
+  }
 
-    const handleSeek = (e) => {
-        const time = parseFloat(e.target.value)
-        audioRef.current.currentTime = time
-        setCurrentTime(time)
-    }
+  const fmt = s => {
+    if (!Number.isFinite(s)) return '0:00'
+    const m = Math.floor(s / 60)
+    const sec = Math.floor(s % 60)
+    return `${m}:${sec < 10 ? '0' : ''}${sec}`
+  }
 
-    const formatTime = (timeInSeconds) => {
-        const minutes = Math.floor(timeInSeconds / 60)
-        const seconds = Math.floor(timeInSeconds % 60)
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
-    }
+  const handleAddClick = async () => {
+    if (!currentSong) return
+    if (isLiked) await unlikeSong(currentSong.id)
+    else await likeSong(currentSong)
+  }
 
-    function handleLengthChange() {
-        setDuration(audioRef.current.duration)
-        setCurrentTime(audioRef.current.currentTime)
-    }
+  return (
+    <footer className="music-player">
+      <div className="player-left">
+        <img
+          src={currentSong?.imgUrl || '/img/unnamed-song.png'}
+          alt=""
+          className="player-album-cover"
+          width={50}
+          height={50}
+        />
+        <div className="player-song-info">
+          <span className="song-title">{currentSong?.title || station?.name || '—'}</span>
+          <span className="song-artist">{currentSong?.artists || ''}</span>
+        </div>
+        <button
+          type="button"
+          className="tertiary-btn"
+          aria-label={isLiked ? 'In Your Library' : 'Add to Your Library'}
+          aria-pressed={isLiked}
+          onClick={handleAddClick}
+        >
+          {isLiked ? <IconCheckCircle24 className="icon" /> : <IconAddCircle24 className="icon" />}
+        </button>
+      </div>
 
-
-    return (
-        <footer className="music-player">
-            <div className="player-left">
-                <img src={station?.imgUrl || '/img/unnamed-song.png'} alt="Album Cover" className="player-album-cover" style={{ width: '50px', height: '50px' }} />
-                <div className="player-song-info">
-                    <span className="song-title">{station?.name}</span>
-                    <span className="song-artist">{station?.artist}</span>
-                    <span className='created-by'>{station?.createdBy?.fullname}</span>
-                </div>
-                {
-                    <button className="tertiary-btn" aria-label="add to your library" onClick={handleAddClick}>
-                        {isLiked ? <DoneIcon style={{ color: 'green' }} /> : <AddCircleOutlineIcon className="icon" />}
-                    </button>
-
-                }
-            </div>
-
-            <div className="player-center">
-                <div className="player-controls">
-                    <button className="control-btn"><SkipPreviousIcon style={{ fontSize: '25px', marginLeft: '2px' }} /></button>
-                    <button className="control-btn play-pause-btn" onClick={togglePlayPause}>
-                        {isPlaying ? <PauseIcon style={{ fontSize: '25px', marginLeft: '2px' }} /> : <PlayArrowIcon style={{ fontSize: '25px', marginLeft: '2px' }} />}
-                    </button>
-                    <button className="control-btn"><SkipNextIcon style={{ fontSize: '25px', marginLeft: '2px' }} /></button>
-                </div>
-                <div className="progress-bar-container">
-                    <span className="time-stamp">{formatTime(currentTime)}</span>
-                    <input
-                        ref={progressBarRef}
-                        type="range"
-                        value={currentTime}
-                        max={duration}
-                        onChange={handleSeek}
-                        className="progress-bar"
-                    />
-                    <span className="time-stamp">{formatTime(duration) || '4:20'}</span>
-                </div>
-            </div>
-
-            <div className="player-right">
-                {/* <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><SlideshowIcon /></button>
-                <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><QueueMusicIcon /></button>
-                <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><TapAndPlayIcon /></button> */}
-                <button
-                    onClick={() => setIsQueueOpen(true)}
-                    className="queue-btn"
-                    style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}
-                >
-                    <SlideshowIcon />
-                </button>
-
-                <VolumeControl audioRef={audioRef} />
-                <button style={{ backgroundColor: 'transparent', fontSize: '0.2em' }}><FullscreenIcon /></button>
-            </div>
-
-            <audio
-                ref={audioRef}
-                src={songSrc}
-                onLoadedMetadata={() => setDuration(audioRef.current.duration)}
-                onTimeUpdate={() => setCurrentTime(audioRef.current.currentTime)}
-                onEnded={() => setIsPlaying(false)}
-            />
-            {isQueueOpen && (
-                <QueueSidebar
-                    stations={stations}
-                    onClose={() => setIsQueueOpen(false)}
-                />
+      <div className="player-center">
+        <div className="player-controls">
+          <button type="button" className="control-btn" onClick={onPrev} disabled={!currentSong}>
+            <SkipPreviousIcon style={{ fontSize: 25, marginLeft: 2 }} />
+          </button>
+          <button
+            type="button"
+            className="control-btn play-pause-btn"
+            onClick={handleTogglePlay}
+            disabled={!currentSong && queue.length === 0}
+          >
+            {isPlaying ? (
+              <PauseIcon style={{ fontSize: 25, marginLeft: 2 }} />
+            ) : (
+              <PlayArrowIcon style={{ fontSize: 25, marginLeft: 2 }} />
             )}
-        </footer>
-    )
+          </button>
+          <button type="button" className="control-btn" onClick={onNext} disabled={!currentSong}>
+            <SkipNextIcon style={{ fontSize: 25, marginLeft: 2 }} />
+          </button>
+        </div>
+
+        <div className="progress-bar-container">
+          <span className="time-stamp">{fmt(currentTime)}</span>
+          <input
+            ref={progressBarRef}
+            type="range"
+            className="progress-bar"
+            value={currentTime}
+            max={duration || 0}
+            step="0.1"
+            onChange={handleSeek}
+          />
+          <span className="time-stamp">{fmt(duration)}</span>
+        </div>
+      </div>
+
+      <div className="player-right">
+        <button type="button" style={{ backgroundColor: 'transparent' }}>
+          <SlideshowIcon />
+        </button>
+        <button
+          type="button"
+          className="queue-btn"
+          style={{ backgroundColor: 'transparent' }}
+          onClick={() => setIsQueueOpen(p => !p)}
+        >
+          <QueueMusicIcon />
+        </button>
+        <button type="button" style={{ backgroundColor: 'transparent' }}>
+          <TapAndPlayIcon />
+        </button>
+        <VolumeControl audioRef={audioRef} />
+        <button type="button" style={{ backgroundColor: 'transparent' }}>
+          <FullscreenIcon />
+        </button>
+      </div>
+
+      <audio
+        ref={audioRef}
+        src={currentSong?.url || FALLBACK}
+        preload="metadata"
+        onLoadedMetadata={() => {
+          setDuration(audioRef.current?.duration || 0)
+          if (isPlaying) audioRef.current?.play().catch(() => {})
+        }}
+        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
+        onEnded={onNext}
+      />
+
+      {isQueueOpen && <QueueSidebar stations={stations} onClose={() => setIsQueueOpen(false)} />}
+    </footer>
+  )
 }

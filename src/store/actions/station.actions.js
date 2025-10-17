@@ -1,7 +1,7 @@
 // import { stationService } from '../../services/station'
 import { stationService } from '../../services/station/station.service.local'
 import { store } from '../store'
-import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, ADD_SONG_TO_LIKED } from '../reducers/station.reducer'
+import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, LIKE_SONG ,UNLIKE_SONG} from '../reducers/station.reducer'
 import { showSuccessMsg } from '../../services/event-bus.service'
 import { Modal } from '@mui/material'
 
@@ -16,17 +16,13 @@ export async function loadStations(filterBy) {
 }
 
 export async function loadStation(stationId) {
-    try {
-        const station = await stationService.getById(stationId)
-        store.dispatch(getCmdSetStation(station))
-    } catch (err) {
-        console.log('Cannot load station', err)
-        throw err
-    }
-}
-
-export function addSongToLikedAction(song) {
-    return { type: ADD_SONG_TO_LIKED, song }
+  try {
+    const station = await stationService.getById(stationId)
+    store.dispatch(getCmdSetStation(station))
+  } catch (err) {
+    console.log('Cannot load station', err)
+    throw err
+  }
 }
 
 
@@ -40,6 +36,18 @@ export async function removeStation(stationId) {
         showSuccessMsg('Cannot remove station')
         throw err
     }
+}
+
+export async function likeSong(song) {
+  const likedStation = await stationService.addLikedSong(song)   // must return station
+  store.dispatch({ type: UPDATE_STATION, station: likedStation })
+  return likedStation
+}
+
+export async function unlikeSong(songId) {
+  const likedStation = await stationService.removeLikedSong(songId) // must return station
+  store.dispatch({ type: UPDATE_STATION, station: likedStation })
+  return likedStation
 }
 
 export async function addStation(station) {
@@ -63,6 +71,10 @@ export async function updateStation(station) {
         throw err
     }
 }
+
+
+export const setUpdatedStation = station => ({ type: UPDATE_STATION, station })
+
 
 export async function addStationMsg(stationId, txt) {
     try {
@@ -110,6 +122,20 @@ function getCmdAddStationMsg(msg) {
     return {
         type: ADD_STATION_MSG,
         msg
+    }
+}
+
+function getCmdLikeSong(song) {
+    return {
+        type: LIKE_SONG,
+        song
+    }
+}
+
+function getCmdUnlikeSong(song) {
+    return {
+        type: UNLIKE_SONG,
+        song
     }
 }
 
