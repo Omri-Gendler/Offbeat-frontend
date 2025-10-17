@@ -2,7 +2,7 @@ import { userService } from '../services/user'
 import { StationPreview } from './StationPreview'
 import { FastAverageColor } from 'fast-average-color';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { maxLength } from '../services/util.service'
 import { ContextMenu } from './ContextMenu';
 
@@ -13,12 +13,22 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     const [dynamicBgColor, setDynamicBgColor] = useState('#121212')
 
     const navigate = useNavigate()
+    const recentsScrollRef = useRef(null)
 
     const [contextMenu, setContextMenu] = useState({
         isOpen: false,
         position: { x: 0, y: 0 },
         stationId: null,
     })
+
+    const handleRecentsScroll = (scrollOffset) => {
+        if (recentsScrollRef.current) {
+            recentsScrollRef.current.scrollBy({
+                left: scrollOffset,
+                behavior: 'smooth'
+            })
+        }
+    }
 
     const handleContextMenu = (event, stationId) => {
         event.preventDefault()
@@ -86,6 +96,8 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
                     <button>Music</button>
                 </div>
 
+                
+
                 <div className='station-list-recents'>
                     {stations.slice(0, 6).map(station => (
                         <button
@@ -111,6 +123,66 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
             <div className="station-list-content">
 
 
+                <ul className="station-list">
+                    {stations.map(station => (
+                        <li key={station._id} onContextMenu={(event) => handleContextMenu(event, station._id)} className="station-list-wrapper">
+
+                            <StationPreview station={station} />
+                            <div className="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5V19L19 12L8 5Z" fill="black" />
+                                </svg>
+                            </div>
+
+
+                            <div className="actions">
+                                {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
+                                {/* <button onClick={() => onRemoveStation(station._id)}>x</button> */}
+                            </div>
+
+                        </li>
+                    ))}
+                </ul>
+                <ul className="station-list">
+                    {stations.map(station => (
+                        <li key={station._id} onContextMenu={(event) => handleContextMenu(event, station._id)} className="station-list-wrapper">
+
+                            <StationPreview station={station} />
+                            <div className="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5V19L19 12L8 5Z" fill="black" />
+                                </svg>
+                            </div>
+
+
+                            <div className="actions">
+                                {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
+                                {/* <button onClick={() => onRemoveStation(station._id)}>x</button> */}
+                            </div>
+
+                        </li>
+                    ))}
+                </ul>
+                <ul className="station-list">
+                    {stations.map(station => (
+                        <li key={station._id} onContextMenu={(event) => handleContextMenu(event, station._id)} className="station-list-wrapper">
+
+                            <StationPreview station={station} />
+                            <div className="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5V19L19 12L8 5Z" fill="black" />
+                                </svg>
+                            </div>
+
+
+                            <div className="actions">
+                                {/* <button onClick={() => onUpdateStation(station)}>Edit</button> */}
+                                {/* <button onClick={() => onRemoveStation(station._id)}>x</button> */}
+                            </div>
+
+                        </li>
+                    ))}
+                </ul>
                 <ul className="station-list">
                     {stations.map(station => (
                         <li key={station._id} onContextMenu={(event) => handleContextMenu(event, station._id)} className="station-list-wrapper">

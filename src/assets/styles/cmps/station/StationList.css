@@ -15,6 +15,7 @@
 
 .station-list::-webkit-scrollbar-thumb {
     background-color: #535353;
+
     border-radius: 10px;
     border: 2px solid transparent;
     background-clip: content-box;
@@ -183,7 +184,7 @@ button {
 }
 
 .main-station-list-header {
-    position: sticky;
+    /* position: sticky; */
     top: 0;
     z-index: 10;
     padding-inline: 10px;
