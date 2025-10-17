@@ -17,15 +17,12 @@
 .station-header{
   display: flex;
   align-items: flex-end;
-  margin-top: 16px;
-
 }
 
 .station-header,
 .station-details-header{
   position:relative;
   z-index: 2;
-  margin-bottom: var(--content-spacing);
 }
 
 .background-color-details{
@@ -42,17 +39,17 @@
 
 .background{
   z-index: -1;
-    background: linear-gradient(transparent 0, rgba(0, 0, 0, .5) 100%), var(--background-noise);
+    /* background: linear-gradient(transparent 0, rgba(0, 0, 0, .5) 100%), var(--background-noise); */
 
 }
-.background-position{
+/* .background-position{
       display: block;
     height: 100%;
     left: 0;
     position: absolute;
     top: 0;
     width: 100%;
-}
+} */
 
 .station-details-header{
 
@@ -128,13 +125,13 @@
     min-height: var(--min-fluid-height);
 
 }
-
+/* 
 @media (max-width: 700px) {
   .songs-list-header {
     position: static;
   }
 
-}
+} */
  
 
 
@@ -670,7 +667,7 @@ cubic-bezier(.3, 0, .4, 1);
     width: 18px;}
   }
 }
-.station-details-body {
+.station-details {
   flex: 1 1 auto;   
   min-height: 0;     
   overflow-y: auto; 
