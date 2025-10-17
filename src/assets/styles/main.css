@@ -108,7 +108,7 @@
             }
         }
 
-        .app-footer {
+        .music-player {
             grid-column: 1 / -1;
             grid-row: 3;
             max-height: 75px;
@@ -270,7 +270,7 @@
         max-height: 65px;
     }
 
-    .app-footer {
+    .music-player {
         grid-area: now-playing-bar;
         width: 100%;
         max-height: 90px;

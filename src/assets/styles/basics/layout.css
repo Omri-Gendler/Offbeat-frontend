@@ -100,7 +100,7 @@
     grid-area: top-banner;
 }
 
-.app-footer {
+.music-player {
     grid-area: now-playing-bar;
     width: 100%;
 }
