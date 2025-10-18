@@ -59,8 +59,8 @@ export function StationSearch({
 
         </div>
       </div>
-
-      {/* <button
+{/* 
+      <button
         type="button"
         className="close-icon-btn"
         onClick={onClose}

@@ -1,6 +1,5 @@
 .app-header {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
+    display: flex;
     
     align-items: center;
     background-color: var(--clr1);
@@ -11,7 +10,6 @@
 
     & nav {
         display: flex;
-        grid-template-columns: 1fr 2fr 1fr;
         width: 100%;
         align-items: center;
 
@@ -35,11 +33,8 @@
         .logo-container {
             display: flex;
             align-items: center;
-            /* justify-content: center; */
+            justify-content: center;
 
-            .login-link {
-                justify-self: end;
-            }
 
             padding: 0;
             height: 2em;
@@ -115,13 +110,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 0.625empx;
-    width: 100%;
+    margin-left: 0.625em;
 
     .station-search-container {
         background-color: var(--clr1);
 
-        width: 100%;
+
+        height: 36px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -132,8 +127,10 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            width: 80%;
-            height: 3.25em;
+
+           
+
+
 
             .search-svg {
                 
@@ -191,7 +188,7 @@
                 background-color: var(--background-elevated-base);
                 transition: background-color 0.2s, box-shadow 0.2s;
                 color: var(--clr4);
-                font-size: 1em;
+                font-size: 1.2em;
                 min-width: 474px;
                 outline: none;
                 
@@ -199,7 +196,7 @@
                 padding-top: 0.6em;
                 border-radius: 500px;
                 font-family: var(--encore-body-font-stack);
-                width: 100%;
+                padding-inline-start: 3em;
 
                 &::placeholder {
                     color: var(--clr5);

@@ -7,6 +7,10 @@ export const ADD_STATION_MSG = 'ADD_STATION_MSG'
 export const TOGGLE_LIKE_STATION = 'TOGGLE_LIKE_STATION'
 export const LIKE_SONG = 'LIKE_SONG'
 export const UNLIKE_SONG = 'UNLIKE_SONG'
+export const ADD_SONG_TO_STATION    = 'STATION/ADD_SONG_TO_STATION'
+export const REMOVE_SONG_FROM_STATION = 'STATION/REMOVE_SONG_FROM_STATION'
+
+
 
 const LIKED_ID = 'liked-songs-station'
 
@@ -54,17 +58,58 @@ export function stationReducer(state = initialState, action) {
                 newState = { ...state, station: { ...state.station, msgs: [...state.station.msgs || [], action.msg] } }
                 break
             }
-        case LIKE_SONG: {
-      const stations = state.stations.map(st =>
-        st._id === LIKED_ID
-          ? {
-              ...st,
-              songs: st.songs.some(s => s.id === action.song.id)
-                ? st.songs
-                : [...st.songs, action.song]
+        case ADD_SONG_TO_STATION: {
+            const { stationId, song } = action
+            // update stations array
+            const stations = state.stations.map(st =>
+                st._id === stationId
+                ? {
+                    ...st,
+                    songs: st.songs.some(s => s.id === song.id)
+                        ? st.songs                      // avoid duplicates
+                        : [...st.songs, song]
+                    }
+                : st
+            )
+            // update currently opened station if it’s the same one
+            const station =
+                state.station && state.station._id === stationId
+                ? {
+                    ...state.station,
+                    songs: state.station.songs.some(s => s.id === song.id)
+                        ? state.station.songs
+                        : [...state.station.songs, song]
+                    }
+                : state.station
+
+            return { ...state, stations, station }
             }
-          : st
-      )
+
+            case REMOVE_SONG_FROM_STATION: {
+            const { stationId, songId } = action
+            const stations = state.stations.map(st =>
+                st._id === stationId
+                ? { ...st, songs: st.songs.filter(s => s.id !== songId) }
+                : st
+            )
+            const station =
+                state.station && state.station._id === stationId
+                ? { ...state.station, songs: state.station.songs.filter(s => s.id !== songId) }
+                : state.station
+
+            return { ...state, stations, station }
+        }
+        case LIKE_SONG: {
+        const stations = state.stations.map(st =>
+            st._id === LIKED_ID
+            ? {
+                ...st,
+                songs: st.songs.some(s => s.id === action.song.id)
+                    ? st.songs
+                    : [...st.songs, action.song]
+                }
+            : st
+        )
       return { ...state, stations }
     }
 

@@ -1,7 +1,7 @@
 // import { stationService } from '../../services/station'
 import { stationService } from '../../services/station/station.service.local'
 import { store } from '../store'
-import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, LIKE_SONG ,UNLIKE_SONG} from '../reducers/station.reducer'
+import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, LIKE_SONG ,UNLIKE_SONG, ADD_SONG_TO_STATION, REMOVE_SONG_FROM_STATION} from '../reducers/station.reducer'
 import { showSuccessMsg } from '../../services/event-bus.service'
 import { Modal } from '@mui/material'
 
@@ -87,56 +87,61 @@ export async function addStationMsg(stationId, txt) {
     }
 }
 
-// Command Creators:
+export async function addSongToStation(stationId, song) {
+  // If your local service mutates and returns the updated station, prefer that:
+  if (typeof stationService.addSongToStation === 'function') {
+    const updated = await stationService.addSongToStation(stationId, song)
+    store.dispatch(getCmdUpdateStation(updated))
+    return updated
+  }
+  // Fallback to pure Redux action
+  const action = getCmdAddSongToStation(stationId, song)
+  store.dispatch(action)
+  return action
+}
+
+export async function removeSongFromStation(stationId, songId) {
+  if (typeof stationService.removeSongFromStation === 'function') {
+    const updated = await stationService.removeSongFromStation(stationId, songId)
+    store.dispatch(getCmdUpdateStation(updated))
+    return updated
+  }
+  const action = getCmdRemoveSongFromStation(stationId, songId)
+  store.dispatch(action)
+  return action
+}
+
+
 function getCmdSetStations(stations) {
-    return {
-        type: SET_STATIONS,
-        stations
-    }
+  return { type: SET_STATIONS, stations }
 }
+
 function getCmdSetStation(station) {
-    return {
-        type: SET_STATION,
-        station
-    }
+  return { type: SET_STATION, station }
 }
-function getCmdRemoveStation(stationId) {
-    return {
-        type: REMOVE_STATION,
-        stationId
-    }
-}
+
 function getCmdAddStation(station) {
-    return {
-        type: ADD_STATION,
-        station
-    }
+  return { type: ADD_STATION, station }
 }
+
 function getCmdUpdateStation(station) {
-    return {
-        type: UPDATE_STATION,
-        station
-    }
-}
-function getCmdAddStationMsg(msg) {
-    return {
-        type: ADD_STATION_MSG,
-        msg
-    }
+  return { type: UPDATE_STATION, station }
 }
 
-function getCmdLikeSong(song) {
-    return {
-        type: LIKE_SONG,
-        song
-    }
+function getCmdRemoveStation(stationId) {
+  return { type: REMOVE_STATION, stationId }
 }
 
-function getCmdUnlikeSong(song) {
-    return {
-        type: UNLIKE_SONG,
-        song
-    }
+function getCmdAddStationMsg(stationId, msg) {
+  return { type: ADD_STATION_MSG, stationId, msg }
+}
+
+function getCmdAddSongToStation(stationId, song) {
+  return { type: ADD_SONG_TO_STATION, stationId, song }
+}
+
+function getCmdRemoveSongFromStation(stationId, songId) {
+  return { type: REMOVE_SONG_FROM_STATION, stationId, songId }
 }
 
 // unitTestActions()
