@@ -74,7 +74,7 @@
 .station-list-recents {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    /* gap: 16px; */
+    gap: 0.625em;
     /* margin-bottom: 32px; */
     margin-left: 21px;
 }
@@ -253,7 +253,7 @@ button {
 .recent-item-list .play-button {
     position: absolute;
     right: 5px;
-    top: 50%;
+    top: 37%;
     transform: translateY(-50%);
 
     width: 35px;

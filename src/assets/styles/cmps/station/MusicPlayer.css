@@ -33,7 +33,10 @@
     .player-right {
         display: flex;
         justify-content: flex-end;
-        padding-inline-end: 0.9em;
+
+        button {
+            margin: 0;
+        }
     }
 
     .player-album-cover {

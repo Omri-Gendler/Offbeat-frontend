@@ -1,5 +1,6 @@
 .app-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
     
     align-items: center;
     background-color: var(--clr1);
@@ -190,7 +191,7 @@
                 background-color: var(--background-elevated-base);
                 transition: background-color 0.2s, box-shadow 0.2s;
                 color: var(--clr4);
-                font-size: 1.2em;
+                font-size: 1em;
                 min-width: 474px;
                 outline: none;
                 

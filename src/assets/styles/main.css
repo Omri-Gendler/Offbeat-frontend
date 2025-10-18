@@ -91,7 +91,7 @@
 
             /* Scrollbar styling for main content */
             &::-webkit-scrollbar {
-                width: 8px;
+                width: 1px;
             }
 
             &::-webkit-scrollbar-track {
