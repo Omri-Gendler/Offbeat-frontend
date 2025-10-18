@@ -7,8 +7,9 @@ import { SongPicker } from '../cmps/SongPicker'
 import { SongsList } from '../cmps/SongsList.jsx'
 import { StationActions } from '../cmps/StationActions.jsx'
 import { EditStationModal } from '../cmps/EditStationModal.jsx'
-import { addStation, loadStation, updateStation } from '../store/actions/station.actions'
-import { addStationToLibrary } from '../store/actions/station.actions'
+import { StationSearch} from '../cmps/StationSearch.jsx'
+import { use } from 'react'
+
 
 export function StationDetails() {
   const { stationId } = useParams()
@@ -56,6 +57,13 @@ export function StationDetails() {
     if (!station) return
     await dispatch(updateStation({ ...station, ...updatedDetails }))
   }
+
+  // Early return AFTER hooks
+  // ✅ Use `songs` in both computation and deps
+  const existingIds = useMemo(
+    () => new Set(songs.map(t => t.id)),
+    [songs]
+  )
 
   // Early return AFTER hooks
   if (!station) {
@@ -126,16 +134,11 @@ export function StationDetails() {
 
           <SongsList station={station} />
 
-          <button className="btn" onClick={() => setIsPickerOpen(true)}>Add songs</button>
-
-          {isPickerOpen && (
-            <SongPicker
-              stationId={station._id}
-              existingIds={existingIds}
-              onClose={() => setIsPickerOpen(false)}
-            // optional: initial={suggestedTracksArray}
-            />
-          )}
+        <StationSearch
+          value={query}
+          onChange={setQuery}
+          onClose={() => setQuery('')}
+        />
         </div>
       </div>
     </section>
