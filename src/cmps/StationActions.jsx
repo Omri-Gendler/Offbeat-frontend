@@ -7,7 +7,7 @@ import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { removeStation } from '../store/actions/station.actions.js'
 import { libraryService } from '../services/library/library.service.local.js'
 import { playContext, togglePlay, setPlay } from '../store/actions/player.actions' // ← import player actions
-
+import { addStationToLibrary, removeStationFromLibrary } from '../store/actions/station.actions.js'
 export function StationActions({ station }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -17,6 +17,21 @@ export function StationActions({ station }) {
     s => s.playerModule || {},
     shallowEqual
   )
+
+  const isAdded = station?.createdBy?.fullname === 'You'
+
+  const handleToggleLibrary = () => {
+    if (!station?._id) return
+
+    const { added: nowAdded } = libraryService.toggle(station._id)
+    setAdded(nowAdded)
+
+    if (isAdded) {
+      removeStationFromLibrary(station)
+    } else {
+      addStationToLibrary(station)
+    }
+  }
 
   // Local “added to library” UI state
   const [added, setAdded] = useState(false)
@@ -33,12 +48,6 @@ export function StationActions({ station }) {
     } catch (err) {
       console.error('Failed to remove station:', err)
     }
-  }
-
-  function handleClickAdd() {
-    if (!station?._id) return
-    const { added: nowAdded } = libraryService.toggle(station._id)
-    setAdded(nowAdded)
   }
 
   // Helper: compare two track arrays by id
@@ -59,7 +68,7 @@ export function StationActions({ station }) {
     contextType === 'station' &&
     idsEqual(queue, stationSongs)
 
-    const isPressed = isThisStationActive && isPlaying
+  const isPressed = isThisStationActive && isPlaying
   // Play/Pause like Spotify:
   // - If this station is the active context → toggle play.
   // - Else → replace queue with this station, start at index 0, autoplay.
@@ -95,7 +104,7 @@ export function StationActions({ station }) {
         <button
           type="button"
           className="tertiary-btn"
-          onClick={handleClickAdd}
+          onClick={handleToggleLibrary}
           aria-pressed={added}
           aria-label={added ? 'Added to your library' : 'Add to your library'}
           data-added={added ? 'true' : 'false'}

@@ -3,6 +3,7 @@ import { useEffect, useState, useMemo, useRef } from "react";
 import { loadStations, addStation } from "../store/actions/station.actions";
 import { useNavigate } from "react-router-dom";
 import { maxLength } from "../services/util.service";
+import { LIKED_ID } from "../store/reducers/station.reducer";
 
 import { playContext, togglePlay, setPlay } from "../store/actions/player.actions";
 
@@ -12,7 +13,8 @@ import GridViewIcon from '@mui/icons-material/GridView';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 export function LeftSideBar() {
-  const stations = useSelector(storeState => storeState.stationModule.stations) || [];
+  const allStations = useSelector(storeState => storeState.stationModule.stations) || []
+
   const { queue = [], isPlaying = false, contextId = null, contextType = null } =
     useSelector(s => s.playerModule || {});
 
@@ -27,7 +29,7 @@ export function LeftSideBar() {
 
   const handleCreateStation = async () => {
     try {
-      const playlistNumbers = stations
+      const playlistNumbers = allStations
         .map(s => s.name.match(/^My Playlist #(\d+)$/))
         .filter(Boolean)
         .map(match => parseInt(match[1], 10));
@@ -39,7 +41,9 @@ export function LeftSideBar() {
         imgUrl: '/img/unnamed-song.png',
         songs: [],
         createdBy: { fullname: 'You' }
-      };
+      }
+
+      console.log('newStation',newStation)
 
       const savedStation = await addStation(newStation);
       navigate(`/station/${savedStation._id}`);
@@ -54,19 +58,22 @@ export function LeftSideBar() {
   }
 
   const stationsToDisplay = useMemo(() => {
-    let stationsToShow = [...stations];
+    let stationsToShow = allStations.filter(station =>
+      station._id === LIKED_ID || station.createdBy?.fullname === 'You'
+    )
+
     if (sortBy === 'albums' || sortBy === 'artists' || sortBy === 'station') {
-      stationsToShow = stationsToShow.filter(station => station.type === sortBy);
+      stationsToShow = stationsToShow.filter(station => station.type === sortBy)
     }
     if (filterBy.txt) {
-      const regex = new RegExp(filterBy.txt, 'i');
-      stationsToShow = stationsToShow.filter(station => regex.test(station.name));
+      const regex = new RegExp(filterBy.txt, 'i')
+      stationsToShow = stationsToShow.filter(station => regex.test(station.name))
     }
     if (sortBy !== 'recent') {
-      stationsToShow.sort((a, b) => a.name.localeCompare(b.name));
+      stationsToShow.sort((a, b) => a.name.localeCompare(b.name))
     }
-    return stationsToShow;
-  }, [stations, filterBy, sortBy]);
+    return stationsToShow
+  }, [allStations, filterBy, sortBy])
 
   function searchBar() {
     const inputRef = useRef(null);
@@ -210,10 +217,10 @@ export function LeftSideBar() {
                   {/* <p className="station-type">Playlist•{`${station.songs.length} songs`}</p> */}
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </aside>
     </section>
-  );
+  )
 }

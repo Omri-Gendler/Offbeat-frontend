@@ -7,7 +7,8 @@ import { SongPicker } from '../cmps/SongPicker'
 import { SongsList } from '../cmps/SongsList.jsx'
 import { StationActions } from '../cmps/StationActions.jsx'
 import { EditStationModal } from '../cmps/EditStationModal.jsx'
-import { loadStation, updateStation } from '../store/actions/station.actions'
+import { addStation, loadStation, updateStation } from '../store/actions/station.actions'
+import { addStationToLibrary } from '../store/actions/station.actions'
 
 export function StationDetails() {
   const { stationId } = useParams()
@@ -127,7 +128,7 @@ export function StationDetails() {
               stationId={station._id}
               existingIds={existingIds}
               onClose={() => setIsPickerOpen(false)}
-              // optional: initial={suggestedTracksArray}
+            // optional: initial={suggestedTracksArray}
             />
           )}
         </div>

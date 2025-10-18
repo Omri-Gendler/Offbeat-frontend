@@ -398,6 +398,11 @@ export function MusicPlayer({ station }) {
     else await likeSong(currentSong)
   }
 
+  const onAddToLibrary = () => {
+    if (!station) return
+    addStationToLibrary(station)
+  }
+
   const canControl = !!currentSong
   const canGoPrev = canControl && index > 0         // Spotify: prev disabled at start (no wrap)
   const canGoNext = canControl && index < queue.length - 1
@@ -425,7 +430,7 @@ export function MusicPlayer({ station }) {
           className="tertiary-btn"
           aria-label={isLiked ? 'In Your Library' : 'Add to Your Library'}
           aria-pressed={isLiked}
-          onClick={handleAddClick}
+          onClick={onAddToLibrary}
           disabled={!currentSong}
         >
           {isLiked ? <IconCheckCircle24 className="icon" /> : <IconAddCircle24 className="icon" />}

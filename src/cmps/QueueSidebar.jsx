@@ -27,7 +27,7 @@ export function QueueSidebar({ stations, onClose }) {
                         <li key={station._id} className="queue-item">
                             <img src={station.imgUrl || '/img/unnamed-song.png'} alt={station.name} />
                             <div className="item-details">
-                                <p className="item-name">{station.name}</p>
+                                <p className="item-name">{station.songs.title}</p>
                                 <p className="item-creator">{station.createdBy?.fullname}</p>
                             </div>
                         </li>
