@@ -10,7 +10,7 @@
     /* height: 64px; */
 
     & nav {
-        display: grid;
+        display: flex;
         grid-template-columns: 1fr 2fr 1fr;
         width: 100%;
         align-items: center;
