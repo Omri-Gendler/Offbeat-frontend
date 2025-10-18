@@ -11,7 +11,23 @@
   --content-spacing: clamp(16px, 16px + (var(--main-view-grid-width) - 600px) / 424 * 8, 24px);
   width: 100%;
 
+}
 
+.station-details::-webkit-scrollbar {
+  width: 8px; 
+}
+
+.station-details::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.station-details::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3); 
+  border-radius: 20px; 
+}
+
+.station-details::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 .station-header {
@@ -409,8 +425,8 @@
 }
 
 
-.songs-list{
-  
+.songs-list {
+
   margin: 0;
   padding-bottom: 16px;
 
@@ -554,11 +570,16 @@
   font-size: 16px;
 }
 
-.play-btn { display: none; }                     /* default: hidden */
+.play-btn {
+  display: none;
+}
+
+/* default: hidden */
 .row:hover .play-btn,
 .row:focus-within .play-btn,
 .play-btn:focus-visible,
-.row.is-playing .play-btn {                      /* only visible on hover/focus or when playing */
+.row.is-playing .play-btn {
+  /* only visible on hover/focus or when playing */
   display: flex;
 }
 
@@ -760,14 +781,18 @@
 .row:focus-within .play-btn,
 .play-btn:focus-visible {
   display: flex;
-  opacity: 1; visibility: visible; pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: scale(1);
 }
 
 /* Keep the button always visible ONLY when actually playing */
 .row.is-playing .play-btn {
   display: flex;
-  opacity: 1; visibility: visible; pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: scale(1);
 }
 
@@ -782,10 +807,12 @@
 }
 
 .title--playing {
-  color: var(--playing-green, #1db954); /* Spotify green; override via CSS var if you want */
-  font-weight: 600;                     /* optional emphasis */
+  color: var(--playing-green, #1db954);
+  /* Spotify green; override via CSS var if you want */
+  font-weight: 600;
+  /* optional emphasis */
 }
 
-.songs-list button{
+.songs-list button {
   background-color: transparent;
 }

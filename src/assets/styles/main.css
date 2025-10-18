@@ -64,21 +64,21 @@
             overflow-y: auto;
 
             /* Scrollbar styling for sidebar */
-            &::-webkit-scrollbar {
+            ::-webkit-scrollbar {
                 width: 8px;
             }
 
-            &::-webkit-scrollbar-track {
+            ::-webkit-scrollbar-track {
                 background: transparent;
             }
 
-            &::-webkit-scrollbar-thumb {
-                background-color: #535353;
+            ::-webkit-scrollbar-thumb {
+                background-color: rgba(255, 255, 255, 0.3);
                 border-radius: 20px;
             }
 
-            &::-webkit-scrollbar-thumb:hover {
-                background-color: #6a6a6a;
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: rgba(255, 255, 255, 0.5);
             }
         }
 
@@ -87,26 +87,27 @@
             grid-row: 2;
             border-radius: 9px;
             overflow-y: auto;
-            
+
 
             /* Scrollbar styling for main content */
-            &::-webkit-scrollbar {
+            ::-webkit-scrollbar {
                 width: 1px;
             }
 
-            &::-webkit-scrollbar-track {
+            ::-webkit-scrollbar-track {
                 background: transparent;
             }
 
-            &::-webkit-scrollbar-thumb {
+            ::-webkit-scrollbar-thumb {
                 background-color: #535353;
                 border-radius: 20px;
             }
 
-            &::-webkit-scrollbar-thumb:hover {
+            ::-webkit-scrollbar-thumb:hover {
                 background-color: #6a6a6a;
             }
         }
+
 
         .music-player {
             grid-column: 1 / -1;
@@ -204,20 +205,20 @@
 
 
             /* Scrollbar styling for sidebar */
-            &::-webkit-scrollbar {
+            ::-webkit-scrollbar {
                 width: 8px;
             }
 
-            &::-webkit-scrollbar-track {
+            ::-webkit-scrollbar-track {
                 background: transparent;
             }
 
-            &::-webkit-scrollbar-thumb {
+            ::-webkit-scrollbar-thumb {
                 background-color: #535353;
                 border-radius: 20px;
             }
-            
-            &::-webkit-scrollbar-thumb:hover {
+
+            ::-webkit-scrollbar-thumb:hover {
                 background-color: #6a6a6a;
             }
         }
@@ -230,6 +231,7 @@
             position: relative;
             flex: 1;
             min-height: 0;
+
             /* width: 100%; */
             /* Scrollbar styling for main content */
             &::-webkit-scrollbar {

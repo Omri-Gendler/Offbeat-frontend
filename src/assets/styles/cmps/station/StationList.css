@@ -4,25 +4,20 @@
 }
 
 .station-list::-webkit-scrollbar {
-    height: 8px;
     width: 8px;
 }
 
 .station-list::-webkit-scrollbar-track {
     background: transparent;
-    border-radius: 10px;
 }
 
 .station-list::-webkit-scrollbar-thumb {
-    background-color: #535353;
-
-    border-radius: 10px;
-    border: 2px solid transparent;
-    background-clip: content-box;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
 }
 
 .station-list::-webkit-scrollbar-thumb:hover {
-    background-color: #6a6a6a;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .station-list-title {
@@ -66,6 +61,10 @@
 
 }
 
+.station-list::-webkit-scrollbar {
+    height: 8px;
+}
+
 .station-list .station-list-wrapper {
     flex-shrink: 0;
     width: 180px;
@@ -81,6 +80,7 @@
 
 .station-list-list {
     display: flex;
+    
 }
 
 .recent-item-list {
@@ -284,21 +284,21 @@ button {
 
 
 .station-list-wrapper[data-active="true"] .play-button {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 
 .recent-item-list[data-active="true"] .play-button {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
-  pointer-events: auto;
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+    pointer-events: auto;
 }
 
 
 .station-list-wrapper[data-active="true"] .play-button[data-playing="true"],
 .recent-item-list[data-active="true"] .play-button[data-playing="true"] {
-  background-color: #1ed760; 
+    background-color: #1ed760;
 
 }

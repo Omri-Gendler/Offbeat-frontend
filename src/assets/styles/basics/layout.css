@@ -31,21 +31,21 @@
         z-index: var(--left-sidebar-grid-area-z-index);
 
         /* Scrollbar styling for sidebar */
-        &::-webkit-scrollbar {
+        ::-webkit-scrollbar {
             width: 8px;
         }
 
-        &::-webkit-scrollbar-track {
+        ::-webkit-scrollbar-track {
             background: transparent;
         }
 
-        &::-webkit-scrollbar-thumb {
-            background-color: #535353;
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
             border-radius: 20px;
         }
 
-        &::-webkit-scrollbar-thumb:hover {
-            background-color: #6a6a6a;
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.5);
         }
     }
 
@@ -63,21 +63,20 @@
         padding-inline-end: px;
 
         &::-webkit-scrollbar {
-            width: 1px;
+            width: 8px;
         }
 
         &::-webkit-scrollbar-track {
-            background: #2b2b2b;
-            border-radius: 5px;
+            background: transparent;
         }
 
         &::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 5px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
         }
 
         &::-webkit-scrollbar-thumb:hover {
-            background: #555;
+            background-color: rgba(255, 255, 255, 0.5);
         }
 
     }

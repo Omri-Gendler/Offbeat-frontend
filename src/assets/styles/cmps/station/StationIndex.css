@@ -11,6 +11,23 @@
         /* padding-block: .3em; */
     }
 
+    .station-index::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .station-index::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .station-index::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 20px;
+    }
+
+    .station-index::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+
     & h2 {
         /* margin: 0; */
         font-size: 1.3em;
