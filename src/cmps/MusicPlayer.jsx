@@ -537,7 +537,7 @@ export function MusicPlayer({ station }) {
       {isQueueOpen && (
         <QueueSidebar
           id="queue-sidebar"
-          stations={stations}
+          stations={queue}
           onClose={() => setIsQueueOpen(false)}
         />
       )}
