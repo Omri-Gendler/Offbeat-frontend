@@ -385,6 +385,16 @@ export function MusicPlayer({ station }) {
     }
   }
 
+  const addSongToLikedSongs = useCallback(async () => {
+    if (!currentSong) return
+    await likeSong(currentSong)
+  }, [currentSong])
+
+  const removeSongFromLikedSongs = useCallback(async () => {
+    if (!currentSong) return
+    await unlikeSong(currentSong.id)
+  }, [currentSong])
+
   const fmt = (s) => {
     if (!Number.isFinite(s)) return '0:00'
     const m = Math.floor(s / 60)
@@ -400,7 +410,9 @@ export function MusicPlayer({ station }) {
 
   const onAddToLibrary = () => {
     if (!station) return
-    addStationToLibrary(station)
+    isLiked
+      ? removeSongFromLikedSongs()
+      : addSongToLikedSongs()
   }
 
   const canControl = !!currentSong
