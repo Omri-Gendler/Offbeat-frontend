@@ -452,7 +452,7 @@ export function MusicPlayer({ station }) {
       <div className="player-center">
         <div className="player-controls" role="group" aria-label="Playback">
           <button type="button" className="control-btn" onClick={onPrev} disabled={!canGoPrev}>
-            <SkipPreviousIcon style={{ fontSize: 25, marginLeft: 2 }} />
+            <SkipPreviousIcon style={{ fontSize: '1.563em', }} />
           </button>
           <button
             type="button"
@@ -463,13 +463,13 @@ export function MusicPlayer({ station }) {
             aria-pressed={isPlaying}
           >
             {isPlaying ? (
-              <PauseIcon style={{ fontSize: 25, marginLeft: 2 }} />
+              <PauseIcon style={{ fontSize: '1.563em' }} />
             ) : (
-              <PlayArrowIcon style={{ fontSize: 25, marginLeft: 2 }} />
+              <PlayArrowIcon style={{ fontSize: '1.563em' }} />
             )}
           </button>
           <button type="button" className="control-btn" onClick={onNext} disabled={!canGoNext}>
-            <SkipNextIcon style={{ fontSize: 25, marginLeft: 2 }} />
+            <SkipNextIcon style={{ fontSize: '1.563em' }} />
           </button>
         </div>
 

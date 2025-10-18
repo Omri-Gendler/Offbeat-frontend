@@ -63,8 +63,7 @@
 
     .player-controls {
         display: flex;
-        gap: 16px;
-        align-items: center;
+        gap: 1em;
     }
 
     .control-btn {
