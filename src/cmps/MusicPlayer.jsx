@@ -271,32 +271,32 @@ export function MusicPlayer({ station }) {
   const [isQueueOpen, setIsQueueOpen] = useState(false)
 
   // Reflect store -> <audio>, resilient to autoplay errors
-// 1) On track change: pause → load → (optionally) play
-useEffect(() => {
-  const el = audioRef.current
-  if (!el || !currentSong) return
+  // 1) On track change: pause → load → (optionally) play
+  useEffect(() => {
+    const el = audioRef.current
+    if (!el || !currentSong) return
 
-  el.pause()
-  el.currentTime = 0
-  el.load()                 // <-- forces the new src to be fetched/decoded
-    console.log(currentSong)
-  if (isPlaying) {
-    el.play().catch(() => setPlay(false))
-  }
-
-  setDuration(0)
-  setCurrentTime(0)
-}, [currentSong?.id])        // <-- only when the song changes
-
-useEffect(() => {
-  const el = audioRef.current
-  if (!el) return
-  if (isPlaying && currentSong) {
-    el.play().catch(() => setPlay(false))
-  } else {
     el.pause()
-  }
-}, [isPlaying, currentSong?.id])
+    el.currentTime = 0
+    el.load()                 // <-- forces the new src to be fetched/decoded
+    console.log(currentSong)
+    if (isPlaying) {
+      el.play().catch(() => setPlay(false))
+    }
+
+    setDuration(0)
+    setCurrentTime(0)
+  }, [currentSong?.id])        // <-- only when the song changes
+
+  useEffect(() => {
+    const el = audioRef.current
+    if (!el) return
+    if (isPlaying && currentSong) {
+      el.play().catch(() => setPlay(false))
+    } else {
+      el.pause()
+    }
+  }, [isPlaying, currentSong?.id])
 
   // Keep CSS progress bar in sync
   useEffect(() => {
@@ -478,7 +478,10 @@ useEffect(() => {
 
       <div className="player-right">
         <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Picture in Picture">
-          <SlideshowIcon />
+          {/* <SlideshowIcon /> */}
+        </button>
+        <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Cast">
+          {/* <TapAndPlayIcon /> */}
         </button>
         <button
           type="button"
@@ -490,18 +493,16 @@ useEffect(() => {
         >
           <QueueMusicIcon />
         </button>
-        <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Cast">
-          <TapAndPlayIcon />
-        </button>
+
         <VolumeControl audioRef={audioRef} />
         <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Fullscreen">
-          <FullscreenIcon />
+          {/* <FullscreenIcon /> */}
         </button>
       </div>
 
       <audio
         ref={audioRef}
-        src={currentSong?.url }
+        src={currentSong?.url}
         preload="metadata"
         onLoadedMetadata={() => {
           const d = audioRef.current?.duration || 0

@@ -205,7 +205,8 @@ export function LeftSideBar() {
                     )}
                   </button>
 
-                  <p>{maxLength(station.name, 20)}</p>
+                  <p>{` ${maxLength(station.name, 20)}`}</p>
+                  <p className="station-type-p">{`Playlist•${station.songs.length} songs`}</p>
                   {/* <p className="station-type">Playlist•{`${station.songs.length} songs`}</p> */}
                 </div>
               </div>
