@@ -52,6 +52,11 @@ export function StationDetails() {
     [songs]
   )
 
+  const handleSaveDetails = async (updatedDetails) => {
+    if (!station) return
+    await dispatch(updateStation({ ...station, ...updatedDetails }))
+  }
+
   // Early return AFTER hooks
   if (!station) {
     return (
