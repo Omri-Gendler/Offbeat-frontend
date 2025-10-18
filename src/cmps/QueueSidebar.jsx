@@ -46,7 +46,6 @@ export function QueueSidebar({ stations, onClose }) {
                                 <img src={song.imgUrl || '/img/unnamed-song.png'} alt={song.title} />
                                 <div className="item-details">
                                     <p className="item-name">{song.title || 'Unknown Title'}</p>
-                                    <p className="item-creator">{song.artists || 'Unknown Artist'}</p>
                                 </div>
                             </li>
                         )
