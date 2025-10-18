@@ -43,7 +43,7 @@ export function StationActions({ station }) {
   async function handleDelete(ev) {
     ev.stopPropagation()
     try {
-      await dispatch(removeStation(station._id))
+      removeStation(station._id)
       navigate('/stations')
     } catch (err) {
       console.error('Failed to remove station:', err)
