@@ -140,7 +140,7 @@
         }
     }
 
-    button:not(.play-button){
+    button:not(.play-button) {
         background: none;
         border: none;
         color: var(--clr4);
@@ -323,8 +323,8 @@
 
 .library-item .play-button {
     position: absolute;
-    bottom: 3em;
-    right: 2.1em;
+    bottom: 4em;
+    right: 0.4em;
     width: 3em;
     height: 3em;
     background-color: #1ed760;
@@ -340,11 +340,11 @@
     pointer-events: none;
 }
 
-/* .library-item:hover .play-button {
+.library-item:hover .play-button {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
-} */
+}
 
 .library-item .play-button svg {
     width: 22px;
@@ -352,7 +352,7 @@
 }
 
 
-.library-item .play-button { opacity: 0; transform: translateY(1em); pointer-events: none; transition: opacity .2s, transform .2s; }
+/* .library-item .play-button { opacity: 0; transform: translateY(1em); pointer-events: none; transition: opacity .2s, transform .2s; }
 .library-item[data-active="true"] .play-button[data-playing="true"],
 .library-item:hover .play-button:not([data-playing="false"]),
 .library-item:focus-within .play-button:not([data-playing="false"]) {
@@ -366,5 +366,4 @@
   transform: translateY(1em);
   pointer-events: none;
   transition: opacity .2s, transform .2s;
-}
-
+} */
