@@ -134,7 +134,7 @@
         }
     }
 
-    button {
+    button:not(.play-button){
         background: none;
         border: none;
         color: var(--clr4);
@@ -318,7 +318,7 @@
 .library-item .play-button {
     position: absolute;
     bottom: 2.5em;
-    right: 15px;
+    right: 2em;
     width: 45px;
     height: 45px;
     background-color: #1ed760;
@@ -329,18 +329,36 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(1em);
     transition: opacity 0.2s ease, transform 0.2s ease;
     pointer-events: none;
 }
 
-.library-item:hover .play-button {
+/* .library-item:hover .play-button {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
-}
+} */
 
 .library-item .play-button svg {
     width: 22px;
     height: 22px;
 }
+
+
+.library-item .play-button { opacity: 0; transform: translateY(1em); pointer-events: none; transition: opacity .2s, transform .2s; }
+.library-item[data-active="true"] .play-button[data-playing="true"],
+.library-item:hover .play-button:not([data-playing="false"]),
+.library-item:focus-within .play-button:not([data-playing="false"]) {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  transition: opacity .2s, transform .2s; 
+
+}.library-item .play-button[data-playing="false"] {
+  opacity: 0;
+  transform: translateY(1em);
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+

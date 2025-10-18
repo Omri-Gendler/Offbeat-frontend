@@ -16,11 +16,11 @@ export const SET_QUEUE     = 'PLAYER/SET_QUEUE'   // ← fix string
 
 
 const initialState = {
-  contextId: null,        // any id: stationId/albumId/mixId/custom
-  contextType: null,      // 'station' | 'album' | 'mix' | 'playlist' | 'ad-hoc' | ...
+  contextId: null,          // agnostic: playlist/album/songlist/etc.
+  contextType: null,        // 'station' | 'album' | 'songlist' | ...
   queue: [],
   index: 0,
-  nowPlayingId: null,
+  nowPlayingId: null,       // optional; we’ll still derive from queue+index
   isPlaying: false,
   progressSec: 0,
   shuffle: false,
@@ -31,10 +31,11 @@ const initialState = {
 
 export function playerReducer(state = initialState, action = {}) {
   switch (action.type) {
+
     case PLAY_CONTEXT: {
       const {
         contextId,
-        contextType,
+        contextType = null,
         tracks = [],
         trackId = null,
         index: wantedIndex = 0,
@@ -49,9 +50,7 @@ export function playerReducer(state = initialState, action = {}) {
       const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
       const idx = len === 0
         ? -1
-        : (byId !== -1
-            ? byId
-            : clamp(Number.isInteger(wantedIndex) ? wantedIndex : 0, 0, len - 1))
+        : (byId !== -1 ? byId : clamp(Number.isInteger(wantedIndex) ? wantedIndex : 0, 0, len - 1))
 
       const nowPlayingId = (idx >= 0 && len) ? (tracks[idx]?.id ?? null) : null
 
@@ -64,10 +63,11 @@ export function playerReducer(state = initialState, action = {}) {
         nowPlayingId,
         isPlaying: !!autoplay && nowPlayingId != null,
         progressSec: 0,
+        upNext: [], // clear manual queue when switching context (Spotify-like)
       }
     }
 
-    // Generic queue setter (no autoplay)
+    // Used by setQueueIfChanged()
     case SET_QUEUE: {
       const { queue = [], index = 0, contextId = null, contextType = null } = action.payload || {}
       const clamp = (n, min, max) => Math.min(Math.max(n, min), max)
@@ -79,7 +79,7 @@ export function playerReducer(state = initialState, action = {}) {
         queue,
         index: idx,
         nowPlayingId: queue[idx]?.id ?? null,
-        // keep current play/pause; reset progress if index changed
+        // keep current play state; reset progress if index moved
         isPlaying: state.isPlaying,
         progressSec: idx !== state.index ? 0 : state.progressSec,
       }
@@ -108,7 +108,7 @@ export function playerReducer(state = initialState, action = {}) {
     case NEXT: {
       const len = state.queue.length
       if (!len) return state
-      const idx = Math.min(state.index + 1, len - 1) // no wrap (match your logic)
+      const idx = Math.min(state.index + 1, len - 1) // no wrap
       return { ...state, index: idx, nowPlayingId: state.queue[idx]?.id ?? null, progressSec: 0 }
     }
 
@@ -130,6 +130,8 @@ export function playerReducer(state = initialState, action = {}) {
       return initialState
 
     default:
-      return state
+      return{ ...state,
+        progressSec: 0
+      }
   }
 }

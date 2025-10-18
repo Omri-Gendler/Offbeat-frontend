@@ -2,27 +2,27 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { PlayPauseButton } from '../cmps/PlayPauseButton.jsx'
 import { IconMoreHorizontal24, IconAddCircle24, IconCheckCircle24 } from '../cmps/Icon.jsx'
 import { useNavigate } from 'react-router'
-import { useEffect, useState , } from 'react'
-import { useDispatch,useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { removeStation } from '../store/actions/station.actions.js'
 import { libraryService } from '../services/library/library.service.local.js'
-import { addLikedSong } from '../services/station/station.service.local';
+import { playContext, togglePlay, setPlay } from '../store/actions/player.actions' // ← import player actions
 
 export function StationActions({ station }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  // Player slice (to detect current context & queue)
+  const { queue = [], isPlaying = false, contextId = null, contextType = null } = useSelector(
+    s => s.playerModule || {},
+    shallowEqual
+  )
 
-  // local UI state, derived from storage
+  // Local “added to library” UI state
   const [added, setAdded] = useState(false)
-
-  // initialize + keep in sync when station changes
   useEffect(() => {
-    if (station?._id) {
-      setAdded(libraryService.has(station._id))
-    } else {
-      setAdded(false)
-    }
+    if (station?._id) setAdded(libraryService.has(station._id))
+    else setAdded(false)
   }, [station?._id])
 
   async function handleDelete(ev) {
@@ -37,29 +37,59 @@ export function StationActions({ station }) {
 
   function handleClickAdd() {
     if (!station?._id) return
-    // toggle in storage and reflect the new state in UI
     const { added: nowAdded } = libraryService.toggle(station._id)
     setAdded(nowAdded)
   }
-function DebugLibraryLogger() {
-  useEffect(() => {
-    (async () => {
-      console.log('Library IDs:', ids);
-      console.log('Library Stations:', libraryStations);
-    })();
-  }, []);
 
-  return null;
-}
+  // Helper: compare two track arrays by id
+  const idsEqual = (a = [], b = []) => {
+    if (a.length !== b.length) return false
+    for (let i = 0; i < a.length; i++) {
+      const aid = a[i]?.id ?? a[i]
+      const bid = b[i]?.id ?? b[i]
+      if (aid !== bid) return false
+    }
+    return true
+  }
 
+  const stationSongs = Array.isArray(station?.songs) ? station.songs : []
+  const isThisStationActive =
+    !!station?._id &&
+    contextId === station._id &&
+    contextType === 'station' &&
+    idsEqual(queue, stationSongs)
+
+    const isPressed = isThisStationActive && isPlaying
+  // Play/Pause like Spotify:
+  // - If this station is the active context → toggle play.
+  // - Else → replace queue with this station, start at index 0, autoplay.
+  const handlePlay = () => {
+    if (!station?._id || !stationSongs.length) return
+    if (isThisStationActive) {
+      if (!isPlaying) togglePlay() // resume if currently paused
+    } else {
+      playContext({
+        contextId: station._id,
+        contextType: 'station',
+        tracks: stationSongs,
+        index: 0,
+        autoplay: true,
+      })
+    }
+  }
+
+  const handlePause = () => {
+    if (isPlaying) setPlay(false)
+  }
 
   return (
     <div className="station-actions-space content-spacing">
       <div className="station-actions flex">
         <PlayPauseButton
-          defaultPressed={false}
-          onPlay={() => console.log('started')}
-          onPause={() => console.log('stopped')}
+          isPlaying={isThisStationActive && isPlaying}  // ← controlled by Redux
+          onPlay={handlePlay}
+          onPause={handlePause}
+          disabled={!stationSongs.length}
         />
 
         <button
@@ -92,4 +122,3 @@ function DebugLibraryLogger() {
     </div>
   )
 }
-
