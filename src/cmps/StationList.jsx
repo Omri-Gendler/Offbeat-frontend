@@ -1,11 +1,10 @@
-import { userService } from '../services/user'
-import { StationPreview } from './StationPreview'
 import { FastAverageColor } from 'fast-average-color'
 import { useNavigate } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
+import { useSelector, shallowEqual } from 'react-redux'
 import { maxLength } from '../services/util.service'
 import { ContextMenu } from './ContextMenu'
-import { useSelector, shallowEqual } from 'react-redux'
+import { StationPreview } from './StationPreview'
 import { playContext, togglePlay, setPlay } from '../store/actions/player.actions'
 
 export function StationList({ stations, onRemoveStation, onUpdateStation }) {
@@ -13,7 +12,6 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
   const navigate = useNavigate()
   const recentsScrollRef = useRef(null)
 
-  // 🔎 Read current player state (to decide per-station play behavior)
   const { queue = [], isPlaying = false, contextId = null, contextType = null } = useSelector(
     s => s.playerModule || {},
     shallowEqual
@@ -62,7 +60,6 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     return () => fac.destroy()
   }, [stations])
 
-  // helper: compare queues by ids
   const idsEqual = (a = [], b = []) => {
     if (a.length !== b.length) return false
     for (let i = 0; i < a.length; i++) {
@@ -73,29 +70,24 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     return true
   }
 
-// render 1 station card (reused below)
-const renderStationItem = (station) => {
-  const stationSongs = Array.isArray(station?.songs) ? station.songs : []
+  const isStationContext = (station) => {
+    const stationSongs = Array.isArray(station?.songs) ? station.songs : []
+    return !!station?._id &&
+      contextId === station._id &&
+      contextType === 'station' &&
+      idsEqual(queue, stationSongs)
+  }
 
-  const isThisStationContext =
-    !!station?._id &&
-    contextId === station._id &&
-    contextType === 'station' &&
-    idsEqual(queue, stationSongs)
-
-  // active only while actually playing
-  const isActive = isThisStationContext && isPlaying
-
-  const onPlayClick = (e) => {
+  const makeHandlePlayClick = (station) => (e) => {
     e.stopPropagation()
+    e.preventDefault()
+    const stationSongs = Array.isArray(station?.songs) ? station.songs : []
     if (!station?._id || !stationSongs.length) return
-
-    if (isThisStationContext) {
-      // Same context → toggle based on current state
-      if (!isPlaying) togglePlay()   // resume
-      else setPlay(false)            // pause
+    const sameContext = isStationContext(station)
+    if (sameContext) {
+      if (!isPlaying) togglePlay()
+      else setPlay(false)
     } else {
-      // New context → load from first track and autoplay
       playContext({
         contextId: station._id,
         contextType: 'station',
@@ -106,38 +98,42 @@ const renderStationItem = (station) => {
     }
   }
 
-  return (
-    <li
-      className="station-list-wrapper"
-      data-active={isActive ? 'true' : 'false'}
-      onClick={() => navigate(`/station/${station._id}`)}
-    >
-      <StationPreview station={station} />
+  const renderStationItem = (station) => {
+    const sameContext = isStationContext(station)
+    const active = sameContext && isPlaying
+    const onPlayClick = makeHandlePlayClick(station)
 
-      <button
-        type="button"
-        className="play-button"
-        onClick={onPlayClick}
-        aria-pressed={isActive}
-        aria-label={isActive ? 'Pause' : 'Play'}
-        data-playing={isActive ? 'true' : 'false'}
+    return (
+      <li
+        key={station._id}
+        className="station-list-wrapper"
+        data-active={active ? 'true' : 'false'}
+        onContextMenu={(e) => handleContextMenu(e, station._id)}
+        onClick={() => navigate(`/station/${station._id}`)}
       >
-        {isActive ? (
-          // pause icon
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="6" y="5" width="4" height="14" />
-            <rect x="14" y="5" width="4" height="14" />
-          </svg>
-        ) : (
-          // play icon
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 5V19L19 12L8 5Z" />
-          </svg>
-        )}
-      </button>
-    </li>
-  )
-}
+        <StationPreview station={station} />
+        <button
+          type="button"
+          className="play-button"
+          onClick={onPlayClick}
+          aria-pressed={active}
+          aria-label={active ? 'Pause' : 'Play'}
+          data-playing={active ? 'true' : 'false'}
+        >
+          {active ? (
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="6" y="5" width="4" height="14" />
+              <rect x="14" y="5" width="4" height="14" />
+            </svg>
+          ) : (
+            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5V19L19 12L8 5Z" />
+            </svg>
+          )}
+        </button>
+      </li>
+    )
+  }
 
   return (
     <section className="station-list-container" style={{ background: dynamicBgColor }}>
@@ -148,55 +144,51 @@ const renderStationItem = (station) => {
         </div>
 
         <div className='station-list-recents'>
-          {stations.slice(0, 6).map(station => (
-            <button
-              onClick={() => navigate(`/station/${station._id}`)}
-              key={station._id}
-              className="recent-item-list"
-            >
-              <img src={station.imgUrl} alt={station.name} />
-              <span>{maxLength(station.name, 15)}</span>
+          {stations.slice(0, 6).map(st => {
+            const sameContext = isStationContext(st)
+            const active = sameContext && isPlaying
+            const onPlayClick = makeHandlePlayClick(st)
 
-              {/* recent-row play button mirrors same behavior */}
-              <button
-                type="button"
-                className="play-button"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  const stationSongs = Array.isArray(station?.songs) ? station.songs : []
-                  const isActive =
-                    contextId === station._id &&
-                    contextType === 'station' &&
-                    idsEqual(queue, stationSongs)
-                  if (!stationSongs.length) return
-                  if (isActive) {
-                    if (!isPlaying) togglePlay()
-                    else setPlay(false)
-                  } else {
-                    playContext({
-                      contextId: station._id,
-                      contextType: 'station',
-                      tracks: stationSongs,
-                      index: 0,
-                      autoplay: true,
-                    })
-                  }
-                }}
-                aria-label="Play"
+            return (
+              <div
+                key={st._id}
+                className="recent-item-list"
+                data-active={active ? 'true' : 'false'}
+                onClick={() => navigate(`/station/${st._id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && navigate(`/station/${st._id}`)}
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M8 5V19L19 12L8 5Z" fill="black" />
-                </svg>
-              </button>
-            </button>
-          ))}
+                <img src={st.imgUrl} alt={st.name} />
+                <span>{maxLength(st.name, 15)}</span>
+                <button
+                  type="button"
+                  className="play-button"
+                  onClick={onPlayClick}
+                  aria-pressed={active}
+                  aria-label={active ? 'Pause' : 'Play'}
+                  data-playing={active ? 'true' : 'false'}
+                >
+                  {active ? (
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="6" y="5" width="4" height="14" />
+                      <rect x="14" y="5" width="4" height="14" />
+                    </svg>
+                  ) : (
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M8 5V19L19 12L8 5Z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            )
+          })}
         </div>
 
         <h2 className='station-list-title'>All Stations</h2>
       </div>
 
       <div className="station-list-content">
-        {/* You had multiple repeated lists; reusing a single map here */}
         <ul className="station-list">
           {stations.map(renderStationItem)}
         </ul>
@@ -212,3 +204,24 @@ const renderStationItem = (station) => {
     </section>
   )
 }
+
+
+                {/* <div className='station-list-recents'>
+                    {stations.slice(0, 6).map(station => (
+                        <button
+                            onClick={() => navigate(`/station/${station._id}`)}
+                            key={station._id}
+                            className="recent-item-list"
+                        >
+                            <img src={station.imgUrl} alt={station.name} />
+                            <span>{maxLength(station.name, 15)}</span>
+
+                            <div className="play-button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5V19L19 12L8 5Z" fill="black" />
+                                </svg>
+                            </div>
+
+                        </button>
+                    ))}
+                </div> */}

@@ -317,10 +317,10 @@
 
 .library-item .play-button {
     position: absolute;
-    bottom: 2.5em;
-    right: 2em;
-    width: 45px;
-    height: 45px;
+    bottom: 3em;
+    right: 2.1em;
+    width: 3em;
+    height: 3em;
     background-color: #1ed760;
     border-radius: 50%;
     display: flex;
