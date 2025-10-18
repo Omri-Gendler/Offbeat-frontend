@@ -46,7 +46,8 @@
         margin-block-end: var(--encore-spacing-tighter-2, 8px);
         flex-shrink: 0;
         color: white;
-        font-size: 16px;
+        font-size: 1em;
+        font-weight: 500;
     }
 }
 
@@ -96,7 +97,7 @@
     padding: 0;
     color: white;
     font-weight: 700;
-    /* font-size: 16px; */
+    /* font-size: 0.75em; */
     text-align: left;
     cursor: pointer;
     transition: background-color 0.2s ease;
@@ -106,7 +107,7 @@
     }
 
     span {
-        font-size: 14px;
+        font-size: 0.75em;
     }
 
     img {
@@ -155,7 +156,7 @@ button {
 
 .station-list li .station-preview {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 0.75em;
     margin: 0;
     border-radius: 7px;
 
