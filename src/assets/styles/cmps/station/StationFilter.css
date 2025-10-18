@@ -65,15 +65,13 @@
 
 .station-search-container { position: relative; }
 
-.station-search {
-  width: 80%;
-}
+
 
 .search-dropdown {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: min(520px, 100%);
+  width: min(472px, 100%);
   background-color: var(--background-base, #181818);
   border-radius: 6px;
   padding: 12px;

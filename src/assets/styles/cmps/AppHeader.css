@@ -110,22 +110,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 0.625em;
+   
 
     .station-search-container {
         background-color: var(--clr1);
 
-
-        height: 36px;
+        width: 474px;
+        position: relative;
         display: flex;
         align-items: center;
-        justify-content: center;
+       
 
 
         .station-search {
             display: flex;
             align-items: center;
-            justify-content: center;
+            margin-right: 0;
+            /* position: absolute; */
             position: relative;
 
            
@@ -134,30 +135,32 @@
 
             .search-svg {
                 
-                left: 12px;
-                top: 12px;
+                left: 0.7em;
+                top: 0.7em;
                 position: absolute;
-                
+                z-index: 1;
                 display: block;
                 fill: var(--clr5);
             }
 
             .browse {
-                position: relative;
+                position: absolute;
                 
-                height: 100%;
-                width: 100%;
-               
+                
+                transform: translate(50%);
+                right: 2.6em;
+                top: 0.6em;
+                
                 
 
             }
 
-            .browse .button {
+            .browse button {
                 border: none;
                 background-color: transparent;
-                position: absolute;
-                width: 40px;
-                height: 28px;
+                
+                /* width: 3em; */
+                height: 2.2em;
                 padding-left: 16px;
                 border-radius: 0;
                 border-left: 1px solid var(--clr5);
@@ -165,8 +168,10 @@
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                right: 12px;
-                top:12px;
+                
+               
+               
+                
 
                 &:hover {
                     .browse-svg {
@@ -176,8 +181,8 @@
             }
 
             .browse-svg {
-                height: 24px;
-                width: 24px;
+                height: 0.7em;
+                width: 0.7em;
                 display: block;
                 fill: var(--clr5);
             }
@@ -189,9 +194,10 @@
                 transition: background-color 0.2s, box-shadow 0.2s;
                 color: var(--clr4);
                 font-size: 1.2em;
-                min-width: 474px;
+                width: 474px;
                 outline: none;
-                
+                position: relative;
+                padding-inline-end: 2em;
                 padding-bottom: 0.6em;
                 padding-top: 0.6em;
                 border-radius: 500px;
