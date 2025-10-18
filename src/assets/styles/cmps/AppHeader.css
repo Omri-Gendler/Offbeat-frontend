@@ -1,11 +1,11 @@
 .app-header {
     display: flex;
-    min-height: 3.2rem;
-
+    
+    align-items: center;
     background-color: var(--clr1);
 
 
-    padding: 13.5px;
+    
     /* height: 64px; */
 
     & nav {
@@ -13,8 +13,12 @@
         grid-template-columns: 1fr 2fr 1fr;
         width: 100%;
         align-items: center;
-        justify-content: space-between;
 
+        justify-content: space-between;
+        padding-left: 1.3em;
+        padding-right: 1.3em;
+        padding-bottom: 0.7em;
+       
 
         font-size: .8em;
 
@@ -37,8 +41,7 @@
             }
 
             padding: 0;
-            /* height: 72px;
-            width: 72px; */
+            height: 2em;
         }
 
 
@@ -48,8 +51,8 @@
             display: flex;
 
             padding: 0;
-            height: 50px;
             width: 50px;
+            height: 50px;
             border-radius: 50%;
             border: none;
             cursor: pointer;
@@ -57,14 +60,15 @@
             justify-content: center;
             align-items: center;
             background-color: var(--clr1);
+                flex-shrink: 0;
 
             &:hover {
                 background-color: var(--clr1-light);
             }
 
             & svg {
-                height: 24px;
-                width: 24px;
+                height: 2em;
+                width: 2em;
                 fill: var(--clr4);
             }
 
@@ -75,8 +79,8 @@
     }
 
     .app-header-logo {
-        height: 32px;
-        width: fit-content;
+        height: 2em;
+        width: 2em;
         cursor: pointer;
 
 
@@ -131,22 +135,22 @@
             height: 3.25em;
 
             .search-svg {
-                height: 3em;
-                width: 3em;
-                left: 0.75em;
+                
+                left: 12px;
+                top: 12px;
                 position: absolute;
-                padding: 0 0.75em;
-
+                
                 display: block;
                 fill: var(--clr5);
             }
 
             .browse {
-                position: absolute;
-                width: 28px;
-                height: 41px;
-                right: 0.75em;
-                top: 0.75em;
+                position: relative;
+                
+                height: 100%;
+                width: 100%;
+               
+                
 
             }
 
@@ -164,6 +168,7 @@
                 justify-content: center;
                 cursor: pointer;
                 right: 12px;
+                top:12px;
 
                 &:hover {
                     .browse-svg {
@@ -185,10 +190,12 @@
                 background-color: var(--background-elevated-base);
                 transition: background-color 0.2s, box-shadow 0.2s;
                 color: var(--clr4);
-                font-size: 0.875em;
-                margin-left: 0.625em;
+                font-size: 1.2em;
+                min-width: 474px;
                 outline: none;
-                padding: 1.1875em;
+                
+                padding-bottom: 0.6em;
+                padding-top: 0.6em;
                 border-radius: 500px;
                 font-family: var(--encore-body-font-stack);
                 width: 100%;
@@ -197,7 +204,8 @@
                     color: var(--clr5);
                     opacity: 0.7;
                     font-family: var(--encore-body-font-stack);
-                    font-size: 0.875em;
+                    font-size: 1em;
+                   
                 }
 
                 &:hover,

@@ -5,7 +5,10 @@ export const ADD_STATION = 'ADD_STATION'
 export const UPDATE_STATION = 'UPDATE_STATION'
 export const ADD_STATION_MSG = 'ADD_STATION_MSG'
 export const TOGGLE_LIKE_STATION = 'TOGGLE_LIKE_STATION'
-export const ADD_SONG_TO_LIKED = 'ADD_SONG_TO_LIKED'
+export const LIKE_SONG = 'LIKE_SONG'
+export const UNLIKE_SONG = 'UNLIKE_SONG'
+
+const LIKED_ID = 'liked-songs-station'
 
 const initialState = {
     stations: [],
@@ -51,20 +54,29 @@ export function stationReducer(state = initialState, action) {
                 newState = { ...state, station: { ...state.station, msgs: [...state.station.msgs || [], action.msg] } }
                 break
             }
-        case ADD_SONG_TO_LIKED:
-            const likedStationIdx = state.stations.findIndex(station => station._id === 'station000')
-            if (likedStationIdx === -1) return state
-
-            const newStations = [...state.stations]
-            const oldLikedStation = newStations[likedStationIdx]
-
-            const updatedLikedStation = {
-                ...oldLikedStation,
-                songs: [...oldLikedStation.songs, action.song]
+        case LIKE_SONG: {
+      const stations = state.stations.map(st =>
+        st._id === LIKED_ID
+          ? {
+              ...st,
+              songs: st.songs.some(s => s.id === action.song.id)
+                ? st.songs
+                : [...st.songs, action.song]
             }
+          : st
+      )
+      return { ...state, stations }
+    }
 
-            newStations[likedStationIdx] = updatedLikedStation
-            return { ...state, stations: newStations }
+    case UNLIKE_SONG: {
+      const stations = state.stations.map(st =>
+        st._id === LIKED_ID
+          ? { ...st, songs: st.songs.filter(s => s.id !== action.songId) }
+          : st
+      )
+      return { ...state, stations }
+    }
+
     }
     return newState
 }
