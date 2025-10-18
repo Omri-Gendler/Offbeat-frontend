@@ -65,6 +65,10 @@
 
 .station-search-container { position: relative; }
 
+.station-search {
+  width: 80%;
+}
+
 .search-dropdown {
   position: absolute;
   top: calc(100% + 8px);

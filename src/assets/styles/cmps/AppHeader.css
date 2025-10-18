@@ -9,7 +9,8 @@
     /* height: 64px; */
 
     & nav {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
         width: 100%;
         align-items: center;
         justify-content: space-between;
@@ -29,8 +30,11 @@
         .logo-container {
             display: flex;
             align-items: center;
-            justify-content: center;
+            /* justify-content: center; */
 
+            .login-link {
+                justify-self: end;
+            }
 
             padding: 0;
             /* height: 72px;
@@ -107,12 +111,12 @@
     align-items: center;
     justify-content: center;
     margin-left: 0.625empx;
+    width: 100%;
 
     .station-search-container {
         background-color: var(--clr1);
 
-
-        height: 36px;
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -123,10 +127,8 @@
             align-items: center;
             justify-content: center;
             position: relative;
-
-            height: 52px;
-
-
+            width: 80%;
+            height: 3.25em;
 
             .search-svg {
                 height: 3em;
@@ -189,6 +191,7 @@
                 padding: 1.1875em;
                 border-radius: 500px;
                 font-family: var(--encore-body-font-stack);
+                width: 100%;
 
                 &::placeholder {
                     color: var(--clr5);
