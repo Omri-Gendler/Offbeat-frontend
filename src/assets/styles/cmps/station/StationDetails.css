@@ -373,7 +373,7 @@
 
 .songs-list-container {
   position: static;
-  padding: 0 16px;
+  
 }
 
 .songs-list-content-spacing {
@@ -415,13 +415,14 @@
 
 .song-list-row {
   display: grid;
-  /* ;   padding: 0 16px; */
+  ;   padding: 0 16px;
   min-width: none;
   align-items: center;
   border: 1px solid transparent;
   border-radius: 4px;
   height: var(--row-height);
   position: relative;
+
 }
 
 
@@ -779,29 +780,41 @@
   opacity: 1; visibility: visible; pointer-events: auto;
   transform: scale(1);
 }
+.row:hover{
+  background-color: #3d3c3c;
+}
 
-/* Keep the button always visible ONLY when actually playing */
+
 .row.is-playing .play-btn {
   display: flex;
   opacity: 1; visibility: visible; pointer-events: auto;
   transform: scale(1);
 }
 
-/* When actively selected (current track), color the index green */
+
 .row.is-active .index-number {
   color: var(--playing-green, #1db954);
 }
 
-/* Hide the index number only while playing (so the pause button sits there) */
+
+
+.row:focus-within ,.row:focus .song-list-row{background-color: hsla(0, 0%, 100%, .3); }
+
+
+
+
 .row.is-playing .index-number {
   display: none;
 }
 
 .title--playing {
-  color: var(--playing-green, #1db954); /* Spotify green; override via CSS var if you want */
-  font-weight: 600;                     /* optional emphasis */
+  color: var(--playing-green, #1db954);
+  /* Spotify green; override via CSS var if you want */
+  font-weight: 600;
+  /* optional emphasis */
 }
 
 .songs-list button{
   background-color: transparent;
 }
+

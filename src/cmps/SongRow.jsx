@@ -1,7 +1,8 @@
-import React from 'react'
-import { IconPlay24, IconPause24, IconKebab16, IconAddCircle24 } from './Icon.jsx'
-
-
+import React, { useState, useRef, useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { likeSong, unlikeSong } from '../store/actions/station.actions'
+import { IconPlay24, IconPause24, IconKebab16, IconAddCircle24, IconCheckCircle24 } from './Icon.jsx'
+import { selectIsSongLiked } from '../store/selectors/player.selectors'
 
 function formatDuration(ms) {
   if (typeof ms !== 'number') return ''
@@ -28,12 +29,6 @@ function formatAdded(ts, { locale = navigator.language, thresholdWeeks = 3 } = {
   return 'Just now'
 }
 
-/**
- * Props:
- * - variant: 'station' | 'picker' (default 'station')
- * - idx, song, isActive, isPlaying, onPlayToggle   (both variants)
- * - isInStation, onAdd                              (picker only)
- */
 export function SongRowBase({
   idx,
   song,
@@ -41,12 +36,72 @@ export function SongRowBase({
   isPlaying,
   onPlayToggle,
   variant = 'station',
-  isInStation = false,
-  onAdd,
+  isInStation = false, 
+  onAdd,              
+  isLikedSongs = false,
+  onAddToAnother,
+  onRemoveFromStation,
+  onToggleLike, 
+         
 }) {
+  const [isMenuOpen, setMenuOpen] = useState(false)
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0 })
+  const kebabRef = useRef(null)
+  const firstMenuBtnRef = useRef(null)
+
   const pressed = isActive && isPlaying
   const isPicker = variant === 'picker'
- 
+  const showStationActions = !isPicker && !isLikedSongs
+  const isLiked = useSelector(state => selectIsSongLiked(state, song?.id))
+
+  // close on ESC
+  useEffect(() => {
+    if (!isMenuOpen) return
+    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isMenuOpen])
+
+  // focus first item when opened
+  useEffect(() => {
+    if (isMenuOpen) firstMenuBtnRef.current?.focus()
+  }, [isMenuOpen])
+
+  const openMenuNearKebab = () => {
+    const btn = kebabRef.current
+    if (!btn) return
+    const rect = btn.getBoundingClientRect()
+    const offset = 8
+    const desiredLeft = rect.right + offset
+    const desiredTop  = rect.bottom + offset
+    const panelW = 260
+    const panelH = 180
+    const maxLeft = window.innerWidth - panelW - 8
+    const maxTop  = window.innerHeight - panelH - 8
+    setMenuPos({
+      left: Math.max(8, Math.min(desiredLeft, maxLeft)),
+      top : Math.max(8, Math.min(desiredTop , maxTop)),
+    })
+    setMenuOpen(true)
+  }
+
+  const handleToggleLike = async (e) => {
+    e.stopPropagation()
+    if (!song?.id) return
+    if (onToggleLike) return onToggleLike(song, !isLiked)
+    try {
+      if (!isLiked) await likeSong(song)
+      else          await unlikeSong(song.id)
+    } catch (err) {
+      console.error('toggle like failed', err)
+    }
+  }
+
+  const durationEl = (
+    <div className="duration-text">
+      {song?.durationMs != null ? formatDuration(song.durationMs) : '-'}
+    </div>
+  )
 
   return (
     <li
@@ -55,27 +110,24 @@ export function SongRowBase({
       aria-rowindex={idx + 2}
     >
       <div className="song-list-row">
-        {/* # / Play */}
+        {/* index / play */}
         <div className="cell index flex" role="gridcell" aria-colindex={1}>
           <div className="index-inner">
-                               
-              <button
-                type="button"
-                className={`play-btn ${isActive ? 'is-active' : ''}`}
-                aria-pressed={pressed}
-                aria-label={pressed ? `Pause ${song.title}` : `Play ${song.title}`}
-                onClick={() => onPlayToggle?.(song)}
-                tabIndex={-1}
-              >
-                {pressed ? <IconPause24 /> : <IconPlay24 />}
-
+            <button
+              type="button"
+              className={`play-btn ${isActive ? 'is-active' : ''}`}
+              aria-pressed={pressed}
+              aria-label={pressed ? `Pause ${song.title}` : `Play ${song.title}`}
+              onClick={() => onPlayToggle?.(song)}
+              tabIndex={-1}
+            >
+              {pressed ? <IconPause24 /> : <IconPlay24 />}
             </button>
-            
-            <span className="index-number">{idx + 1}</span>
+            {!isPicker && <span className="index-number">{idx + 1}</span>}
           </div>
         </div>
 
-        {/* Title */}
+        {/* title */}
         <div className="cell title container flex" role="gridcell" aria-colindex={2}>
           {song.imgUrl && (
             <img className="thumb" src={song.imgUrl} alt="" width={40} height={40} draggable={false} loading="eager" />
@@ -92,7 +144,7 @@ export function SongRowBase({
           </div>
         </div>
 
-        {/* Album */}
+        {/* album */}
         <div className="cell album" role="gridcell" aria-colindex={3}>
           {song.album ? (
             <a className="standalone-ellipsis-one-line" tabIndex={-1}>{song.album}</a>
@@ -101,13 +153,8 @@ export function SongRowBase({
           )}
         </div>
 
-        {/* Date added (hidden in picker, keeps column space) */}
-        <div
-          className="cell added"
-          role="gridcell"
-          aria-colindex={4}
-          aria-hidden={isPicker}
-        >
+        {/* date added */}
+        <div className="cell added" role="gridcell" aria-colindex={4} aria-hidden={isPicker}>
           {!isPicker && (
             <span className="subdued standalone-ellipsis-one-line">
               {formatAdded(song.addedAt)}
@@ -115,36 +162,42 @@ export function SongRowBase({
           )}
         </div>
 
-        {/* Right column */}
-        <div className="cell duration" role="gridcell" aria-colindex={5} aria-label="Duration">
+        {/* actions — duration then kebab at the VERY end */}
+        <div className="cell actions" role="gridcell" aria-colindex={5} aria-label="Actions">
           {isPicker ? (
-            <>
-              <button
-                className="btn-icon add-btn"
-                aria-label={isInStation ? 'Already in playlist' : 'Add to playlist'}
-                disabled={isInStation}
-                aria-disabled={isInStation}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  if (!isInStation) onAdd?.(song)
-                }}
-                tabIndex={-1}
-              >
-                <IconAddCircle24 />
-              </button>
-              {song.durationMs ? (
-                <div className="duration-text">{formatDuration(song.durationMs)}</div>
-              ) : (
-                <div className="duration-text"> </div>
-              )}
-            </>
+            // PICKER: text Add only
+            <button
+              className="btn btn-add-text"
+              aria-label="Add to playlist"
+              onClick={(e) => { e.stopPropagation(); onAdd?.(song) }}
+              tabIndex={-1}
+            >
+              Add
+            </button>
           ) : (
             <>
-              <div className="duration-text">{formatDuration(song.durationMs)}</div>
+              {showStationActions && (
+                <button
+                  className="tertiary-btn add-btn"
+                  aria-label={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
+                  onClick={handleToggleLike}
+                  tabIndex={-1}
+                >
+                  {isLiked ? <IconCheckCircle24 /> : <IconAddCircle24 />}
+                </button>
+              )}
+
+              {/* Duration BEFORE kebab */}
+              {durationEl}
+
+              {/* Kebab LAST */}
               <button
-                className="btn-icon more-btn"
+                ref={kebabRef}
+                className="more-btn"
                 aria-haspopup="menu"
+                aria-expanded={isMenuOpen}
                 aria-label={`More options for ${song.title}${song.artists ? ` by ${song.artists}` : ''}`}
+                onClick={(e) => { e.stopPropagation(); openMenuNearKebab() }}
                 tabIndex={-1}
               >
                 <IconKebab16 />
@@ -153,6 +206,35 @@ export function SongRowBase({
           )}
         </div>
       </div>
+
+      {/* anchored popover */}
+      {!isPicker && isMenuOpen && (
+        <>
+          <div className="menu-layer" onClick={() => setMenuOpen(false)} />
+          <div
+            className="menu-panel"
+            role="menu"
+            style={{ top: `${menuPos.top}px`, left: `${menuPos.left}px` }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              ref={firstMenuBtnRef}
+              className="menu-item"
+              role="menuitem"
+              onClick={() => { onAddToAnother?.(song); setMenuOpen(false) }}
+            >
+              Add to another station
+            </button>
+            <button
+              className="menu-item danger"
+              role="menuitem"
+              onClick={() => { onRemoveFromStation?.(song); setMenuOpen(false) }}
+            >
+              Remove from this station
+            </button>
+          </div>
+        </>
+      )}
     </li>
   )
 }
@@ -163,5 +245,7 @@ export const SongRow = React.memo(SongRowBase, (prev, next) =>
   prev.isActive === next.isActive &&
   prev.isPlaying === next.isPlaying &&
   prev.variant === next.variant &&
-  prev.isInStation === next.isInStation
+  prev.isInStation === next.isInStation &&
+  prev.isLikedSongs === next.isLikedSongs
+
 )

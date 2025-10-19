@@ -80,6 +80,38 @@ export async function addStationToLibrary(station) {
   }
 }
 
+
+
+
+export async function addSongToStation(stationId, song) {
+  try {
+
+    const station = await stationService.getById(stationId)
+
+    if (station.songs?.some(s => s.id === song.id)) return station
+
+    const songToAdd = {
+      ...song,
+      addedAt: Date.now(),
+    }
+
+    const updatedStation = {
+      ...station,
+      songs: [...(station.songs || []), songToAdd],
+    }
+
+    const saved = await stationService.save(updatedStation)
+
+
+    store.dispatch({ type: UPDATE_STATION, station: saved })
+    return saved
+  } catch (err) {
+    console.error('Failed to add song to station', err)
+    throw err
+  }
+}
+
+
 export async function removeStationFromLibrary(station) {
   try {
     const stationToRemove = {
@@ -125,18 +157,6 @@ export async function addStationMsg(stationId, txt) {
   }
 }
 
-export async function addSongToStation(stationId, song) {
-  // If your local service mutates and returns the updated station, prefer that:
-  if (typeof stationService.addSongToStation === 'function') {
-    const updated = await stationService.addSongToStation(stationId, song)
-    store.dispatch(getCmdUpdateStation(updated))
-    return updated
-  }
-  // Fallback to pure Redux action
-  const action = getCmdAddSongToStation(stationId, song)
-  store.dispatch(action)
-  return action
-}
 
 export async function removeSongFromStation(stationId, songId) {
   if (typeof stationService.removeSongFromStation === 'function') {

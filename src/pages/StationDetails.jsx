@@ -1,35 +1,47 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+
 import { FastAverageColor } from 'fast-average-color'
 
 import { SongPicker } from '../cmps/SongPicker'
 import { SongsList } from '../cmps/SongsList.jsx'
 import { StationActions } from '../cmps/StationActions.jsx'
 import { EditStationModal } from '../cmps/EditStationModal.jsx'
-import { StationSearch} from '../cmps/StationSearch.jsx'
-import { use } from 'react'
+import { useParams } from 'react-router-dom'
 
+import { addSongToStation } from '../store/actions/station.actions'
+import { addStation, loadStation, updateStation } from '../store/actions/station.actions'
+import { addStationToLibrary } from '../store/actions/station.actions'
 
 export function StationDetails() {
   const { stationId } = useParams()
   const station = useSelector(s => s.stationModule.station)
   const dispatch = useDispatch()
 
-  // state
+  const isInStation = (song) => !!station?.songs?.some(s => s.id === song.id)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
   const [dynamicBg, setDynamicBg] = useState('#121212')
+  
 
-  // Load station
   useEffect(() => {
     if (stationId) loadStation(stationId)
   }, [stationId])
 
-  // Safe alias: never read station.songs directly
   const songs = station?.songs ?? []
 
-  // Dynamic bg
+    const handleAddToCurrent = async (song) => {
+    try {
+      await addSongToStation(stationId, song)
+      // optional: toast/snackbar
+      // showSuccessMsg('Added to playlist')
+    } catch (err) {
+      // showErrorMsg('Could not add song')
+    }
+  }
+
+  
+
   useEffect(() => {
     const fac = new FastAverageColor()
     const imageUrl = station?.imgUrl
@@ -55,7 +67,7 @@ export function StationDetails() {
 
   const handleSaveDetails = async (updatedDetails) => {
     if (!station) return
-    await dispatch(updateStation({ ...station, ...updatedDetails }))
+    dispatch(updateStation({ ...station, ...updatedDetails }))
   }
 
   // Early return AFTER hooks

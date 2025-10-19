@@ -1,3 +1,29 @@
-.empty-msg {
-    padding-inline-start: 31px;
+/* Station rows: hide Add + Kebab by default */
+.row:not(.row--picker) .add-btn,
+.row:not(.row--picker) .more-btn {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition: opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
 }
+
+/* Reveal on row hover or keyboard focus */
+.row:not(.row--picker):hover .add-btn,
+.row:not(.row--picker):hover .more-btn,
+.row:not(.row--picker):focus-within .add-btn,
+.row:not(.row--picker):focus-within .more-btn {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity .15s ease, transform .15s ease, visibility 0s;
+}
+
+/* Make sure right edge doesn't clip the buttons */
+.cell.actions { overflow: visible; }
+
+/* Optional: spacing & alignment on the right */
+.cell.actions { display:flex; justify-content:flex-end; align-items:center; gap:8px; }
+.duration-text { min-width:40px; text-align:right; }
+
