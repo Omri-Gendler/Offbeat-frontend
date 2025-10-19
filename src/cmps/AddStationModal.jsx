@@ -28,6 +28,7 @@ export function AddStationModal() {
         newStation.createdBy = {
             fullname: 'You',
         }
+        
 
         try {
             const savedStation = await addStation(newStation)
@@ -35,6 +36,8 @@ export function AddStationModal() {
         } catch (err) {
             console.error('Failed to add station', err)
         }
+
+        logger.log('New station created:', newStation)
     }
 
     return (

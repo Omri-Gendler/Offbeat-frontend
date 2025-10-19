@@ -421,105 +421,106 @@ export const likedSongsStationTemplate = {
 // }
 
 export const stationService = {
-  query,
-  getById,
-  save,
-  remove,
-  getLikedSongsStation,
-  addLikedSong,           // expose
-  removeLikedSong         // expose
+    query,
+    getById,
+    save,
+    remove,
+    getLikedSongsStation,
+    addLikedSong,           // expose
+    removeLikedSong         // expose
 }
 
 async function query(filterBy = { txt: '' }) {
-  const stationsFromStorage = await storageService.query(STORAGE_KEY)
-  const likedStation = getLikedSongsStation()
-  const { txt, sortField, sortDir } = filterBy || {}
+    const stationsFromStorage = await storageService.query(STORAGE_KEY)
+    const likedStation = getLikedSongsStation()
+    const { txt, sortField, sortDir } = filterBy || {}
 
-  let allStations = [likedStation, ...stationsFromStorage]
+    let allStations = [likedStation, ...stationsFromStorage]
 
-  if (txt) {
-    const regex = new RegExp(txt, 'i')
-    allStations = allStations.filter(station =>
-      regex.test(station.name || '') ||
-      regex.test(station.description || '')
-    )
-  }
+    if (txt) {
+        const regex = new RegExp(txt, 'i')
+        allStations = allStations.filter(station =>
+            regex.test(station.name || '') ||
+            regex.test(station.description || '')
+        )
+    }
 
-  if (sortField === 'name') {
-    const dir = +sortDir || 1
-    allStations.sort((a, b) => (a.name || '').localeCompare(b.name || '') * dir)
-  }
+    if (sortField === 'name') {
+        const dir = +sortDir || 1
+        allStations.sort((a, b) => (a.name || '').localeCompare(b.name || '') * dir)
+    }
 
-  return allStations
+    return allStations
 }
 
 async function getById(stationId) {
-  if (stationId === 'liked-songs-station') {
-    // return a Promise to keep the API shape consistent
-    return Promise.resolve(getLikedSongsStation())
-  }
-  return storageService.get(STORAGE_KEY, stationId)
+    if (stationId === 'liked-songs-station') {
+        // return a Promise to keep the API shape consistent
+        return Promise.resolve(getLikedSongsStation())
+    }
+    return storageService.get(STORAGE_KEY, stationId)
 }
 
 function getLikedSongsStation() {
-  let station = loadFromStorage(LIKED_SONGS_KEY)
-  if (!station) {
-    station = { ...likedSongsStationTemplate }
-    saveToStorage(LIKED_SONGS_KEY, station)
-  }
-  return station
+    let station = loadFromStorage(LIKED_SONGS_KEY)
+    if (!station) {
+        station = { ...likedSongsStationTemplate }
+        saveToStorage(LIKED_SONGS_KEY, station)
+    }
+    return station
 }
 
 function saveLikedSongsStation(station) {
-  saveToStorage(LIKED_SONGS_KEY, station)
+    saveToStorage(LIKED_SONGS_KEY, station)
 }
 
 export async function addLikedSong(song) {
-  if (!song?.id) return
-  const station = getLikedSongsStation()
-  const exists = station.songs.some(s => s.id === song.id)
-  if (!exists) {
-    station.songs.push({
-      ...song,
-      addedAt: song.addedAt || Date.now()
-    })
-    saveLikedSongsStation(station)
-  }
-  return { ...station }
+    if (!song?.id) return
+    const station = getLikedSongsStation()
+    const exists = station.songs.some(s => s.id === song.id)
+    if (!exists) {
+        station.songs.push({
+            ...song,
+            addedAt: song.addedAt || Date.now()
+        })
+        saveLikedSongsStation(station)
+    }
+    return { ...station }
 }
 
 export async function removeLikedSong(songId) {
-  const station = getLikedSongsStation()
-  const idx = station.songs.findIndex(song => song.id === songId)
-  if (idx !== -1) {
-    station.songs.splice(idx, 1)
-    saveLikedSongsStation(station)
-  }
-  return { ...station }
+    const station = getLikedSongsStation()
+    const idx = station.songs.findIndex(song => song.id === songId)
+    if (idx !== -1) {
+        station.songs.splice(idx, 1)
+        saveLikedSongsStation(station)
+    }
+    return { ...station }
 }
 
 async function save(station) {
-  // Handle the special Liked Songs doc separately
-  if (station._id === 'liked-songs-station') {
-    const merged = { ...getLikedSongsStation(), ...station }
-    saveLikedSongsStation(merged)
-    return merged
-  }
-
-  let savedStation
-  if (station._id) {
-    const stationToSave = { ...station }
-    savedStation = await storageService.put(STORAGE_KEY, stationToSave)
-  } else {
-    const stationToSave = {
-      name: station.name,
-      owner: userService.getLoggedinUser(),
-      msgs: [],
-      imgUrl: station.imgUrl || '/img/infected.jpg'
+    // Handle the special Liked Songs doc separately
+    if (station._id === 'liked-songs-station') {
+        const merged = { ...getLikedSongsStation(), ...station }
+        saveLikedSongsStation(merged)
+        return merged
     }
-    savedStation = await storageService.post(STORAGE_KEY, stationToSave)
-  }
-  return savedStation
+
+    let savedStation
+    if (station._id) {
+        const stationToSave = { ...station }
+        savedStation = await storageService.put(STORAGE_KEY, stationToSave)
+    } else {
+        const stationToSave = {
+            ...station,
+            name: station.name,
+            owner: userService.getLoggedinUser(),
+            msgs: [],
+            imgUrl: station.imgUrl || '/img/infected.jpg'
+        }
+        savedStation = await storageService.post(STORAGE_KEY, stationToSave)
+    }
+    return savedStation
 }
 
 function _createStations() {
@@ -598,7 +599,7 @@ function _createStations() {
                 _id: 'station002',
                 name: 'Chill Lo-Fi Beats',
                 tags: ['Lo-Fi', 'Chill', 'Study'],
-                url:'https://youtu.be/4adZ7AguVcw?si=THH24oaBdq8JLuf-',
+                url: 'https://youtu.be/4adZ7AguVcw?si=THH24oaBdq8JLuf-',
                 imgUrl: 'https://picsum.photos/300/300?random=2',
                 type: 'station',
 
