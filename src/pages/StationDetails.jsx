@@ -11,7 +11,7 @@ import { EditStationModal } from '../cmps/EditStationModal.jsx'
 import { useParams } from 'react-router-dom'
 
 
-import { addStation, loadStation, updateStation,addSongToStation } from '../store/actions/station.actions'
+import { addStation, loadStation, updateStation, addSongToStation } from '../store/actions/station.actions'
 import { addStationToLibrary } from '../store/actions/station.actions'
 
 export function StationDetails() {
@@ -33,7 +33,7 @@ export function StationDetails() {
 
   const songs = station?.songs ?? []
 
-    const handleAddToCurrent = async (song) => {
+  const handleAddToCurrent = async (song) => {
     try {
       await addSongToStation(stationId, song)
       // optional: toast/snackbar
@@ -43,7 +43,7 @@ export function StationDetails() {
     }
   }
 
-  
+
 
   useEffect(() => {
     const fac = new FastAverageColor()
@@ -68,7 +68,7 @@ export function StationDetails() {
     }
   }, [station?.imgUrl])
 
- const handleCoverChange = useCallback((newUrl) => {
+  const handleCoverChange = useCallback((newUrl) => {
     if (station) updateStation({ ...station, imgUrl: newUrl })
   }, [station])
   // Set of ids already in this station (for picker to disable/hide)
@@ -77,7 +77,7 @@ export function StationDetails() {
     [songs]
   )
 
- const handleSaveDetails = async (updatedDetails) => {
+  const handleSaveDetails = async (updatedDetails) => {
     if (!station) return
     await updateStation({ ...station, ...updatedDetails })
   }
@@ -123,6 +123,7 @@ export function StationDetails() {
               </span>
             </button>
             <div className="station-byline">
+              <img src="/img/user-avatar.png" alt="user avatar" style={{ width: '25px', height: '25px' }} />
               <a className="station-owner">{station?.createdBy?.fullname ?? 'Unknown'}</a>
               <span className="dot">•</span>
               <span className="station-stats">{station?.songs?.length ?? 0} songs</span>
