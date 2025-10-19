@@ -7,32 +7,45 @@ import { SongPicker } from '../cmps/SongPicker'
 import { SongsList } from '../cmps/SongsList.jsx'
 import { StationActions } from '../cmps/StationActions.jsx'
 import { EditStationModal } from '../cmps/EditStationModal.jsx'
-import { loadStation, updateStation } from '../store/actions/station.actions'
-import { addStationToLibrary } from '../store/actions/station.actions' // if you use it elsewhere
+import { useParams } from 'react-router-dom'
+
+import { addSongToStation } from '../store/actions/station.actions'
+import { addStation, loadStation, updateStation } from '../store/actions/station.actions'
+import { addStationToLibrary } from '../store/actions/station.actions'
 
 export function StationDetails() {
   const { stationId } = useParams()
   const station = useSelector(s => s.stationModule.station)
   const dispatch = useDispatch()
 
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
   const [dynamicBg, setDynamicBg] = useState('#121212')
 
-
+  // Load station
   useEffect(() => {
     if (stationId) dispatch(loadStation(stationId))
   }, [stationId, dispatch])
 
 
+
   const songs = station?.songs ?? []
 
+    const handleAddToCurrent = async (song) => {
+    try {
+      await addSongToStation(stationId, song)
+      // optional: toast/snackbar
+      // showSuccessMsg('Added to playlist')
+    } catch (err) {
+      // showErrorMsg('Could not add song')
+    }
+  }
+
+  
 
   useEffect(() => {
     const fac = new FastAverageColor()
     const imageUrl = station?.imgUrl
-
     let cancelled = false
     if (!imageUrl) {
       setDynamicBg('#121212')
@@ -65,15 +78,8 @@ export function StationDetails() {
 
   const handleSaveDetails = async (updatedDetails) => {
     if (!station) return
-    await dispatch(updateStation({ ...station, ...updatedDetails }))
+    dispatch(updateStation({ ...station, ...updatedDetails }))
   }
-
-  // Early return AFTER hooks
-  // ✅ Use `songs` in both computation and deps
-  const existingIds = useMemo(
-    () => new Set(songs.map(t => t.id)),
-    [songs]
-  )
 
   // Early return AFTER hooks
   if (!station) {
@@ -108,7 +114,6 @@ export function StationDetails() {
 
           <div className="station-meta">
             <span className="station-type">Public Playlist</span>
-
             <button className="station-title editable" onClick={() => setIsModalOpen(true)}>
               <span>
                 <h1 className="e-91000-text encore-text-headline-large encore-internal-color-text-base">
@@ -116,7 +121,6 @@ export function StationDetails() {
                 </h1>
               </span>
             </button>
-
             <div className="station-byline">
               <a className="station-owner">{station?.createdBy?.fullname ?? 'Unknown'}</a>
               <span className="dot">•</span>
