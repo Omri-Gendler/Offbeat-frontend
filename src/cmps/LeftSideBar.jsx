@@ -43,7 +43,7 @@ export function LeftSideBar() {
         createdBy: { fullname: 'You' }
       }
 
-      console.log('newStation',newStation)
+      console.log('newStation', newStation)
 
       const savedStation = await addStation(newStation);
       navigate(`/station/${savedStation._id}`);
@@ -133,6 +133,7 @@ export function LeftSideBar() {
               <button
                 onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
                 className="view-toggle-btn"
+                style={{ backgroundColor: 'transparent' }}
               >
                 {viewMode === 'grid'
                   ? <FormatListBulletedIcon style={{ fontSize: '18px', color: 'var(--clr4)' }} />
