@@ -1,0 +1,16 @@
+.browser {
+    width: 100%;
+
+    .categories {
+        margin: 0;
+        padding: 0;
+
+        h2{
+            margin-left: 0.4em;
+        }
+    }
+
+    .category-grid {
+        padding: 0.625em;
+    }
+}
