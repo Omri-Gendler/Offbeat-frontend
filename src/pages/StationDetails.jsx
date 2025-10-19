@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+
+
 import { FastAverageColor } from 'fast-average-color'
 
 import { SongPicker } from '../cmps/SongPicker'
@@ -9,14 +10,15 @@ import { StationActions } from '../cmps/StationActions.jsx'
 import { EditStationModal } from '../cmps/EditStationModal.jsx'
 import { useParams } from 'react-router-dom'
 
-import { addSongToStation } from '../store/actions/station.actions'
-import { addStation, loadStation, updateStation } from '../store/actions/station.actions'
+
+import { addStation, loadStation, updateStation,addSongToStation } from '../store/actions/station.actions'
 import { addStationToLibrary } from '../store/actions/station.actions'
 
 export function StationDetails() {
+  const dispatch = useDispatch()
   const { stationId } = useParams()
   const station = useSelector(s => s.stationModule.station)
-  const dispatch = useDispatch()
+
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPickerOpen, setIsPickerOpen] = useState(false)
@@ -24,8 +26,8 @@ export function StationDetails() {
 
   // Load station
   useEffect(() => {
-    if (stationId) dispatch(loadStation(stationId))
-  }, [stationId, dispatch])
+    if (stationId) loadStation(stationId)
+  }, [stationId])
 
 
 
@@ -66,19 +68,18 @@ export function StationDetails() {
     }
   }, [station?.imgUrl])
 
-  const handleCoverChange = useCallback((newUrl) => {
-    if (station) dispatch(updateStation({ ...station, imgUrl: newUrl }))
-  }, [station, dispatch])
-
+ const handleCoverChange = useCallback((newUrl) => {
+    if (station) updateStation({ ...station, imgUrl: newUrl })
+  }, [station])
   // Set of ids already in this station (for picker to disable/hide)
   const existingIds = useMemo(
     () => new Set(songs.map(t => t.id)),
     [songs]
   )
 
-  const handleSaveDetails = async (updatedDetails) => {
+ const handleSaveDetails = async (updatedDetails) => {
     if (!station) return
-    dispatch(updateStation({ ...station, ...updatedDetails }))
+    await updateStation({ ...station, ...updatedDetails })
   }
 
   // Early return AFTER hooks
@@ -156,7 +157,7 @@ export function StationDetails() {
               stationId={station._id}
               existingIds={existingIds}
               onClose={() => setIsPickerOpen(false)}
-              // optional: initial={suggestedTracksArray}
+              onAdd={(song) => addSongToStation(stationId, song)}
             />
           )}
         </div>
