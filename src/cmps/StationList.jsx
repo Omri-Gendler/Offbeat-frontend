@@ -98,6 +98,12 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
     }
   }
 
+  function randomStation() {
+    const stations = [...stations]
+    const randomStations = stations.slice(0, 5)
+    return randomStations
+  }
+
   const renderStationItem = (station) => {
     const sameContext = isStationContext(station)
     const active = sameContext && isPlaying
@@ -192,20 +198,12 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
         <ul className="station-list">
           {stations.map(renderStationItem)}
         </ul>
+
+        <h2>Made For You</h2>
         <ul className="station-list">
-          {stations.map(renderStationItem)}
-        </ul>
-        <ul className="station-list">
-          {stations.map(renderStationItem)}
-        </ul>
-        <ul className="station-list">
-          {stations.map(renderStationItem)}
-        </ul>
-        <ul className="station-list">
-          {stations.map(renderStationItem)}
-        </ul>
-        <ul className="station-list">
-          {stations.map(renderStationItem)}
+          {stations.slice(10, 28).map(station => (
+            renderStationItem(station)
+          ))}
         </ul>
       </div>
 

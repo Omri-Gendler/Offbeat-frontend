@@ -529,7 +529,7 @@ function _createStations() {
         stations = [
 
             {
-                "_id": "liked-songs-station",
+                "_id": "s100",
                 "name": "Pop Hits",
                 "tags": ["Pop", "Hits", "Charts"],
                 "imgUrl": "https://picsum.photos/300/300?random=101",
