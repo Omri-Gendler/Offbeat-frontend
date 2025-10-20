@@ -32,6 +32,8 @@
         /* margin: 0; */
         font-size: 1.3em;
         margin-left: 28px;
+        color: white;
+        margin-top: 3.75em;
     }
 
     & button {

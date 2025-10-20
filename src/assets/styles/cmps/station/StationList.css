@@ -1,7 +1,11 @@
 .main-station-list-container {
     margin: -22px;
-
 }
+
+.station.list-content{
+    background-color: red;
+}
+
 
 .station-list::-webkit-scrollbar {
     width: 8px;
@@ -302,4 +306,10 @@ button {
 .recent-item-list[data-active="true"] .play-button[data-playing="true"] {
     background-color: #1ed760;
 
+}
+
+.made-for-you {
+    h2{
+        margin-left: 2.438em;
+    }
 }
