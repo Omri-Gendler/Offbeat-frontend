@@ -26,8 +26,13 @@ export function getRandomIntInclusive(min, max) {
 }
 
 export function maxLength(text, maxLength) {
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength) + '...';
+    if (typeof text !== 'string' || !text) {
+        return ''
+    }
+    if (text.length <= maxLength) return text
+
+    const end = text.lastIndexOf(' ', maxLength)
+    return text.slice(0, end !== -1 ? end : maxLength) + '...'
 }
 
 
