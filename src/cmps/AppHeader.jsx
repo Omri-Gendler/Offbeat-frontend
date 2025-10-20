@@ -27,18 +27,18 @@ export function AppHeader() {
 
 	return (
 		<header className="app-header full">
-	
+
 			<nav>
 				<div className='logo-container'>
 					<img className='app-header-logo' src="/img/spotify-white-icon.webp" alt="Offbeat Logo" onClick={() => navigate('')} />
 				</div>
 				<div className='middle-app-header flex'>
 					<button className="home-btn" title="Home" onClick={() => navigate('/')}>
-					{isActive ? (
-						<HomeFilledIcon size={24} color="#fff" />
-					) : (
-						<HomeOutlineIcon size={24} color="#b3b3b3" />
-					)}
+						{isActive ? (
+							<HomeFilledIcon size={24} color="#fff" />
+						) : (
+							<HomeOutlineIcon size={24} color="#b3b3b3" />
+						)}
 					</button>
 
 					<StationFilter filterBy={filterBy} setFilterBy={setFilterBy} />
@@ -46,8 +46,9 @@ export function AppHeader() {
 
 				{user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
-				{!user && <NavLink to="auth/login" className="login-link">Login</NavLink>}
-				{user && (
+				{/* {!user && <NavLink to="auth/login" className="login-link">Login</NavLink>} */}
+				<img src="/img/user-avatar.png" alt="" style={{ width: '25px', height: '25px' }} />
+				{/* {user && (
 					<div className="user-info">
 						<Link to={`user/${user._id}`}>
 							{user.imgUrl && <img src={user.imgUrl} />}
@@ -57,7 +58,7 @@ export function AppHeader() {
 						<span className="score">{user.score?.toLocaleString()}</span>
 						<button onClick={onLogout}>logout</button>
 					</div>
-				)}
+				)} */}
 			</nav>
 		</header>
 	)
