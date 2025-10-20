@@ -192,6 +192,21 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
         <ul className="station-list">
           {stations.map(renderStationItem)}
         </ul>
+        <ul className="station-list">
+          {stations.map(renderStationItem)}
+        </ul>
+        <ul className="station-list">
+          {stations.map(renderStationItem)}
+        </ul>
+        <ul className="station-list">
+          {stations.map(renderStationItem)}
+        </ul>
+        <ul className="station-list">
+          {stations.map(renderStationItem)}
+        </ul>
+        <ul className="station-list">
+          {stations.map(renderStationItem)}
+        </ul>
       </div>
 
       {contextMenu.isOpen && (
