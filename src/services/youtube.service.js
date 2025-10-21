@@ -1,15 +1,26 @@
 import axios from 'axios'
 
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
-const BASE_URL = 'https://www.googleapis.com/youtube/v3/search'
+const BASE_URL = 'https://www.googleapis.com/youtube/v3'
+
+const searchCache = new Map()
 
 export const youtubeService = {
     searchSongs
 }
 
 async function searchSongs(query) {
+    const cacheKey = query.toLowerCase().trim()
+
+    if (searchCache.has(cacheKey)) {
+        console.log('Serving from cache:', cacheKey)
+        return searchCache.get(cacheKey)
+    }
+
+    console.log('Fetching from API:', cacheKey)
     try {
-        const response = await axios.get(BASE_URL, {
+        // 1. קריאה ראשונה לחיפוש
+        const searchResponse = await axios.get(`${BASE_URL}/search`, {
             params: {
                 part: 'snippet',
                 q: query,
@@ -19,19 +30,52 @@ async function searchSongs(query) {
             }
         })
 
-        const songs = response.data.items.map(item => {
+        // 2. איסוף ID-ים
+        const videoIds = searchResponse.data.items
+            .map(item => item.id.videoId)
+            .join(',')
+
+        if (!videoIds) return []
+
+        // 3. קריאה שנייה לפרטים
+        const detailsResponse = await axios.get(`${BASE_URL}/videos`, {
+            params: {
+                part: 'snippet,contentDetails',
+                id: videoIds,
+                key: API_KEY
+            }
+        })
+
+        // 4. יצירת מפה (lookup)
+        const detailsMap = detailsResponse.data.items.reduce((acc, item) => {
+            acc[item.id] = item
+            return acc
+        }, {})
+
+        // 5. מיפוי תוצאות
+        const songs = searchResponse.data.items.map(item => {
+            const videoId = item.id.videoId
+            const details = detailsMap[videoId]
+
+            const durationMs = details
+                ? parseISO8601Duration(details.contentDetails.duration) * 1000
+                : 0
+
             return {
-                id: item.id.videoId,
+                id: videoId,
                 title: item.snippet.title,
                 artists: item.snippet.channelTitle,
-                genre: detectGenre(item.snippet.title, item.snippet.description || '', item.snippet.channelTitle),
-                url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
+                genre: detectGenre(item.snippet.title),
+                url: `https://www.youtube.com/watch?v=${videoId}`,
                 imgUrl: item.snippet.thumbnails.high.url,
                 addedBy: 'u100',
                 likedBy: [],
-                addedAt: Date.now()
+                addedAt: Date.now(),
+                durationMs: durationMs
             }
         })
+
+        searchCache.set(cacheKey, songs)
 
         return songs
 
@@ -41,23 +85,24 @@ async function searchSongs(query) {
     }
 }
 
-function detectGenre(title, description, channel) {
-    const text = `${title} ${description} ${channel}`.toLowerCase()
+function parseISO8601Duration(isoDuration) {
+    // ...
+    const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/
+    const matches = isoDuration.match(regex)
+    if (!matches) return 0
+    const hours = matches[1] ? parseInt(matches[1]) : 0
+    const minutes = matches[2] ? parseInt(matches[2]) : 0
+    const seconds = matches[3] ? parseInt(matches[3]) : 0
+    return (hours * 3600) + (minutes * 60) + seconds
+}
 
-    // Genre detection based on keywords
-    if (text.includes('hip hop') || text.includes('rap') || text.includes('hip-hop')) return 'Hip-Hop'
-    if (text.includes('rock') || text.includes('metal') || text.includes('punk')) return 'Rock'
-    if (text.includes('pop') || text.includes('chart') || text.includes('hit')) return 'Pop'
-    if (text.includes('jazz') || text.includes('blues')) return 'Jazz'
-    if (text.includes('classical') || text.includes('orchestra') || text.includes('symphony')) return 'Classical'
-    if (text.includes('electronic') || text.includes('edm') || text.includes('techno') || text.includes('house')) return 'Electronic'
-    if (text.includes('country') || text.includes('folk')) return 'Country'
-    if (text.includes('reggae') || text.includes('ska')) return 'Reggae'
-    if (text.includes('latin') || text.includes('salsa') || text.includes('bachata')) return 'Latin'
-    if (text.includes('indie') || text.includes('alternative')) return 'Indie'
-    if (text.includes('chill') || text.includes('lofi') || text.includes('lo-fi') || text.includes('ambient')) return 'Chill'
-    if (text.includes('workout') || text.includes('gym') || text.includes('fitness')) return 'Workout'
-
-    // Default genre
+function detectGenre(title) {
+    // ...
+    const text = title.toLowerCase()
+    if (text.includes('hip hop') || text.includes('rap')) return 'Hip-Hop'
+    if (text.includes('rock') || text.includes('metal')) return 'Rock'
+    if (text.includes('pop') || text.includes('chart')) return 'Pop'
+    if (text.includes('electronic') || text.includes('edm') || text.includes('techno')) return 'Electronic'
+    if (text.includes('chill') || text.includes('lofi')) return 'Chill'
     return 'Pop'
 }

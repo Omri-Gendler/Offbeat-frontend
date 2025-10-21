@@ -33,7 +33,7 @@ export function AppHeader() {
 					<img className='app-header-logo' src="/img/spotify-white-icon.webp" alt="Offbeat Logo" onClick={() => navigate('')} />
 				</div>
 				<div className='middle-app-header flex'>
-					<button className="home-btn" title="Home" onClick={() => navigate('/')}>
+					<button className="home-btn" title="Home" onClick={() => navigate('')}>
 						{isActive ? (
 							<HomeFilledIcon size={24} color="#fff" />
 						) : (

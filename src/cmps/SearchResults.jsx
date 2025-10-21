@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import { youtubeService } from '../services/youtube.service'
 import { IconPlay24, IconAddCircle24 } from './Icon'
-
+import { useDispatch } from 'react-redux'
+import { playSong } from '../store/actions/station.actions'
 export function SearchResults({ searchTerm }) {
     const [songs, setSongs] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const [activeFilter, setActiveFilter] = useState('All')
+
+    const dispatch = useDispatch()
 
     const filters = ['All', 'Artists', 'Playlists', 'Songs', 'Albums', 'Profiles', 'Podcasts & Shows']
 
@@ -33,9 +36,11 @@ export function SearchResults({ searchTerm }) {
         }
     }
 
-    function formatDuration(seconds) {
-        const mins = Math.floor(seconds / 60)
-        const secs = seconds % 60
+    function formatDuration(ms) {
+        if (!ms) return '0:00'
+        const totalSeconds = Math.floor(ms / 1000)
+        const mins = Math.floor(totalSeconds / 60)
+        const secs = totalSeconds % 60
         return `${mins}:${secs.toString().padStart(2, '0')}`
     }
 
@@ -67,6 +72,11 @@ export function SearchResults({ searchTerm }) {
         )
     }
 
+    function handlePlaySong(song) {
+        if (!song) return
+        dispatch(playSong(song))
+    }
+
     const topResult = songs[0]
     const songsList = songs.slice(1, 5) // Show top 4 songs
     const featuringList = songs.slice(5, 7) // Show 2 featured items
@@ -96,7 +106,10 @@ export function SearchResults({ searchTerm }) {
                         )}
                         <h2>{topResult.title}</h2>
                         <p>Artist</p>
-                        <button className="play-btn" aria-label="Play">
+                        <button className="play-btn"
+                            aria-label="Play"
+                            onClick={() => handlePlaySong(topResult)}
+                        >
                             <IconPlay24 />
                         </button>
                     </div>
@@ -107,7 +120,11 @@ export function SearchResults({ searchTerm }) {
                     <h2>Songs</h2>
                     <div className="songs-list">
                         {songsList.map((song, index) => (
-                            <div key={song.id} className="song-item">
+                            <div
+                                key={song.id}
+                                className="song-item"
+                                onClick={handlePlaySong(song)}
+                            >
                                 {song.imgUrl && (
                                     <img src={song.imgUrl} alt={song.title} />
                                 )}
@@ -116,11 +133,15 @@ export function SearchResults({ searchTerm }) {
                                     <p className="song-artist">{song.artists}</p>
                                 </div>
                                 <div className="song-actions">
-                                    <button className="add-btn" aria-label="Add to playlist">
+                                    <button
+                                        className="add-btn"
+                                        aria-label="Add to playlist"
+                                        onClick={handlePlaySong(song)}
+                                    >
                                         <IconAddCircle24 />
                                     </button>
                                 </div>
-                                <span className="song-duration">{formatDuration(Math.floor(Math.random() * 240) + 60)}</span>
+                                <span className="song-duration">{formatDuration(song.durationMs)}</span>
                             </div>
                         ))}
                     </div>

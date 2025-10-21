@@ -2,6 +2,7 @@
 import { stationService } from '../../services/station/station.service.local'
 import { store } from '../store'
 import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, LIKE_SONG, UNLIKE_SONG, ADD_SONG_TO_STATION, REMOVE_SONG_FROM_STATION } from '../reducers/station.reducer'
+import { PLAY_CONTEXT } from '../reducers/player.reducer'
 import { showSuccessMsg } from '../../services/event-bus.service'
 import { Modal } from '@mui/material'
 
@@ -48,6 +49,13 @@ export async function unlikeSong(songId) {
   const likedStation = await stationService.removeLikedSong(songId) // must return station
   store.dispatch({ type: UPDATE_STATION, station: likedStation })
   return likedStation
+}
+
+export function playSong(song) {
+  if (!song) return
+  const action = { type: PLAY_CONTEXT, payload: { queue: [song], index: 0, contextId: song.id, contextType: 'song' } }
+  store.dispatch(action)
+  return action
 }
 
 export async function addStation(station) {
