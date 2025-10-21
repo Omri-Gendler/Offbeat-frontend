@@ -9,6 +9,7 @@
 @import "RootCmp";
 
 @import "cmps/SearchBar";
+@import "cmps/SearchResults";
 @import "cmps/AboutUs";
 @import "cmps/HomePage";
 @import "cmps/UserDetails";

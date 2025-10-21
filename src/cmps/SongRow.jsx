@@ -42,7 +42,7 @@ export function SongRowBase({
   onAddToAnother,
   onRemoveFromStation,
   onToggleLike, 
-         
+  showGenre = false,         
 }) {
   const [isMenuOpen, setMenuOpen] = useState(false)
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 })
@@ -139,6 +139,9 @@ export function SongRowBase({
             {!!song.artists && (
               <div className="artists standalone-ellipsis-one-line">
                 <a draggable="true" tabIndex={-1}>{song.artists}</a>
+                {showGenre && song.genre && (
+                  <span className="genre-tag">• {song.genre}</span>
+                )}
               </div>
             )}
           </div>

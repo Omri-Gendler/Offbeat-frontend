@@ -1,0 +1,117 @@
+.search-results {
+  padding: 24px;
+}
+
+.search-results.empty {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.search-results.empty h2 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.search-results.empty p {
+  font-size: 16px;
+  color: #b3b3b3;
+}
+
+.search-results.loading {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.search-results.loading h2 {
+  font-size: 24px;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #333;
+  border-top: 3px solid #1db954;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.search-results.error {
+  text-align: center;
+  padding: 64px 24px;
+}
+
+.search-results.error h2 {
+  font-size: 24px;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.search-results.error p {
+  color: #b3b3b3;
+  margin-bottom: 16px;
+}
+
+.search-results.error button {
+  background-color: #1db954;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.results-header {
+  margin-bottom: 24px;
+}
+
+.results-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.results-header p {
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+.songs-grid {
+  background-color: transparent;
+}
+
+.search-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.stations-section h2,
+.youtube-section h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.genre-tag {
+  color: #b3b3b3;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.browser {
+  padding: 24px;
+  min-height: calc(100vh - 160px);
+}
