@@ -25,23 +25,23 @@ export function Browser() {
 
   return (
     <section className="browser">
-      {!searchQuery ? <Categories onClickCategory={handleCategoryClick} /> : null}
-
-      {searchQuery && (
-        <div className="search-content">
+      {!searchQuery ? (
+        <Categories onClickCategory={handleCategoryClick} />
+      ) : (
+        <>
           {/* Show filtered stations if any */}
           {filteredStations.length > 0 && (
-            <div className="stations-section">
-              <h2>Your Playlists</h2>
+            <div className="stations-section" style={{ marginBottom: '32px' }}>
+              <h2 style={{ color: 'white', fontSize: '24px', fontWeight: '700', marginBottom: '16px' }}>
+                Your Playlists
+              </h2>
               <StationList stations={filteredStations} />
             </div>
           )}
 
-          {/* Always show YouTube search results for queries */}
-          <div className="youtube-section">
-            <SearchResults searchTerm={input} />
-          </div>
-        </div>
+          {/* YouTube search results with Spotify-like layout */}
+          <SearchResults searchTerm={input} />
+        </>
       )}
     </section>
   )
