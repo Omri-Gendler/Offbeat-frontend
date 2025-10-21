@@ -1,7 +1,6 @@
 import axios from 'axios'
 
-// שמור את המפתח שלך כאן (או בקובץ .env)
-const API_KEY = 'AIzaSyCDWy_HqJcXUmS5rFXxow1hSwWH7ouAK1M'
+const API_KEY = process.env.YOUTUBE_API_KEY
 const BASE_URL = 'https://www.googleapis.com/youtube/v3/search'
 
 export const youtubeService = {
