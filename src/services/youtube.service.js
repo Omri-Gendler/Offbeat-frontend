@@ -32,7 +32,7 @@ async function searchSongs(query) {
                 addedAt: Date.now()
             }
         })
-
+``
         return songs
 
     } catch (err) {
