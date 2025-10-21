@@ -74,7 +74,8 @@ export function SearchResults({ searchTerm }) {
 
     function handlePlaySong(song) {
         if (!song) return
-        dispatch(playSong(song))
+        console.log('song', song)
+        playSong(song)
     }
 
     const topResult = songs[0]
