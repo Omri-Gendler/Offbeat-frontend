@@ -2,7 +2,7 @@
 .left-side-bar {
   position: relative;
   flex: 0 0 var(--sidebar-width);
-  width: 350px;                  /* FIX: add px */
+  width: 350px;       
   padding: 8px;
   min-inline-size: 220px;
   max-inline-size: 560px;
@@ -12,13 +12,13 @@
   overflow: visible;
 
   display: flex;
-  flex-direction: column;        /* ensure column layout */
-  align-items: stretch;          /* FIX: was center; allow child to fill width */
+  flex-direction: column;        
+  align-items: stretch;        
   gap: 4px;
   color: #fff;
 
   margin-inline-start: 12px;
-  margin-inline-end: 0;          /* FIX: avoid weird shrinking */
+  margin-inline-end: 0;        
 }
 
 .left-header {
@@ -145,9 +145,9 @@ width: max-content;
 
 
 .station-list-container {
-  position: relative;            /* FIX: helps sticky & z-index contexts */
-  flex: 1 1 auto;                /* ensure it can grow to take space */
-  min-height: 0;                 /* FIX: allow child to shrink for scrolling */
+  position: relative;           
+  flex: 1 1 auto;                
+  min-height: 0;                 
   display: flex;
   flex-direction: column;
 
@@ -156,7 +156,7 @@ width: max-content;
   border-radius: 9px;
   width: 100%;
 
-  /* WebKit scrollbars */
+
   &::-webkit-scrollbar { width: 8px; }
   &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
@@ -165,7 +165,7 @@ width: max-content;
   }
   &::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,.5); }
 
-  /* Firefox/IE */
+
   scrollbar-width: thin;
   -ms-overflow-style: none;
 }
@@ -377,7 +377,7 @@ width: max-content;
   overflow-y: auto;
   overflow-x: hidden;
 
-  /* scrollbars inside menu */
+
   &::-webkit-scrollbar { width: 8px; }
   &::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 20px; }
 }
@@ -387,7 +387,7 @@ ul.contextmenu-group {
   margin: 0;
   padding: 0;
 
-  /* group title */
+
   .contextmenu-group-title {
     padding: 0.7em;
     height: var(--menu-item-height, 40px);
@@ -401,7 +401,7 @@ ul.contextmenu-group {
     user-select: none;
   }
 
-  /* radio/button rows */
+
   button.contextmenu-item {
     width: 100%;
     text-align: left;
@@ -424,7 +424,7 @@ ul.contextmenu-group {
     .cm-check { margin-left: auto; }
   }
 
-  /* the row of icons for view selection */
+
   .view-icon-row {
     display: flex;
     justify-content: center;
