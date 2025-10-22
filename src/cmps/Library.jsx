@@ -1,0 +1,143 @@
+
+import React, { memo } from 'react'
+import { LIKED_ID } from '../store/reducers/station.reducer'
+
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
+function getMetaParts(station, likedId) {
+  const count = station.songs?.length ?? 0
+  const songsPart = count > 0 ? plural(count, 'song', 'songs') : null
+
+  switch (station.type) {
+    case 'album':
+      return [
+        'Album',
+        station.artistName || station.createdBy?.fullname || 'Unknown artist',
+        songsPart, // only if count > 0
+      ].filter(Boolean)
+
+    case 'artist':
+      return [
+        'Artist',
+        station.genre || station.country || station.createdBy?.fullname || null,
+        // add other artist stats here if you have them
+      ].filter(Boolean)
+
+    case 'playlist':
+    default: {
+      const base = ['Playlist']
+      if (station._id === likedId) base.push('Liked Songs')
+      if (songsPart) base.push(songsPart)
+      return base
+    }
+  }
+}
+
+export function Library({
+  items,
+  viewMode = 'grid',           // <- default view
+  onOpen,
+  onPlay,
+  isPlaying,
+  isThisContext,
+  onItemContextMenu,
+}) {
+  if (!items?.length) return <div className="library-empty">No playlists yet</div>
+
+
+  // normalize anything unexpected back to 'grid'
+  const mode = (viewMode === 'list' || viewMode === 'grid-compact' || viewMode === 'grid')
+    ? viewMode
+    : 'grid'
+
+  const containerClass =
+    mode === 'list' ? 'library-list list'
+    : mode === 'grid-compact' ? 'library-list grid-compact'
+    : 'library-list grid'
+
+  return (
+    <div className={containerClass}>
+      {items.map(st => (
+        <LibraryItem
+          key={st._id}
+          station={st}
+          isActive={isThisContext(st) && isPlaying}
+          onOpen={onOpen}
+          onPlay={onPlay}
+          onItemContextMenu={onItemContextMenu}
+          compact={mode === 'grid-compact'}
+          list={mode === 'list'}
+        />
+      ))}
+    </div>
+  )
+}
+
+const LibraryItem = memo(function LibraryItem({
+  station,
+  isActive,
+  onOpen,
+  onPlay,
+  onItemContextMenu,
+  compact,
+  list
+}) {
+  
+
+const parts = getMetaParts(station,LIKED_ID)
+
+
+
+
+  return (
+    <div
+      className={`library-item ${compact ? 'compact' : ''} ${list ? 'list' : ''}`}
+      data-active={isActive ? 'true' : 'false'}
+      title={station.name}
+      onClick={() => onOpen(station)}
+      onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); onItemContextMenu?.(e, station) }}
+      tabIndex={0}
+      data-id={station._id}
+    >
+      <div className="thumb-wrap">
+        <img  loading="lazy" src={station.imgUrl || '/img/unnamed-song.png'} alt={station.name} />
+        <button
+          type="button"
+          className="play-button"
+          onClick={(e) => { e.stopPropagation(); onPlay(station, { active: isActive }) }}
+          aria-pressed={isActive}
+          aria-label={isActive ? 'Pause' : 'Play'}
+          data-playing={isActive ? 'true' : 'false'}
+        >
+          {isActive ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="6" y="5" width="4" height="14" />
+              <rect x="14" y="5" width="4" height="14" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5V19L19 12L8 5Z" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+
+
+<div className="meta">
+  <p className="name">{station.name}</p>
+
+  {(!compact || list) && (
+    <p className="sub" aria-label={parts.join(' • ')}>
+      {parts.map((part, i) => (
+        <span key={i} className="meta-chip">
+          {i > 0 ? <span aria-hidden> • </span> : null}
+          {part}
+        </span>
+      ))}
+    </p>
+  )}
+</div>
+
+    </div>
+  )
+})

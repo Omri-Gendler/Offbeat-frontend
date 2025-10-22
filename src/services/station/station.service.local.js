@@ -51,10 +51,6 @@ _createStations()
 //     return storageService.get(STORAGE_KEY, stationId)
 // }
 
-async function remove(stationId) {
-    // throw new Error('Nope')
-    await storageService.remove(STORAGE_KEY, stationId)
-}
 
 // function getLikedSongsStation() {
 //     let station = loadFromStorage(LIKED_SONGS_KEY)
@@ -379,7 +375,10 @@ export const likedSongsStationTemplate = {
         fullname: 'You'
     }
 }
-
+async function remove(stationId) {
+    // throw new Error('Nope')
+    await storageService.remove(STORAGE_KEY, stationId)
+}
 // async function save(station) {
 //     let savedStation
 

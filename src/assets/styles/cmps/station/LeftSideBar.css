@@ -1,4 +1,4 @@
-.station-list-container {
+.library-list-container {
     flex-grow: 1;
     min-height: 0;
     overflow-y: auto;
@@ -18,6 +18,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    
     /* overflow: hidden; */
 
     h3 {
@@ -88,7 +89,7 @@
             margin-bottom: 8px;
         }
 
-        .station-info {
+        .library-info {
             min-width: 0;
 
 
@@ -102,7 +103,7 @@
                 text-overflow: ellipsis;
             }
 
-            .station-type {
+            .library-type {
                 font-size: 0.5em;
                 color: #b3b3b3;
                 margin: 0;
@@ -110,7 +111,7 @@
                 font-size: 12px;
             }
 
-            .station-type-p {
+            .library-type-p {
                 font-size: 0.625em;
                 font-weight: normal;
             }
@@ -153,7 +154,7 @@
         }
     }
 
-    button:not(.play-button) {
+    /* button:not(.play-button) {
         background: none;
         border: none;
         color: var(--clr4);
@@ -171,7 +172,7 @@
             transform: translateY(2px);
         }
 
-    }
+    } */
 
     .recent-btn {
         display: flex;
@@ -179,7 +180,7 @@
         margin-top: -7px;
     }
 
-    .create-station-btn {
+    .create-library-btn {
         background-color: var(--gray2, #2a2a2a);
         border: none;
         border-radius: 50%;
@@ -285,13 +286,13 @@
             gap: 12px;
             padding: 4px 8px;
 
-            .station-info {
+            .library-info {
                 p {
                     font-size: 14px;
                     font-weight: 500;
                 }
 
-                .station-type {
+                .library-type {
                     font-size: 12px;
                 }
             }
@@ -380,3 +381,109 @@
   pointer-events: none;
   transition: opacity .2s, transform .2s;
 } */
+
+/* base grids */
+
+
+.library-list.grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  gap: 10px;
+}
+
+/* list stays as you already have */
+
+
+.library-item:hover { background: #202020; }
+
+
+
+/* compact tweaks */
+.library-item.compact {
+  padding: 8px;
+}
+.library-item.compact img {
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+
+
+/* play button smaller in compact */
+
+
+.library-item.compact .play-button {
+  right: 8px;
+  bottom: 44px;
+  width: 30px; height: 30px;
+}
+
+.contextmenu{
+    background-color: #282828;
+
+}
+.contextmenu ul{
+
+    background-color: #282828;
+    border-radius: 4px;
+    
+
+    max-height: calc(100vh - 24px);
+    max-width: 350px;
+    min-width: 200px;
+    overflow-y: auto;
+    padding: 4px;
+
+  
+    .contextmenu-group-title{
+        font-size: 0.7em;
+        font-weight: 600;
+    }
+}
+.contextmenu-item{
+    border-radius: 0px;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 0.8em;
+    margin:0;
+    padding: 8px 8px 8px 12px;
+    border: none;
+    background-color: #282828;
+
+}
+.contextmenu button:hover{
+    background-color: #757474;
+}
+
+
+.contextmenu-group-title{
+    padding: 12px;
+    display: flex;
+    gap: 8px;
+    height: var(--menu-item-height, 40px);
+    padding-inline-end: 8px;
+    position: relative;
+    justify-content: space-between;
+    align-items: center;
+    color: hsla(0, 0%, 100%, .7);
+    text-align: start;
+    user-select: none;
+    width: 100%;
+}
+.view-icon-row{
+    display: flex;
+    justify-content: center;
+    .cm-icon{
+        fill: #b3b3b3;
+    }
+}
+.contextmenu-item.view-op-cm{
+    padding: 8px;
+}
+.view-toggle-btn{
+    fill: #b3b3b3;
+}
+ul.contextmenu-group {
+  margin-top: 0;
+  margin-bottom: 0;
+}

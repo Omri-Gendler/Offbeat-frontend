@@ -231,3 +231,21 @@ export function IconCheckCircle24(props) {
   );
 }
 
+
+export const IconListCompact = (p) => (
+  <svg viewBox="0 0 16 16" width="16" height="16" {...p}>
+    <path d="M1 1h3v3H1zm0 5.5h3v3H1zM4 12H1v3h3zM6.5 1h3v3h-3zm3 5.5h-3v3h3zm-3 5.5h3v3h-3zM15 1h-3v3h3zm-3 5.5h3v3h-3zm3 5.5h-3v3h3z"></path>
+  </svg>
+)
+
+export const IconListDefault = (p) => (
+  <svg viewBox="0 0 16 16" width="16" height="16" {...p}>
+    <path d="M15 14.5H5V13h10zm0-5.75H5v-1.5h10zM15 3H5V1.5h10zM3 3H1V1.5h2zm0 11.5H1V13h2zm0-5.75H1v-1.5h2z"></path>
+  </svg>
+)
+
+export const IconGridDefault = (p) => (
+  <svg viewBox="0 0 16 16" width="16" height="16" {...p}>
+    <path d="M1 1h6v6H1zm1.5 1.5v3h3v-3zM1 9h6v6H1zm1.5 1.5v3h3v-3zM9 1h6v6H9zm1.5 1.5v3h3v-3zM9 9h6v6H9zm1.5 1.5v3h3v-3z"></path>
+  </svg>
+)
