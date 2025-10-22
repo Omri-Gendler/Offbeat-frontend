@@ -1,28 +1,26 @@
-/* ===== Left sidebar container ===== */
+
 .left-side-bar {
-  position: relative;                         
-  flex: 0 0 var(--sidebar-width);             
-  width: 350;
+  position: relative;
+  flex: 0 0 var(--sidebar-width);
+  width: 350px;                  /* FIX: add px */
   padding: 8px;
   min-inline-size: 220px;
   max-inline-size: 560px;
   background: var(--gray1);
-  align-items: center;
   border-radius: 9px;
-  min-height: 0;                               /* nested scroll friendliness */
-  overflow: visible;                           /* don't clip the handle */
-  h3 {
-    display: flex;
-    align-items: center;
-    font-size: 0.9em;
-    margin-inline-end: auto;
-    gap: 4px;
-    color: #fff;
-        margin-inline-start: 12px;
-  }
+  min-height: 0;
+  overflow: visible;
+
+  display: flex;
+  flex-direction: column;        /* ensure column layout */
+  align-items: stretch;          /* FIX: was center; allow child to fill width */
+  gap: 4px;
+  color: #fff;
+
+  margin-inline-start: 12px;
+  margin-inline-end: 0;          /* FIX: avoid weird shrinking */
 }
 
-/* ===== Top header (title + add) ===== */
 .left-header {
 
     display: flex;
@@ -30,7 +28,7 @@
     justify-content: space-between;
     gap: 8px;
     /* padding: 12px 16px 8px; */
-    position: relative;
+    position: sticky;
     /* z-index: 1; */
     padding-inline-end: var(--encore-spacing-tighter-2);
 
@@ -68,14 +66,15 @@ ease-out;
   }
 }
 
-/* ===== Sticky filters row ===== */
-.library-filters {
+
+/* .library-filters {
   position: sticky;
   top: 0;
   z-index: 10;
   display: grid;
   gap: 0;
-}
+  background: var(--gray1);      /
+} */
 
 .search-and-recent {
   display: flex;
@@ -113,7 +112,7 @@ width: max-content;
   }
 }
 
-/* ===== Search ===== */
+
 .search-container-left-side-bar {
   display: flex;
   align-items: center;
@@ -144,14 +143,16 @@ width: max-content;
 
 }
 
-/* ===== Scrolling container ===== */
+
 .station-list-container {
-  flex-grow: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  position: relative;            /* FIX: helps sticky & z-index contexts */
+  flex: 1 1 auto;                /* ensure it can grow to take space */
+  min-height: 0;                 /* FIX: allow child to shrink for scrolling */
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;
+  overflow-x: hidden;
   border-radius: 9px;
   width: 100%;
 
@@ -169,17 +170,15 @@ width: max-content;
   -ms-overflow-style: none;
 }
 
-/* =================== Library layouts =================== */
+
 
 .library-list {
-    display: grid
-;
-    grid-gap: var(--grid-gap);
-  
-    grid-template-rows: min-content;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
 
-  /* responsive columns */
+  display: grid;
+  gap: var(--grid-gap, 8px); 
+  grid-template-rows: min-content;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+
   @media (max-width: 1200px) { grid-template-columns: repeat(2, 1fr); }
   @media (max-width: 780px)  { grid-template-columns: repeat(1, 1fr); }
 
@@ -209,34 +208,54 @@ width: max-content;
   &.list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0;
 
     .library-item {
       flex-direction: row;
       align-items: center;
       gap: 12px;
-      padding: 4px 8px;
+      margin: 0;
+      
+      &:hover{
+        .play-button{
+            background-color: #3f3f3f;
+            opacity: 0.5;
+            svg{
+                opacity: 2;
+            }
+        }
+      }
 
       img {
-        width: 40px;
-        height: 40px;
+        min-width: 50px;
+        height: 50px;
         aspect-ratio: 1 / 1;
         object-fit: cover;
         border-radius: 4px;
         margin-bottom: 0;
+        position: relative;
       }
 
       .play-button {
-        bottom: 5px;
-        right: 15px;
-        width: 40px;
-        height: 40px;
+        bottom: 0px;
+        left: 0px;
+        width: 53px;
+        height: 53px;
+        border-radius: 4px;
+        background-color:transparent;
+        box-shadow: none;
+        transition: none;
+        svg{
+            fill: var(--clr4);
+            width: 3em;
+            height: 3em;
+        }
+
       }
     }
   }
 }
 
-/* =================== Library item =================== */
 
 .library-item {
   position: relative;
@@ -260,7 +279,12 @@ width: max-content;
     margin-bottom: 8px;
   }
 
-  .meta, .station-info { min-width: 0; }
+  .meta, .station-info {   
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-basis: 100%;
+    align-items: flex-start;}
 
   .name {
     color: #fff;
@@ -268,7 +292,6 @@ width: max-content;
     font-weight: 500;
     margin: 0 0 2px 0;
 
-    /* clamp to 2 lines nicely */
     display: -webkit-box;
      white-space: nowrap;
    
@@ -293,13 +316,12 @@ width: max-content;
     }
   }
 
-  /* play button */
   .play-button {
     position: absolute;
-    bottom: 4em;
-    right: .4em;
-    width: 3em;
-    height: 3em;
+    bottom: 5.5em;
+    right: .7em;
+    width: 4em;
+    height: 4em;
     background-color: #1ed760;
     border-radius: 50%;
     display: grid;
@@ -307,11 +329,11 @@ width: max-content;
     box-shadow: 0 4px 10px rgba(0,0,0,.4);
 
     opacity: 0;
-    transform: translateY(1em);
+    transform: translateY(2em);
     transition: opacity .2s ease, transform .2s ease;
     pointer-events: none;
 
-    svg { width: 22px; height: 22px; }
+    svg { width: 2em; height: 2em; }
   }
 
   &:hover .play-button,
@@ -323,20 +345,18 @@ width: max-content;
   }
 }
 
-/* empty state */
 .library-empty {
   color: #b3b3b3;
   padding: 12px;
 }
 
-/* ===== Filter button (if used) ===== */
 .filter-btn.selected {
   background-color: #fff;
   color: #000;
   position: relative;
 }
 
-/* =================== Context Menus =================== */
+
 
 .contextmenu {
   position: fixed;
@@ -344,9 +364,9 @@ width: max-content;
   background-color: #282828;
   color: #fff;
   border-radius: 8px;
-  /* position: absolute;
+  position: absolute;
   right: 5;
-  left: 10px; */
+  left: 10px;
   padding: 4px;
   box-shadow:
     0 16px 24px rgba(0,0,0,.3),
@@ -369,20 +389,20 @@ ul.contextmenu-group {
 
   /* group title */
   .contextmenu-group-title {
-    padding: 12px;
+    padding: 0.7em;
     height: var(--menu-item-height, 40px);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
     color: hsla(0,0%,100%,.7);
-    font-size: .8rem;
+    font-size: .7em;
     font-weight: 600;
     user-select: none;
   }
 
   /* radio/button rows */
-  .contextmenu-item {
+  button.contextmenu-item {
     width: 100%;
     text-align: left;
     background: #282828;
@@ -391,14 +411,15 @@ ul.contextmenu-group {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 12px;
+    padding: 0.9;
     font-size: .9rem;
     cursor: pointer;
     border-radius: 4px;
+    margin: 0;
 
     &:hover { background: #3a3a3a; }
 
-    .cm-icon { display: inline-grid; place-items: center; }
+    .cm-icon { display: inline-grid; justify-content: center; }
     .cm-label { flex: 1 1 auto; }
     .cm-check { margin-left: auto; }
   }
@@ -414,7 +435,7 @@ ul.contextmenu-group {
       padding: 8px;
       min-width: auto;
       background: transparent;
-      justify-content: center;
+      justify-content: space-between;
 
       &:hover { background: rgba(255,255,255,.08); }
       svg { fill: #b3b3b3; }
