@@ -10,7 +10,7 @@ export function ViewContextMenu({
   offset = 8,
 }) {
   const ref = useRef(null)
-  const [pos, setPos] = useState({ x: -9999, y: -9999 })
+  const [pos, setPos] = useState({ x: 0, y: 0 })
 
   // compute groups / selected index FIRST (hooks always run)
   const viewGroup = useMemo(
@@ -72,7 +72,8 @@ export function ViewContextMenu({
       className="contextmenu"
       role="dialog"
       aria-label="View menu"
-      style={{ position: 'fixed', left: pos.x, top: pos.y, zIndex: 9999 }}
+      data-anchor="view"
+      style={{ position: 'fixed', zIndex: 9999 }}
       onClick={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
     >

@@ -1,6 +1,7 @@
 
 import React, { memo } from 'react'
 import { LIKED_ID } from '../store/reducers/station.reducer'
+import { IconPinned } from './Icon'
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 function getMetaParts(station, likedId) {
@@ -25,7 +26,6 @@ function getMetaParts(station, likedId) {
     case 'playlist':
     default: {
       const base = ['Playlist']
-      if (station._id === likedId) base.push('Liked Songs')
       if (songsPart) base.push(songsPart)
       return base
     }
@@ -85,6 +85,8 @@ const LibraryItem = memo(function LibraryItem({
 
 const parts = getMetaParts(station,LIKED_ID)
 
+ const ariaParts = station.isPinned ? ['Pinned', ...parts] : parts
+
 
 
 
@@ -100,6 +102,7 @@ const parts = getMetaParts(station,LIKED_ID)
     >
       <div className="thumb-wrap">
         <img  loading="lazy" src={station.imgUrl || '/img/unnamed-song.png'} alt={station.name} />
+        {!compact &&
         <button
           type="button"
           className="play-button"
@@ -119,23 +122,31 @@ const parts = getMetaParts(station,LIKED_ID)
             </svg>
           )}
         </button>
+}         
       </div>
 
 
 
 <div className="meta">
-  <p className="name">{station.name}</p>
+  {!compact &&
+  <p className="name">{station.name}</p>}
 
-  {(!compact || list) && (
-    <p className="sub" aria-label={parts.join(' • ')}>
-      {parts.map((part, i) => (
-        <span key={i} className="meta-chip">
-          {i > 0 ? <span aria-hidden> • </span> : null}
-          {part}
-        </span>
-      ))}
-    </p>
-  )}
+{(!compact || list) && (
+  <p className="sub" aria-label={ariaParts.join(' • ')}>
+    {station.isPinned && (
+      <span className="meta-chip pinned" aria-hidden="true">
+        <IconPinned className='pinned-icon' size={12} color="var(--text-bright-accent, #1ed760)" />
+      </span>
+    )}
+
+    {parts.map((part, i) => (
+      <span key={i} className="meta-chip">
+        {i > 0 ? <span aria-hidden> • </span> : null}
+        {part}
+      </span>
+    ))}
+  </p>
+)}
 </div>
 
     </div>

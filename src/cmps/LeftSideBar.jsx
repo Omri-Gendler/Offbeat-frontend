@@ -14,13 +14,19 @@ import { IconListCompact, IconListDefault, IconGridDefault } from './Icon';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
-// ---------- static (outside component) ----------
-const VIEW_KEY = 'libraryViewMode'; // persist view
+
+const VIEW_KEY = 'libraryViewMode'; 
 const VIEW_META = {
   grid:          { label: 'Default grid',  Icon: IconGridDefault },
   'grid-compact':{ label: 'Compact grid',  Icon: IconListCompact },
   list:          { label: 'Default list',  Icon: IconListDefault },
-};
+}
+const SORT_LABELS = {
+  recent: 'Recents',
+  recentlyAdded: 'Recently Added',
+  alphabetical: 'Alphabetical',
+  creator: 'Creator',
+}
 
 export function LeftSideBar() {
   const allStations = useSelector(s => s.stationModule.stations) || [];
@@ -47,7 +53,7 @@ const [menu, setMenu] = useState({ open: false, x: 0, y: 0, kind: null, itemId: 
   useEffect(() => { localStorage.setItem(VIEW_KEY, viewMode); }, [viewMode]);
 
   const { label: viewLabel, Icon: ViewIcon } = VIEW_META[viewMode] || VIEW_META.grid;
-
+ const sortLabel = SORT_LABELS[sortBy] || 'Recents'
 
 const [pinnedIds, setPinnedIds] = useState(() => {
   try { return new Set(JSON.parse(localStorage.getItem(PINNED_KEY) || '[]')) }
@@ -205,10 +211,6 @@ const makeSorter = (sortBy) => {
         return (a._id || '').localeCompare(b._id || '');
       };
 
-    // add more if you like:
-    // case 'songs':
-    //   return (a, b) => (b.songs?.length || 0) - (a.songs?.length || 0);
-
     default:
       return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
   }
@@ -224,7 +226,7 @@ const sorter = makeSorter(sortBy);
     return liked ? [liked, ...pinned, ...unpinned] : [...pinned, ...unpinned]
 }, [allStations, filterBy.txt, sortBy, pinnedIds])
 
-  // ---- small UI bits ----
+
   function searchBar() {
     return (
       <div className={`search-container-left-side-bar ${isSearchOpen ? 'expanded' : ''}`}>
@@ -257,6 +259,7 @@ const sorter = makeSorter(sortBy);
         <h3>Your Library</h3>
         <button className="create-station-btn" onClick={handleCreateStation}>
           <AddIcon />
+          <span>Create</span>
         </button>
       </div>
     );
@@ -276,12 +279,13 @@ const sorter = makeSorter(sortBy);
               <button
                 ref={recentBtnRef}
                 type="button"
-                className="view-toggle-btn flex"
+                className="view-toggle-btn flex ctx-anchor-view"
                 title={`View: ${viewLabel}`}
                 aria-label={`View: ${viewLabel}`}
-                onClick={() => openMenuAtAnchor(recentBtnRef.current)} // left-click also opens view menu
+                onClick={() => openMenuAtAnchor(recentBtnRef.current)} 
                 style={{ background: 'transparent', display: 'flex', alignItems: 'center' }}
               >
+                <span>{sortLabel}</span>
                 <ViewIcon style={{ width: 16, height: 16, color: 'var(--clr4)' }} />
               </button>
             </div>
@@ -352,7 +356,40 @@ const sorter = makeSorter(sortBy);
           ]}
           onClose={closeMenu}
         />
+        <div
+      className="LayoutResizer LayoutResizer__inline-end"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Resize library sidebar"
+      onMouseDown={startSidebarDrag}
+      onTouchStart={startSidebarDrag}
+    />
       </aside>
     </section>
-  );
+  )
+}
+
+function startSidebarDrag(e) {
+  e.preventDefault();
+  const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+  const startWidth = parseFloat(getComputedStyle(document.documentElement)
+    .getPropertyValue('--sidebar-width')) || 320;
+
+  const onMove = (ev) => {
+    const x = 'touches' in ev ? ev.touches[0].clientX : ev.clientX;
+    const delta = x - startX;                 // LTR: dragging right widens
+    const next = Math.min(560, Math.max(220, startWidth + delta));
+    document.documentElement.style.setProperty('--sidebar-width', `${next}px`);
+  };
+  const onUp = () => {
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('touchmove', onMove);
+    window.removeEventListener('mouseup', onUp);
+    window.removeEventListener('touchend', onUp);
+  };
+
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchend', onUp);
 }

@@ -30,6 +30,7 @@
     --content-max-width: 1955px;
     --content-spacing: clamp(16px, 16px + (var(--main-view-grid-width) - 600px) / 424 * 8, 24px);
     --main-view-grid-width: 100cqw;
+    --min-column-width: 130px
     
     .encore-layout-themes {
         --encore-text-size-smaller-2: 0.75rem;
@@ -115,4 +116,8 @@
     font-size: var(--encore-text-size-larger-5);
     font-weight: 800;
     text-wrap: balance;
+}
+:root {
+  --sidebar-width: 320px;
+  --panel-gap: 8px;        
 }
