@@ -30,14 +30,12 @@ async function searchSongs(query) {
             }
         })
 
-        // 2. איסוף ID-ים
         const videoIds = searchResponse.data.items
             .map(item => item.id.videoId)
             .join(',')
 
         if (!videoIds) return []
 
-        // 3. קריאה שנייה לפרטים
         const detailsResponse = await axios.get(`${BASE_URL}/videos`, {
             params: {
                 part: 'snippet,contentDetails',
@@ -67,6 +65,8 @@ async function searchSongs(query) {
                 artists: item.snippet.channelTitle,
                 genre: detectGenre(item.snippet.title),
                 url: `https://www.youtube.com/watch?v=${videoId}`,
+                youtubeVideoId: videoId, // Add YouTube video ID
+                isYouTube: true, // Flag for YouTube content
                 imgUrl: item.snippet.thumbnails.high.url,
                 addedBy: 'u100',
                 likedBy: [],

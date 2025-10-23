@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 
-export function VolumeControl({ audioRef }) {
+export function VolumeControl({ audioRef, ytRef, currentSong }) {
     const [volume, setVolume] = useState(80)
     const volumeSliderRef = useRef(null)
 
@@ -13,14 +13,25 @@ export function VolumeControl({ audioRef }) {
     }
 
     useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = volume / 100
+        const volumeLevel = volume / 100
+        
+        if (currentSong?.isYouTube && ytRef?.current) {
+            // Set YouTube volume
+            try {
+                ytRef.current.setVolume(volumeLevel)
+                console.log('Set YouTube volume to:', volume)
+            } catch (e) {
+                console.warn('YouTube volume control error:', e)
+            }
+        } else if (audioRef?.current) {
+            // Set regular audio volume
+            audioRef.current.volume = volumeLevel
         }
 
         if (volumeSliderRef.current) {
             volumeSliderRef.current.style.setProperty('--volume-progress', `${volume}%`)
         }
-    }, [volume, audioRef])
+    }, [volume, audioRef, ytRef, currentSong])
 
     return (
         <div className="volume-control-container">

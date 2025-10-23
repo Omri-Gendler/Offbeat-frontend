@@ -241,6 +241,7 @@ import { likeSong, unlikeSong } from '../store/actions/station.actions'
 import { QueueSidebar } from './QueueSidebar'
 import { VolumeControl } from './VolumeControl'
 import { IconAddCircle24, IconCheckCircle24 } from './Icon'
+import YouTubePlayer from './YouTubePlayer'
 
 const FALLBACK = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 
@@ -264,37 +265,53 @@ export function MusicPlayer({ station }) {
   const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
 
   const audioRef = useRef(null)
+  const ytRef = useRef(null)
   const progressBarRef = useRef(null)
 
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
   const [isQueueOpen, setIsQueueOpen] = useState(false)
 
-  // Reflect store -> <audio>, resilient to autoplay errors
-  // 1) On track change: pause → load → (optionally) play
+  // Reflect store -> audio or YouTube player
+  // On track change: reset and load into the appropriate player
   useEffect(() => {
-    const el = audioRef.current
-    if (!el || !currentSong) return
-
-    el.pause()
-    el.currentTime = 0
-    el.load()                 // <-- forces the new src to be fetched/decoded
-    console.log(currentSong)
-    if (isPlaying) {
-      el.play().catch(() => setPlay(false))
-    }
-
     setDuration(0)
     setCurrentTime(0)
-  }, [currentSong?.id])        // <-- only when the song changes
+    if (!currentSong) return
 
-  useEffect(() => {
-    const el = audioRef.current
-    if (!el) return
-    if (isPlaying && currentSong) {
-      el.play().catch(() => setPlay(false))
+    if (currentSong.isYouTube) {
+      try {
+        const id = currentSong.youtubeVideoId || currentSong.id
+        ytRef.current?.load(id)
+      } catch (e) {
+        console.warn('YT load failed', e)
+      }
     } else {
+      const el = audioRef.current
+      if (!el) return
       el.pause()
+      el.currentTime = 0
+      el.load()
+      if (isPlaying) el.play().catch(() => setPlay(false))
+    }
+  }, [currentSong?.id])
+
+  // Sync play/pause to active player
+  useEffect(() => {
+    if (!currentSong) return
+    if (currentSong.isYouTube) {
+      try {
+        if (isPlaying) {
+          ytRef.current?.play()
+        } else {
+          ytRef.current?.pause()
+        }
+      } catch (e) { console.warn('YT play/pause error', e) }
+    } else {
+      const el = audioRef.current
+      if (!el) return
+      if (isPlaying && currentSong) el.play().catch(() => setPlay(false))
+      else el.pause()
     }
   }, [isPlaying, currentSong?.id])
 
@@ -347,10 +364,17 @@ export function MusicPlayer({ station }) {
     mediaSession.setActionHandler?.('previoustrack', () => prevTrack())
     mediaSession.setActionHandler?.('nexttrack', () => nextTrack())
     mediaSession.setActionHandler?.('seekto', (d) => {
-      if (!audioRef.current) return
       if (typeof d.seekTime === 'number') {
-        audioRef.current.currentTime = Math.min(Math.max(d.seekTime, 0), duration || 0)
-        setCurrentTime(audioRef.current.currentTime)
+        const seekTime = Math.min(Math.max(d.seekTime, 0), duration || 0)
+        if (currentSong?.isYouTube) {
+          try {
+            ytRef.current?.seekTo(seekTime)
+            setCurrentTime(seekTime)
+          } catch (e) { console.warn('Media session YouTube seek error', e) }
+        } else if (audioRef.current) {
+          audioRef.current.currentTime = seekTime
+          setCurrentTime(audioRef.current.currentTime)
+        }
       }
     })
   }, [currentSong?.id, station?.name, duration])
@@ -362,26 +386,43 @@ export function MusicPlayer({ station }) {
       return
     }
     togglePlay()
-  }, [currentSong, queue.length])
+  }, [currentSong, queue.length, isPlaying])
 
   const onNext = useCallback(() => nextTrack(), [])
   const onPrev = useCallback(() => prevTrack(), [])
 
   const seekBy = useCallback((delta) => {
-    const el = audioRef.current
-    if (!el) return
-    const next = Math.min(Math.max((el.currentTime || 0) + delta, 0), duration || 0)
-    el.currentTime = next
-    setCurrentTime(next)
-  }, [duration])
+    if (!currentSong) return
+    if (currentSong.isYouTube) {
+      try {
+        const cur = ytRef.current?.getCurrentTime() || 0
+        const next = Math.min(Math.max(cur + delta, 0), duration || 0)
+        ytRef.current?.seekTo(next)
+        setCurrentTime(next)
+      } catch (e) { console.warn('YT seekBy error', e) }
+    } else {
+      const el = audioRef.current
+      if (!el) return
+      const next = Math.min(Math.max((el.currentTime || 0) + delta, 0), duration || 0)
+      el.currentTime = next
+      setCurrentTime(next)
+    }
+  }, [duration, currentSong])
 
   const handleSeek = (e) => {
     const t = Number(e.target.value)
     if (!Number.isFinite(t)) return
-    if (audioRef.current) {
+    if (!currentSong) return
+    if (currentSong.isYouTube) {
+      try { 
+        ytRef.current?.seekTo(t)
+        setCurrentTime(t) 
+      } catch (e) { 
+        console.warn('YT handleSeek error', e) 
+      }
+    } else if (audioRef.current) {
       audioRef.current.currentTime = t
       setCurrentTime(t)
-      // setProgress?.(t) // optional: keep Redux in sync if you track progress
     }
   }
 
@@ -511,28 +552,49 @@ export function MusicPlayer({ station }) {
           <QueueMusicIcon />
         </button>
 
-        <VolumeControl audioRef={audioRef} />
+        <VolumeControl audioRef={audioRef} ytRef={ytRef} currentSong={currentSong} />
         <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Fullscreen">
           {/* <FullscreenIcon /> */}
         </button>
       </div>
 
-      <audio
-        ref={audioRef}
-        src={currentSong?.url}
-        preload="metadata"
-        onLoadedMetadata={() => {
-          const d = audioRef.current?.duration || 0
-          setDuration(Number.isFinite(d) ? d : 0)
-          if (isPlaying) audioRef.current?.play().catch(() => setPlay(false))
-        }}
-        onTimeUpdate={() => {
-          const t = audioRef.current?.currentTime || 0
-          setCurrentTime(t)
-          // setProgress?.(t) // optional Redux sync
-        }}
-        onEnded={onNext}
-      />
+      {/* Render audio only for non-YouTube tracks */}
+      {!currentSong?.isYouTube && (
+        <audio
+          ref={audioRef}
+          src={currentSong?.url}
+          preload="metadata"
+          onLoadedMetadata={() => {
+            const d = audioRef.current?.duration || 0
+            setDuration(Number.isFinite(d) ? d : 0)
+            if (isPlaying) audioRef.current?.play().catch(() => setPlay(false))
+          }}
+          onTimeUpdate={() => {
+            const t = audioRef.current?.currentTime || 0
+            setCurrentTime(t)
+          }}
+          onEnded={onNext}
+        />
+      )}
+
+      {/* YouTube player for YouTube tracks (hidden) */}
+      {currentSong?.isYouTube && (
+        <YouTubePlayer
+          ref={ytRef}
+          videoId={currentSong.youtubeVideoId || currentSong.id}
+          autoplay={isPlaying}
+          onDuration={(d) => {
+            setDuration(Number.isFinite(d) ? d : 0)
+          }}
+          onTimeUpdate={(t) => setCurrentTime(Number.isFinite(t) ? t : 0)}
+          onEnded={onNext}
+          onPlayingChange={(playing) => {
+            if (playing !== isPlaying) {
+              setPlay(playing)
+            }
+          }}
+        />
+      )}
 
       {isQueueOpen && (
         <QueueSidebar

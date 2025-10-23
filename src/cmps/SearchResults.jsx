@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { youtubeService } from '../services/youtube.service'
 import { IconPlay24, IconAddCircle24 } from './Icon'
 import { useDispatch } from 'react-redux'
-import { playSong } from '../store/actions/station.actions'
+import { playContext } from '../store/actions/player.actions'
 export function SearchResults({ searchTerm }) {
     const [songs, setSongs] = useState([])
     const [isLoading, setIsLoading] = useState(false)
@@ -72,10 +72,21 @@ export function SearchResults({ searchTerm }) {
         )
     }
 
-    function handlePlaySong(song) {
+    function handlePlaySong(song, songIndex = 0) {
         if (!song) return
-        console.log('song', song)
-        playSong(song)
+        console.log('Playing YouTube song:', song.title, 'isYouTube:', song.isYouTube, 'videoId:', song.youtubeVideoId)
+        
+        // Create a proper context with the search results as queue
+        const context = {
+            contextId: `search-${searchTerm}`,
+            contextType: 'search',
+            tracks: songs, // Full search results as queue
+            index: songIndex, // Which song in the queue to play
+            autoplay: true
+        }
+        
+        console.log('Dispatching playContext:', context)
+        dispatch(playContext(context))
     }
 
     const topResult = songs[0]
@@ -109,7 +120,7 @@ export function SearchResults({ searchTerm }) {
                         <p>Artist</p>
                         <button className="play-btn"
                             aria-label="Play"
-                            onClick={() => handlePlaySong(topResult)}
+                            onClick={() => handlePlaySong(topResult, 0)}
                         >
                             <IconPlay24 />
                         </button>
@@ -124,7 +135,7 @@ export function SearchResults({ searchTerm }) {
                             <div
                                 key={song.id}
                                 className="song-item"
-                                onClick={handlePlaySong(song)}
+                                onClick={() => handlePlaySong(song, index + 1)}
                             >
                                 {song.imgUrl && (
                                     <img src={song.imgUrl} alt={song.title} />
@@ -137,7 +148,10 @@ export function SearchResults({ searchTerm }) {
                                     <button
                                         className="add-btn"
                                         aria-label="Add to playlist"
-                                        onClick={handlePlaySong(song)}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            handlePlaySong(song, index + 1)
+                                        }}
                                     >
                                         <IconAddCircle24 />
                                     </button>
