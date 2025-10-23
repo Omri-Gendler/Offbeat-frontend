@@ -27,6 +27,7 @@ export function SearchResults({ searchTerm }) {
             setIsLoading(true)
             setError(null)
             const results = await youtubeService.searchSongs(searchTerm)
+            console.log('Search results:', results)
             setSongs(results)
         } catch (err) {
             console.error('Search failed:', err)

@@ -50,7 +50,8 @@ export function SongsList({
   onAdd,                   
   searchQuery = '',        
   maxResults = 5,  
-  isLiked = false
+  isLiked = false,
+  isExternalResults = false  // New prop to indicate external search results (like YouTube)
 }) {
   
   const dispatch = useDispatch()
@@ -72,7 +73,12 @@ export function SongsList({
   if (isPicker) {
     const q = normalize(searchQuery)
 
-    if (!q) {
+    if (isExternalResults) {
+      // For external results (like YouTube), use them directly without filtering
+      songs = allSongs.filter(s => !existingIds.has(s.id))
+      showNothingYet = false
+      noMatches = songs.length === 0 && q
+    } else if (!q) {
       showNothingYet = true
       songs = []
     } else {
@@ -80,7 +86,6 @@ export function SongsList({
         .filter(s => !existingIds.has(s.id))   
       noMatches = songs.length === 0
     }
-
   }
   if (isPicker && showNothingYet) {
     return (

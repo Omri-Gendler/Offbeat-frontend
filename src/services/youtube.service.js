@@ -6,7 +6,23 @@ const BASE_URL = 'https://www.googleapis.com/youtube/v3'
 const searchCache = new Map()
 
 export const youtubeService = {
-    searchSongs
+    searchSongs,
+    // searchVideos
+}
+
+export const searchVideos = async (query, maxResults) => {
+    const response = await axios.get(`${BASE_URL}/search`, {
+        params: {
+            part: 'snippet',
+            q: query,
+            key: API_KEY,
+            type: 'video',
+
+
+            maxResults: maxResults
+        }
+    })
+    return response.data.items
 }
 
 async function searchSongs(query) {
@@ -19,7 +35,6 @@ async function searchSongs(query) {
 
     console.log('Fetching from API:', cacheKey)
     try {
-        // 1. קריאה ראשונה לחיפוש
         const searchResponse = await axios.get(`${BASE_URL}/search`, {
             params: {
                 part: 'snippet',
@@ -44,13 +59,11 @@ async function searchSongs(query) {
             }
         })
 
-        // 4. יצירת מפה (lookup)
         const detailsMap = detailsResponse.data.items.reduce((acc, item) => {
             acc[item.id] = item
             return acc
         }, {})
 
-        // 5. מיפוי תוצאות
         const songs = searchResponse.data.items.map(item => {
             const videoId = item.id.videoId
             const details = detailsMap[videoId]
