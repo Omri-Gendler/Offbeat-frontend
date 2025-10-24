@@ -1,0 +1,101 @@
+.eq {
+  --eq-size: 14px;
+  --eq-color: #1ed760;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: calc(var(--eq-size) * 0.15);
+  width: calc(var(--eq-size) * 1.6);
+  height: var(--eq-size);
+}
+
+.eq i {
+  width: calc(var(--eq-size) * 0.18);
+  background: var(--eq-color);
+  border-radius: 999px;
+  transform-origin: bottom center;
+  height: 20%;
+  opacity: .9;
+}
+
+/* animate only when playing */
+.eq--on i {
+  animation: eqBounce 0.9s ease-in-out infinite;
+}
+.eq--on i:nth-child(2) { animation-delay: .15s; }
+.eq--on i:nth-child(3) { animation-delay: .30s; }
+
+/* paused: show subtle steady bars */
+.eq--off i:nth-child(1) { height: 22%; opacity:.6; }
+.eq--off i:nth-child(2) { height: 45%; opacity:.7; }
+.eq--off i:nth-child(3) { height: 30%; opacity:.65; }
+
+@keyframes eqBounce {
+  0%, 100% { height: 20%; }
+  50%      { height: 90%; }
+}
+
+/* Respect reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .eq--on i { animation: none; height: 50%; }
+}
+
+.eq-reactive {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  width: 100px;                 /* set as you like */
+}
+.eq-reactive span {
+  width: 4px;
+  background: var(--eq-color, #1ed760);
+  border-radius: 999px;
+  transition: height 80ms linear; /* smooth out jitter */
+}
+
+/* index cell layout */
+.song-list-row .cell.index .index-inner {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+}
+
+/* play/pause button only visible on hover/focus */
+.song-list-row .play-btn {
+  opacity: 0;
+  transform: scale(.96);
+  transition: opacity .12s ease, transform .12s ease;
+  z-index: 1;
+}
+.row:hover .play-btn,
+.row:focus-within .play-btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* hide the index number when hovering so the button is clean */
+.song-list-row .index-number {
+  transition: opacity .12s ease;
+}
+.row:hover .index-number,
+.row:focus-within .index-number {
+  opacity: 0;
+}
+
+/* equalizer sits centered by default when playing */
+.song-list-row .np-indicator {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transition: opacity .12s ease;
+}
+.row.is-active.is-playing .np-indicator { opacity: 1; }
+
+/* when hovering the active/playing row, show pause instead of EQ */
+.row.is-active.is-playing:hover .np-indicator,
+.row.is-active.is-playing:focus-within .np-indicator {
+  opacity: 0;
+}

@@ -55,6 +55,18 @@
         display: flex;
         flex-direction: column;
         gap: 4px;
+        max-width: 150px;
+        white-space: inherit;
+        text-overflow: ellipsis;
+    }
+    .player-controls{
+        display: flex;
+        align-items: center;
+        .player-controls-right,
+        .player-controls-left{
+            display: flex;
+            align-items: baseline;
+        }
     }
 
     .song-title {
