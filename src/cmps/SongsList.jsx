@@ -42,25 +42,28 @@ function getTopMatches(songs, q, maxResults = 5) {
 }
 
 export function SongsList({
-  station,              
-  songs: songsOverride,   
+  station,
+  songs: songsOverride,
   showHeader = true,
-  rowVariant = 'station', 
-  existingIds = new Set(), 
-  onAdd,                   
-  searchQuery = '',        
-  maxResults = 5,  
+  rowVariant = 'station',
+  existingIds = new Set(),
+  onAdd,
+  searchQuery = '',
+  maxResults = 5,
   isLiked = false,
   isExternalResults = false  // New prop to indicate external search results (like YouTube)
 }) {
-  
+
   const dispatch = useDispatch()
   const nowPlaying = useSelector(selectCurrentSong)
   const isPlaying = useSelector(selectIsPlaying)
   const playingId = nowPlaying?.id ?? null
 
   const isPicker = rowVariant === 'picker'
-  const allSongs = songsOverride ?? station?.songs ?? []
+  const songSource = songsOverride ?? station?.songs ?? []
+  const allSongs = (isExternalResults && songSource && !Array.isArray(songSource) && Array.isArray(songSource.songs))
+    ? songSource.songs
+    : songSource;
 
   const [selectedId, setSelectedId] = useState(null)
   const handleSelectRow = (song) => setSelectedId(song?.id ?? null)
@@ -83,7 +86,7 @@ export function SongsList({
       songs = []
     } else {
       songs = getTopMatches(allSongs, searchQuery, maxResults)
-        .filter(s => !existingIds.has(s.id))   
+        .filter(s => !existingIds.has(s.id))
       noMatches = songs.length === 0
     }
   }
@@ -133,12 +136,12 @@ export function SongsList({
     }
   }
 
-    const handleToggleLike = async (song, nextLiked) => {
+  const handleToggleLike = async (song, nextLiked) => {
     try {
       if (onToggleLike) return onToggleLike(song, nextLiked)
 
-      if (nextLiked) await likeSong(song)      
-      else           await unlikeSong(song.id)  
+      if (nextLiked) await likeSong(song)
+      else await unlikeSong(song.id)
     } catch (err) {
       console.error('toggle like failed', err)
     }
@@ -148,97 +151,97 @@ export function SongsList({
   const colCount = isPicker ? 4 : 5
 
   return (
-      <div className="songs-list-container">
-        <div
-          role="grid"
-          className="songs-list-grid"
-          tabIndex={0}
-          data-testid="songs-list"
-          aria-colcount={colCount}
-          aria-rowcount={songs.length + (showHeader ? 1 : 0)}
-        >
-          {showHeader && (
-            <div className="songs-list-header-spaceing" role="presentation">
-              <div role="presentation">
-                <div className="songs-list-header" role="row" aria-rowindex={1}>
-                  {/* Index / Play */}
-                  <div className="index flex" role="columnheader" aria-colindex={1} tabIndex={-1}>
-                    <div className="index-icon" data-testid="column-header-context-menu">#</div>
-                  </div>
-
-                  {/* Title */}
-                  <div className="title-container flex" role="columnheader" aria-colindex={2} tabIndex={-1}>
-                    <div data-testid="column-header-context-menu">
-                      <div className="column-header-item flex">
-                        <span className="header-item standalone-ellipsis-one-line">Title</span>
-                      </div>
-                    </div>
-                    <div className="title-spacer header-item-spacer" />
-                  </div>
-
-                  {/* Album */}
-                  <div className="title-container flex" role="columnheader" aria-colindex={3} tabIndex={-1}>
-                    <div data-testid="column-header-context-menu">
-                      <div className="column-header-item flex">
-                        <span className="header-item standalone-ellipsis-one-line">Album</span>
-                      </div>
-                    </div>
-                    <div className="album-spacer header-item-spacer" />
-                  </div>
-
-                  {/* Date added */}
-                  <div className="title-container date-added-container flex" role="columnheader" aria-colindex={4} tabIndex={-1}>
-                    <div data-testid="column-header-context-menu">
-                      <div className="column-header-item flex">
-                        <span className="header-item standalone-ellipsis-one-line">Date added</span>
-                      </div>
-                    </div>
-                    <div className="date-added-spacer header-item-spacer" />
-                  </div>
-
-                  {/* Duration column — hidden in picker */}
-                  {!isPicker && (
-                    <div className="duration-container title-container flex" role="columnheader" aria-colindex={5} tabIndex={-1}>
-                      <div data-testid="column-header-context-menu">
-                        <div className="column-header-item duration flex" aria-label="Duration">
-                          <DurationIcon />
-                        </div> 
-                      </div>
-                    </div>
-                  )}
+    <div className="songs-list-container">
+      <div
+        role="grid"
+        className="songs-list-grid"
+        tabIndex={0}
+        data-testid="songs-list"
+        aria-colcount={colCount}
+        aria-rowcount={songs.length + (showHeader ? 1 : 0)}
+      >
+        {showHeader && (
+          <div className="songs-list-header-spaceing" role="presentation">
+            <div role="presentation">
+              <div className="songs-list-header" role="row" aria-rowindex={1}>
+                {/* Index / Play */}
+                <div className="index flex" role="columnheader" aria-colindex={1} tabIndex={-1}>
+                  <div className="index-icon" data-testid="column-header-context-menu">#</div>
                 </div>
+
+                {/* Title */}
+                <div className="title-container flex" role="columnheader" aria-colindex={2} tabIndex={-1}>
+                  <div data-testid="column-header-context-menu">
+                    <div className="column-header-item flex">
+                      <span className="header-item standalone-ellipsis-one-line">Title</span>
+                    </div>
+                  </div>
+                  <div className="title-spacer header-item-spacer" />
+                </div>
+
+                {/* Album */}
+                <div className="title-container flex" role="columnheader" aria-colindex={3} tabIndex={-1}>
+                  <div data-testid="column-header-context-menu">
+                    <div className="column-header-item flex">
+                      <span className="header-item standalone-ellipsis-one-line">Album</span>
+                    </div>
+                  </div>
+                  <div className="album-spacer header-item-spacer" />
+                </div>
+
+                {/* Date added */}
+                <div className="title-container date-added-container flex" role="columnheader" aria-colindex={4} tabIndex={-1}>
+                  <div data-testid="column-header-context-menu">
+                    <div className="column-header-item flex">
+                      <span className="header-item standalone-ellipsis-one-line">Date added</span>
+                    </div>
+                  </div>
+                  <div className="date-added-spacer header-item-spacer" />
+                </div>
+
+                {/* Duration column — hidden in picker */}
+                {!isPicker && (
+                  <div className="duration-container title-container flex" role="columnheader" aria-colindex={5} tabIndex={-1}>
+                    <div data-testid="column-header-context-menu">
+                      <div className="column-header-item duration flex" aria-label="Duration">
+                        <DurationIcon />
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-      <ul className="songs-list" role="rowgroup">
-            {songs.map((song, idx) =>
-              isPicker ? (
-                <SongRow
-                  variant="picker"
-                  key={song.id}
-                  idx={idx}
-                  song={song}
-                  onPlayToggle={handleRowPlay}
-                  isActive={playingId === song.id}
-                  isPlaying={isPlaying}
-                  isInStation={existingIds.has(song.id)}
-                  onAdd={handleAddToCurrent}
-                />
-              ) : (
-                <SongRow
-                  key={song.id}
-                  idx={idx}
-                  song={song}
-                  variant="station"
-                  isActive={playingId === song.id}
-                  isPlaying={isPlaying}
-                  onPlayToggle={handleRowPlay}
-                />
-              )
-            )}
-          </ul>
-        </div>
+        <ul className="songs-list" role="rowgroup">
+          {songs.map((song, idx) =>
+            isPicker ? (
+              <SongRow
+                variant="picker"
+                key={song.id}
+                idx={idx}
+                song={song}
+                onPlayToggle={handleRowPlay}
+                isActive={playingId === song.id}
+                isPlaying={isPlaying}
+                isInStation={existingIds.has(song.id)}
+                onAdd={handleAddToCurrent}
+              />
+            ) : (
+              <SongRow
+                key={song.id}
+                idx={idx}
+                song={song}
+                variant="station"
+                isActive={playingId === song.id}
+                isPlaying={isPlaying}
+                onPlayToggle={handleRowPlay}
+              />
+            )
+          )}
+        </ul>
       </div>
+    </div>
   )
 }
