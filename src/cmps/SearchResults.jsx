@@ -10,9 +10,9 @@ import { PlayPauseButton } from './PlayPauseButton'
 import PauseIcon from '@mui/icons-material/Pause'
 
 export function SearchResults({ searchTerm }) {
-    const [songs, setSongs] = useState([])
-    const [artists, setArtists] = useState([])
+    const [allSongs, setAllSongs] = useState([])
     const [isLoading, setIsLoading] = useState(false)
+    const [allArtists, setAllArtists] = useState([])
     const [error, setError] = useState(null)
     const [activeFilter, setActiveFilter] = useState('All')
     const { queue = [], index = 0, isPlaying = false } = useSelector(
@@ -22,7 +22,7 @@ export function SearchResults({ searchTerm }) {
 
     const dispatch = useDispatch()
 
-    const filters = ['All', 'Artists', 'Playlists', 'Songs', 'Albums', 'Profiles', 'Podcasts & Shows']
+    const filters = ['All', 'Artists', 'Playlists', 'Songs', 'Albums']
 
     useEffect(() => {
         if (!searchTerm?.trim()) {
@@ -32,6 +32,20 @@ export function SearchResults({ searchTerm }) {
 
         searchSongs()
     }, [searchTerm])
+
+    const displayedArtists = useMemo(() => {
+        if (activeFilter === 'All' || activeFilter === 'Artists') {
+            return allArtists
+        }
+        return []
+    }, [allArtists, activeFilter, searchTerm])
+
+    const displayedSongs = useMemo(() => {
+        if (activeFilter === 'All' || activeFilter === 'Songs') {
+            return allSongs
+        }
+        return []
+    }, [allSongs, activeFilter, searchTerm])
 
     const currentPlayingSong = useMemo(() => {
         if (!queue.length) return null
@@ -45,8 +59,8 @@ export function SearchResults({ searchTerm }) {
             setError(null)
             const results = await youtubeService.searchSongs(searchTerm)
             console.log('Search results:', results)
-            setArtists(results.artists || [])
-            setSongs(results.songs || [])
+            setAllArtists(results.artists || [])
+            setAllSongs(results.songs || [])
         } catch (err) {
             console.error('Search failed:', err)
             setError('Failed to search songs. Please try again.')
@@ -123,9 +137,9 @@ export function SearchResults({ searchTerm }) {
         )
     }
 
-    const topResultArtist = artists[0]
-    const songsList = songs.slice(0, 4)
-    const featuringList = songs.slice(5, 7) // Show 2 featured items
+    const topResultArtist = displayedArtists[0]
+    const songsList = displayedSongs.slice(0, 4)
+    const featuringList = allSongs.slice(5, 7)
 
     return (
         <div className="search-container">
@@ -172,16 +186,16 @@ export function SearchResults({ searchTerm }) {
                     <div className="songs-table">
                         {/* Table Header */}
                         {/* <div className="songs-table-header"> */}
-                            {/* <div className="col-index">#</div>
+                        {/* <div className="col-index">#</div>
                             <div className="col-title">Title</div>
                             <div className="col-album">Album</div>
                             <div className="col-date">Date added</div> */}
-                            <div className="col-duration">
-                                {/* <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16">
+                        <div className="col-duration">
+                            {/* <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16">
                                     <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" fill="currentColor"></path>
                                     <path d="M8 3.25a.75.75 0 0 1 .75.75v3.25H11a.75.75 0 0 1 0 1.5H7.25V4A.75.75 0 0 1 8 3.25z" fill="currentColor"></path>
                                 </svg> */}
-                            </div>
+                        </div>
                         {/* </div> */}
 
                         {/* Table Body */}
