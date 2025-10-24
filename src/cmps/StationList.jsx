@@ -146,7 +146,6 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
       <div className='main-station-list-header'>
         <div className='main-station-list-filters'>
           <button>All</button>
-          <button>Music</button>
         </div>
 
         <div className='station-list-recents'>
