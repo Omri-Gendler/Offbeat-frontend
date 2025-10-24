@@ -29,7 +29,7 @@ export function SearchResultSongRow({ song, mapIndex, isThisSongPlaying, handleP
         >
             <div className="col-index">
                 <div className="track-number">
-                    <span className="number">{mapIndex + 2}</span>
+                    {/* <span className="number">{mapIndex + 2}</span> */}
                     <div className="play-pause-btn">
                         <PlayPauseButton
                             isPlaying={isThisSongPlaying}
@@ -57,11 +57,11 @@ export function SearchResultSongRow({ song, mapIndex, isThisSongPlaying, handleP
             </div>
 
             <div className="col-album">
-                <span className="album-name">{song.album || 'YouTube'}</span>
+                {/* <span className="album-name">{song.album || 'YouTube'}</span> */}
             </div>
 
             <div className="col-date">
-                <span className="date-added">Today</span>
+                {/* <span className="date-added">Today</span> */}
             </div>
 
             <div className="col-duration">
