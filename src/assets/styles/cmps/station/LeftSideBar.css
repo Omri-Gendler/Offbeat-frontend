@@ -220,31 +220,7 @@ width: max-content;
 
 
 
-.station-list-container {
-  position: relative;           
-  flex: 1 1 auto;                
-  min-height: 0;                 
-  display: flex;
-  flex-direction: column;
 
-  overflow-y: auto;
-  overflow-x: hidden;
-  border-radius: 9px;
-  width: 100%;
-
-
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 252, 252, 0.3);
-    border-radius: 20px;
-  }
-  &::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,.5); }
-
-
-  scrollbar-width: thin;
-  -ms-overflow-style: none;
-}
 
 
 
@@ -257,6 +233,24 @@ width: max-content;
 
   @media (max-width: 1200px) { grid-template-columns: repeat(2, 1fr); }
   @media (max-width: 780px)  { grid-template-columns: repeat(1, 1fr); }
+
+          & ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        & ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        & ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            
+        }
+
+        & ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
 
 
   &.grid-compact {
