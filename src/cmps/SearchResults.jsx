@@ -171,19 +171,22 @@ export function SearchResults({ searchTerm }) {
                             return (
                                 <div
                                     key={song.id}
-                                    className="song-item"
+                                    className="song-item-youtube"
                                     onClick={() => handlePlayPauseClick(song, index + 1)}
                                 >
-                                    <PlayPauseButton
-                                        isPlaying={isThisSongPlaying}
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            handlePlayPauseClick(song, index + 1)
-                                        }}
-                                    />
-                                    {song.imgUrl && (
-                                        <img src={song.imgUrl} alt={song.title} />
-                                    )}
+                                    <div className="song-item-img-container"> 
+
+                                        <PlayPauseButton
+                                            isPlaying={isThisSongPlaying}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handlePlayPauseClick(song, index + 1);
+                                            }}
+                                        />
+                                        {song.imgUrl && (
+                                            <img src={song.imgUrl} alt={song.title} />
+                                        )}
+                                    </div>
                                     <div className="song-info">
                                         <h3 className="song-title">{song.title}</h3>
                                         <p className="song-artist">{song.artists}</p>
