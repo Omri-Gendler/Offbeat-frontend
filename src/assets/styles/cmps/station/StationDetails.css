@@ -325,7 +325,8 @@
 
   padding-inline: 0px;
   display: inline-flex;
-
+  transform: scale(1);
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1) 150ms;
 
   align-items: center;
 

@@ -11,7 +11,7 @@ import PauseIcon from '@mui/icons-material/Pause'
 
 export function SearchResults({ searchTerm }) {
     const [songs, setSongs] = useState([])
-
+    const [artists, setArtists] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const [activeFilter, setActiveFilter] = useState('All')
@@ -45,7 +45,8 @@ export function SearchResults({ searchTerm }) {
             setError(null)
             const results = await youtubeService.searchSongs(searchTerm)
             console.log('Search results:', results)
-            setSongs(results)
+            setArtists(results.artists || [])
+            setSongs(results.songs || [])
         } catch (err) {
             console.error('Search failed:', err)
             setError('Failed to search songs. Please try again.')
@@ -122,8 +123,8 @@ export function SearchResults({ searchTerm }) {
         )
     }
 
-    const topResult = songs[0]
-    const songsList = songs.slice(1, 5) // Show top 4 songs
+    const topResultArtist = artists[0]
+    const songsList = songs.slice(0, 4)
     const featuringList = songs.slice(5, 7) // Show 2 featured items
 
     return (
@@ -144,19 +145,19 @@ export function SearchResults({ searchTerm }) {
             {/* Main Search Results */}
             <div className="search-results">
                 {/* Top Result */}
-                {topResult && (
+                {topResultArtist && (
                     <div className="top-result">
-                        {topResult.imgUrl && (
-                            <img src={topResult.imgUrl} alt={topResult.title} />
+                        {topResultArtist.imgUrl && (
+                            <img src={topResultArtist.imgUrl} alt={topResultArtist.title} />
                         )}
-                        <h2>{topResult.title}</h2>
+                        <h2>{topResultArtist.title}</h2>
                         <p>Artist</p>
                         <button
                             className="play-btn"
-                            // aria-label={isPlaying && currentPlayingSong?.id === topResult.id ? "Pause" : "Play"}
-                            onClick={() => handlePlayPauseClick(topResult, 0)}
+                            // aria-label={isPlaying && currentPlayingSong?.id === topResultArtist.id ? "Pause" : "Play"}
+                            onClick={() => handlePlayPauseClick(topResultArtist, 0)}
                         >
-                            {isPlaying && currentPlayingSong?.id === topResult.id ? (
+                            {isPlaying && currentPlayingSong?.id === topResultArtist.id ? (
                                 <PauseIcon />
                             ) : (
                                 <IconPlay24 />
@@ -192,7 +193,7 @@ export function SearchResults({ searchTerm }) {
                                     <SearchResultSongRow
                                         key={song.id}
                                         song={song}
-                                        mapIndex={index} 
+                                        mapIndex={index}
                                         isThisSongPlaying={isThisSongPlaying}
                                         handlePlayPauseClick={handlePlayPauseClick}
                                         formatDuration={formatDuration}

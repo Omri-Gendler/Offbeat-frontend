@@ -232,7 +232,7 @@ export function MusicPlayer({ station }) {
   }
 
   const onAddToLibrary = () => {
-    if (!station) return
+    // if (!station) return
     isLiked
       ? removeSongFromLikedSongs()
       : addSongToLikedSongs()

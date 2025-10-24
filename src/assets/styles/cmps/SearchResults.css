@@ -137,7 +137,7 @@
 
 .songs-table-header {
   display: grid;
-  grid-template-columns: 16px 1fr 1fr 120px 60px;
+  grid-template-columns: 16px 2fr 1fr 120px 60px;
   gap: 16px;
   align-items: center;
   height: 36px;
@@ -162,7 +162,7 @@
 /* Song Row */
 .song-row-youtube {
   display: grid;
-  grid-template-columns: 16px 1fr 1fr 120px 60px;
+  grid-template-columns: 16px 2fr 1fr 120px 60px;
   gap: 16px;
   align-items: center;
   height: 56px;
