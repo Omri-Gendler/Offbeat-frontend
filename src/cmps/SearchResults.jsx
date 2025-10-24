@@ -2,12 +2,16 @@ import { useState, useEffect, useMemo } from 'react'
 import { youtubeService } from '../services/youtube.service'
 import { IconPlay24, IconAddCircle24 } from './Icon'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
+import { likeSong, unlikeSong } from '../store/actions/station.actions'
+import { selectIsSongLiked } from '../store/selectors/player.selectors'
+import { SearchResultSongRow } from './SearchResultSongRow.jsx'
 import { playContext, togglePlay } from '../store/actions/player.actions'
 import { PlayPauseButton } from './PlayPauseButton'
 import PauseIcon from '@mui/icons-material/Pause'
 
 export function SearchResults({ searchTerm }) {
     const [songs, setSongs] = useState([])
+
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const [activeFilter, setActiveFilter] = useState('All')
@@ -185,69 +189,14 @@ export function SearchResults({ searchTerm }) {
                                 const isThisSongPlaying = isPlaying && currentPlayingSong?.id === song.id;
 
                                 return (
-                                    <div
+                                    <SearchResultSongRow
                                         key={song.id}
-                                        className={`song-row-youtube ${isThisSongPlaying ? 'active' : ''}`}
-                                        onClick={() => handlePlayPauseClick(song, index + 1)}
-                                    >
-                                        <div className="col-index">
-                                            <div className="track-number">
-                                                <span className="number">{index + 2}</span>
-                                                <div className="play-pause-btn">
-                                                    <PlayPauseButton
-                                                        isPlaying={isThisSongPlaying}
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handlePlayPauseClick(song, index + 1);
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="col-title">
-                                            <div className="track-info">
-                                                {song.imgUrl && (
-                                                    <img src={song.imgUrl} alt={song.title} className="track-image" />
-                                                )}
-                                                <div className="track-details">
-                                                    <div className={`track-name ${isThisSongPlaying ? 'playing' : ''}`}>
-                                                        {song.title}
-                                                    </div>
-                                                    <div className="track-artist">{song.artists}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="col-album">
-                                            <span className="album-name">{song.album || 'YouTube'}</span>
-                                        </div>
-                                        
-                                        <div className="col-date">
-                                            <span className="date-added">Today</span>
-                                        </div>
-                                        
-                                        <div className="col-duration">
-                                            <div className="duration-actions">
-                                                <button
-                                                    className="add-btn"
-                                                    aria-label="Add to playlist"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        handlePlaySong(song, index + 1)
-                                                    }}
-                                                >
-                                                    <IconAddCircle24 />
-                                                </button>
-                                                <span className="duration">{formatDuration(song.durationMs)}</span>
-                                                <button className="more-btn" aria-label="More options">
-                                                    <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16">
-                                                        <path d="M3 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm6.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM16 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor"></path>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                        song={song}
+                                        mapIndex={index} 
+                                        isThisSongPlaying={isThisSongPlaying}
+                                        handlePlayPauseClick={handlePlayPauseClick}
+                                        formatDuration={formatDuration}
+                                    />
                                 )
                             })}
                         </div>

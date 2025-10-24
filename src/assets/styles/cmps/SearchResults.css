@@ -369,7 +369,7 @@
   width: 16px;
   height: 16px;
   border: none;
-  background: none;
+  background: white;
   color: #b3b3b3;
   cursor: pointer;
   border-radius: 50%;
@@ -380,6 +380,13 @@
   padding: 0;
   opacity: 0;
   visibility: hidden;
+}
+
+.add-btn.is-liked {
+  opacity: 1;
+  background-color: var(--clr3);
+  visibility: visible;
+  color: white;
 }
 
 .song-row-youtube:hover .add-btn,
@@ -396,9 +403,15 @@
   transform: scale(1.1);
 }
 
+.add-btn:active {
+  transform: scale(2.95);
+  background-color: rgb(35, 169, 127);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 .song-row-youtube:hover .duration {
-  opacity: 0;
-  visibility: hidden;
+  /* opacity: 0; */
+  /* visibility: hidden; */
 }
 
 .song-row-youtube.active .duration {
