@@ -15,15 +15,28 @@
 }
 
 .context-menu li {
-    padding: 12px 15px;
-    cursor: pointer;
-    border-radius: 4px;
+
     display: flex;
-    align-items: center;
     gap: 12px;
-    font-size: 14px;
-    font-weight: 400;
-    transition: background-color 0.1s ease-in-out;
+    height: var(--menu-item-height, 40px);
+    position: relative;
+
+    justify-content: space-between;
+
+    align-items: center;
+    background: transparent;
+    padding: 8px 12px;
+    text-decoration: none;
+
+    user-select: none;
+
+    border: 0;
+    border-radius: 2px;
+    color: hsla(0, 0%, 100%, .9);
+    cursor: default;
+    padding-inline-end: 8px;
+    text-align: start;
+    width: 100%;
 }
 
 .context-menu li:hover {
@@ -41,4 +54,127 @@
     font-size: 16px;
     width: 16px;
     text-align: center;
+}
+
+
+.contextmenu {
+  position: fixed;
+  z-index: 1;
+  background-color: #282828;
+  color: #fff;
+  border-radius: 8px;
+  position: absolute;
+
+  padding: 4px;
+  box-shadow:
+    0 16px 24px rgba(0,0,0,.3),
+    0 6px 8px rgba(0,0,0,.25);
+  max-width: 200px;
+ 
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+
+  &::-webkit-scrollbar { width: 8px; }
+  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 20px; }
+}
+
+ul.contextmenu-group , ul.context-menu{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+
+  .contextmenu-group-title {
+    padding: 0.7em;
+    height: var(--menu-item-height, 40px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: hsla(0,0%,100%,.7);
+    font-size: .7em;
+    font-weight: 600;
+    user-select: none;
+  }
+
+
+  button.contextmenu-item {
+    width: 100%;
+    text-align: left;
+    background: #282828;
+    border: 0;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.9;
+    font-size: .9rem;
+    cursor: pointer;
+    border-radius: 4px;
+    margin: 0;
+
+    &:hover { background: #3a3a3a; }
+
+    .cm-icon { display: inline-grid; justify-content: center; }
+    .cm-label { flex: 1 1 auto; }
+    .cm-check { margin-left: auto;
+        svg{ 
+            fill: var(--clr3); }}
+  }
+
+
+  .view-icon-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 4px 8px;
+
+    .contextmenu-item.view-op-cm {
+      padding: 8px;
+      min-width: auto;
+      background: transparent;
+      justify-content: space-between;
+
+      &:hover { background: rgba(255,255,255,.08); }
+      svg { fill: #b3b3b3; }
+    }
+  }
+}
+
+
+.ctx-anchor-library-list {
+  anchor-name: --library-list;
+}
+
+.contextmenu[data-anchor="library-list-tr"] {
+  
+  position-anchor: --library-list;
+  top: anchor(top);
+  right: anchor(right);
+  translate: -1em;
+
+}
+.checked-context-item{
+     .cm-label {
+        color:var(--clr3);
+     }
+}
+
+
+html[dir="rtl"] .contextmenu[data-anchor="library-list-tr"] {
+  top: anchor(top);
+
+}
+
+
+
+.sub{
+.pinned-icon{
+    margin-inline-end: 0.3em;
+}}
+
+.context-menu button{
+    background-color: transparent;
 }

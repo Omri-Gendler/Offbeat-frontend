@@ -55,7 +55,7 @@ export function Library({
     : 'library-list grid'
 
   return (
-    <div className={containerClass}>
+    <div className={`${containerClass} ctx-anchor-library-list`}>
       {items.map(st => (
         <LibraryItem
           key={st._id}

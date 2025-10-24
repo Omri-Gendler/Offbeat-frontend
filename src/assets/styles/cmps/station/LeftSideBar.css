@@ -1,8 +1,7 @@
 
 .left-side-bar {
   position: relative;
-  flex: 0 0 var(--sidebar-width);
-  width: 350px;       
+  flex: 0 0 var(--sidebar-width);   
   padding: 8px;
   min-inline-size: 220px;
   max-inline-size: 560px;
@@ -10,13 +9,12 @@
   border-radius: 9px;
   min-height: 0;
   overflow: visible;
-
   display: flex;
   flex-direction: column;        
   align-items: stretch;        
   gap: 4px;
   color: #fff;
-
+  container-type: inline-size;
   margin-inline-start: 12px;
   margin-inline-end: 0;        
 }
@@ -24,26 +22,30 @@
 .left-header {
 
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 8px;
-    /* padding: 12px 16px 8px; */
+   
+    padding: 8px 8px 0;
     position: sticky;
-    /* z-index: 1; */
+    z-index: 2;
     padding-inline-end: var(--encore-spacing-tighter-2);
+    
+   h3 {
+      font-size: 20px;
+      
+    }
 
   .create-station-btn {
-    display: flex;
-    background-color:var(--background-elevated-base);
-    border: none;
-    border-radius: 20px;
-    width: max-content;
+    display: inline-flex;
+    align-items: center;
     gap: 8px;
     padding: 8px 16px;
+    border-radius: 20px;
+    background-color:var(--background-elevated-base);
+    border: none;
+    width: max-content;
+    gap: 8px;
     margin: 0;
-    place-items: center;
-    align-items: center;
-    justify-content: center;
     min-block-size: 35px;
     min-inline-size: 35px;
     color: #b3b3b3;
@@ -56,16 +58,26 @@ ease-out;
       color: #fff;
       
     }
+
     span {
-        font-size: 1.5em;
+        font-size: 24px;
     }
 
     svg {
-         font-size:1.8em;
+         font-size: 24px;
         }
   }
 }
-
+@container (max-width: 332px) {
+  .left-header .create-station-btn span { 
+    display: none; 
+  }
+  .left-header .create-station-btn {
+    padding: 6px;          /* icon-only pill */
+    min-inline-size: 35px; /* keep touch target */
+  }
+  
+}
 
 /* .library-filters {
   position: sticky;
@@ -73,15 +85,17 @@ ease-out;
   z-index: 10;
   display: grid;
   gap: 0;
-  background: var(--gray1);      /
+  background: var(--gray1);      
 } */
 
 .search-and-recent {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 350px;
   
-  margin: .7em 0;
+  padding: 8px 0px 8px 8px;
+  margin-bottom: 0.1em;
 }
 
 .recent-btn {
@@ -89,7 +103,8 @@ ease-out;
   align-items: center;
 justify-content: space-between;
 width: max-content;
-
+  flex: 0 0 auto;           
+  min-width: 0; 
 
   .view-toggle-btn {
     background: transparent;
@@ -105,43 +120,104 @@ width: max-content;
     color: var(--clr4);
     fill: var(--clr4) ;}
   }
-  span {
-    font-size: 1.4em;
-    margin-inline-end: 5px;
-    padding: 4px 0px;
-  }
+
+.view-toggle-btn .label {
+  display: inline-block;
+  max-width: 160px;   
+  font-size: 1.4em;
+  margin-inline-end: 5px;
+  padding: 4px 0px;    
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  transition: max-width .22s ease, opacity .18s ease, margin .18s ease;
+  opacity: 1;
+}
+}
+.search-and-recent:has(.search-container-left-side-bar.expanded) .view-toggle-btn .label {
+  max-width: 0;
+  opacity: 0;
+  margin: 0;               
 }
 
+
+.search-and-recent:has(.search-container-left-side-bar.expanded) .view-toggle-btn {
+  padding-inline: 4px;
+}
 
 .search-container-left-side-bar {
   display: flex;
   align-items: center;
   border-radius: 4px;
-  padding: 5px 12px;
-  margin-bottom: 8px;
+  padding: 5px 10px;
+  margin-bottom: 4px;
   
   cursor: pointer;
   transition: background-color .3s ease;
 
-  &.expanded {
-    background-color: #3f3f3f;
-    cursor: text;
-    margin-left: 8px;
-  }
 
-  .search-input {
-    width: 100%;
-    opacity: 1;
-    padding-left: 8px;
-    outline: none;
-    border: none;
-    background: transparent;
-    box-shadow: none;
-    color: var(--clr4);
-    font-size: 10px;
-  }
 
 }
+.search-container-left-side-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  padding: 6px 8px;
+  background: transparent;
+  transition: background-color .2s ease, outline-color .2s ease;
+  outline: 1px solid transparent;
+  position: relative;
+}
+
+.search-container-left-side-bar.expanded {
+  background-color: #3f3f3f;
+  outline-color: rgba(255,255,255,.06);
+  cursor: text;
+}
+
+.search-container-left-side-bar .search-icon {
+  color: var(--clr4);
+  flex: 0 0 auto;
+
+}
+
+.search-container-left-side-bar .search-input {
+  width: 0;
+  opacity: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--clr4);
+  font-size: 16px;
+  transition: width .22s ease, opacity .18s ease, padding .18s ease;
+}
+
+
+.search-container-left-side-bar.expanded .search-input {
+  width: 140px;         
+  opacity: 1;
+  padding: 0;
+  & :placeholder-shown {
+    color: var(--clr4);
+  }
+}
+
+
+
+
+@media (max-width: 900px) {
+  .search-container-left-side-bar.expanded .search-input { width: 120px; }
+}
+
+.search-and-recent:has(.search-container-left-side-bar.expanded) .view-toggle-btn .label {
+  max-width: 0; opacity: 0; margin: 0;
+}
+.search-and-recent:has(.search-container-left-side-bar.expanded) .view-toggle-btn {
+  padding-inline: 4px;
+}
+
 
 
 .station-list-container {
@@ -177,17 +253,17 @@ width: max-content;
   display: grid;
   gap: var(--grid-gap, 8px); 
   grid-template-rows: min-content;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 
   @media (max-width: 1200px) { grid-template-columns: repeat(2, 1fr); }
   @media (max-width: 780px)  { grid-template-columns: repeat(1, 1fr); }
 
   &.grid-compact {
-    grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
     gap: 0.2em;
 
     .library-item {
-      padding: 8px;
+      padding: 2px;
 
       img {
         border-radius: 4px;
@@ -358,90 +434,10 @@ width: max-content;
 
 
 
-.contextmenu {
-  position: fixed;
-  z-index: 9999;
-  background-color: #282828;
-  color: #fff;
-  border-radius: 8px;
-  position: absolute;
-  right: 5;
-  left: 10px;
-  padding: 4px;
-  box-shadow:
-    0 16px 24px rgba(0,0,0,.3),
-    0 6px 8px rgba(0,0,0,.25);
-  min-width: 220px;
-  max-width: 360px;
-  max-height: calc(100vh - 24px);
-  overflow-y: auto;
-  overflow-x: hidden;
 
 
-  &::-webkit-scrollbar { width: 8px; }
-  &::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 20px; }
-}
-
-ul.contextmenu-group {
-  list-style: none;
-  margin: 0;
-  padding: 0;
 
 
-  .contextmenu-group-title {
-    padding: 0.7em;
-    height: var(--menu-item-height, 40px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    color: hsla(0,0%,100%,.7);
-    font-size: .7em;
-    font-weight: 600;
-    user-select: none;
-  }
-
-
-  button.contextmenu-item {
-    width: 100%;
-    text-align: left;
-    background: #282828;
-    border: 0;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.9;
-    font-size: .9rem;
-    cursor: pointer;
-    border-radius: 4px;
-    margin: 0;
-
-    &:hover { background: #3a3a3a; }
-
-    .cm-icon { display: inline-grid; justify-content: center; }
-    .cm-label { flex: 1 1 auto; }
-    .cm-check { margin-left: auto; }
-  }
-
-
-  .view-icon-row {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 4px 8px;
-
-    .contextmenu-item.view-op-cm {
-      padding: 8px;
-      min-width: auto;
-      background: transparent;
-      justify-content: space-between;
-
-      &:hover { background: rgba(255,255,255,.08); }
-      svg { fill: #b3b3b3; }
-    }
-  }
-}
 
 
 .view-toggle-btn { fill: #b3b3b3; }
@@ -466,36 +462,13 @@ ul.contextmenu-group {
 
 
 
-.ctx-anchor-view {
-  anchor-name: --ctx-anchor-view;
-}
-
-.contextmenu[data-anchor="view"] {
-  position: fixed;
-  position-anchor: --ctx-anchor-view;
 
 
-  top: anchor(top);
-  left: anchor(left);
-  translate: -5em 1.5em 0em;     
-}
 
 
- .contextmenu[data-anchor="view-bottom"] {
-   position: fixed;
-   position-anchor: --ctx-anchor-view;
-   top: anchor(bottom);
-   
-  
- }
 
-
-html[dir="rtl"] .contextmenu[data-anchor="view"] {
-  left: auto;
-  right: anchor(left);
-  translate: -200px 0;
-}
 .sub{
 .pinned-icon{
     margin-inline-end: 0.3em;
 }}
+

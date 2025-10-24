@@ -1,4 +1,4 @@
-// ContextMenu.jsx
+
 import React from 'react';
 
 export function ContextMenu({ position, onDelete, onClose }) {
