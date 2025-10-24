@@ -1,54 +1,49 @@
 .main-container {
-  --left-sidebar-grid-area-z-index: 4;
-  --above-everything-except-music-player-z-index: 5;
-  --above-main-and-music-player-view-grid-area-z-index: 6;
-  --above-everything-grid-area-z-index: 7;
-  --music-player-grid-area-z-index: calc(var(--above-everything-except-music-player-z-index) + 1);
-  --onboarding-search-grid-area-z-index: calc(var(--above-everything-grid-area-z-index) + 1);
 
-  background-color: #000;
-  display: grid;
-  gap: var(--panel-gap);
-  grid-template-areas:
-    "top-banner top-banner"
-    "left-sidebar main-view"
-    "music-player music-player";
-  grid-template-columns: var(--sidebar-width, 320px) 1fr; /* single source of truth */
-  grid-template-rows: auto 1fr auto;
-  height: 100vh;
-  min-height: 0;           /* allow children to scroll */
-  position: relative;
-  padding: 0.3125em;       /* keep just one padding */
-  width: 100%;             /* avoid min-width:100vw overflow */
-}
+    --left-sidebar-grid-area-z-index: 4;
+    --above-everything-except-music-player-z-index: 5;
+    --above-main-and-music-player-view-grid-area-z-index: 6;
+    --above-everything-grid-area-z-index: 7;
+    --music-player-grid-area-z-index: calc(var(--above-everything-except-music-player-z-index) + 1);
+    --onboarding-search-grid-area-z-index: calc(var(--above-everything-grid-area-z-index) + 1);
+    background-color: #000;
+    display: grid;
+    gap: var(--panel-gap);
+    grid-template-areas:
+        "top-banner top-banner"
+        "left-sidebar main-view"
+        "music-player music-player";
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+    min-height: 100%;
+    padding: var(--panel-gap);
+    position: relative;
+    min-width: 100vw;
+    padding: 0.3125em;
 
-.main-container .left-side-bar {
-  grid-area: left-sidebar;
-  z-index: var(--left-sidebar-grid-area-z-index);
-  /* choose ONE scroll owner: either keep this… */
-  overflow-y: auto;
-  /* …or set overflow: hidden here and let the inner container scroll */
-  max-width: 420px;        /* optional hard cap */
-}
+    .left-side-bar {
+        grid-area: left-sidebar;
+        max-width: 420px;
+        width: 320px;
+        z-index: var(--left-sidebar-grid-area-z-index);
+
+    
+    }
+
+    .main-content {
+        grid-area: main-view;
+        container-type: size;
+        /* background-color: black; */
+        border-radius: 9px;
+        display: flex;
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        width: 100%;
+        padding-inline-end: px;
 
 
-/* sidebar scrollbar styling (scoped) */
-.main-container .left-side-bar::-webkit-scrollbar { width: 8px; }
-.main-container .left-side-bar::-webkit-scrollbar-track { background: transparent; }
-.main-container .left-side-bar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,.3); border-radius: 20px; }
-.main-container .left-side-bar::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,.5); }
-
-.main-container .main-content {
-  grid-area: main-view;
-  overflow-x: hidden;
-  overflow-y: auto;
-  container-type: inline-size; /* usually enough */
-  border-radius: 9px;
-  display: flex;
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  width: 100%;
     }
 
 
@@ -58,6 +53,7 @@
         right: 20px;
         z-index: 1000;
     }
+}
 
 
 
@@ -68,9 +64,6 @@
 }
 
 .music-player {
-    background-color: #000;
     grid-area: music-player;
-    margin: calc(var(--panel-gap) * -1);
-    padding: calc(var(--panel-gap));
-    z-index: var(--music-player-grid-area-z-index);
+    width: 100%;
 }

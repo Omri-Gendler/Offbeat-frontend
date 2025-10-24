@@ -1,29 +1,28 @@
-.main-station-list-container {
-    margin: -22px;
-}
+
 
 .station.list-content{
     background-color: red;
 }
+.station-list-container{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+/* .station-list-container::-webkit-scrollbar{
+    max-width: 0;
+} */
 
-
-.station-list::-webkit-scrollbar {
+.station-list-container::-webkit-scrollbar {
     width: 8px;
 }
 
-.station-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.station-list::-webkit-scrollbar-thumb {
+.station-list-container::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 20px;
 }
 
-.station-list::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(255, 255, 255, 0.5);
+.station-list-container::-webkit-scrollbar-track {
+    background: transparent;
 }
-
 .station-list-title {
     font-size: 22px;
     font-weight: 700;
@@ -66,9 +65,7 @@
 
 }
 
-.station-list::-webkit-scrollbar {
-    height: 8px;
-}
+
 
 .station-list .station-list-wrapper {
     flex-shrink: 0;

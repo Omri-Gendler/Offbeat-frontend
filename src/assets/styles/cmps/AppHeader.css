@@ -16,7 +16,7 @@
         justify-content: space-between;
         padding-left: 1.3em;
         padding-right: 1.3em;
-        padding-bottom: 0.7em;
+        
        
 
         font-size: 16px;
@@ -135,8 +135,10 @@
 
             .search-svg {
                 
-                left: 0.7em;
-                top: 0.7em;
+                left: 15px;
+                top: 10px;
+                height: 24px;
+                width: 24px;
                 position: absolute;
                 z-index: 1;
                 display: block;
