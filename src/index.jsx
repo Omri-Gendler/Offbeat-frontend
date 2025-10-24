@@ -8,8 +8,14 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 
 import { store } from './store/store'
 import { RootCmp } from './RootCmp'
+import { initDemoData, clearAndRegenerateDemoData } from './services/demo-data.service.js'
 
 import './assets/styles/main.css'
+
+initDemoData()
+
+// Debug function - available in browser console
+window.resetStationData = clearAndRegenerateDemoData
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
