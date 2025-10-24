@@ -2,7 +2,7 @@
 .left-side-bar {
   position: relative;
   flex: 0 0 var(--sidebar-width);   
-  padding: 8px;
+  padding: 0px 8px;
   min-inline-size: 220px;
   max-inline-size: 560px;
   background: var(--gray1);

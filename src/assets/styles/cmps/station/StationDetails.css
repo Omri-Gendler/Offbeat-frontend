@@ -437,8 +437,6 @@
   border-bottom: 1px solid transparent;
   box-sizing: content-box;
   height: 37px;
-  margin: 0 calc(var(--content-spacing) * -1) calc(var(--content-spacing) - 8px);
-  padding: 0 var(--content-spacing);
   position: sticky;
 
 
@@ -677,11 +675,7 @@
 
 }
 
-.songs-list-content-spacing {
-  min-height: 150px;
 
-
-}
 
 .cell.index {
   grid-column: index;
@@ -715,7 +709,7 @@
 .station-actions-space,
 .song-list-search {
   position: relative;
-  z-index: 1;
+  /* z-index: 1; */
 }
 
 .station-meta button {
@@ -762,7 +756,7 @@
 }
 
 
-/* .song-list { list-style: none; margin: 0; padding: 0; }
+.song-list { list-style: none; margin: 0; padding: 0; }
 .song-item { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; }
 
 
@@ -770,7 +764,7 @@
 .picker-panel .song-list--picker .meta .title { font-weight: 600; }
 .picker-panel .song-list--picker .meta .sub { opacity: .7; font-size: .9rem; }
 .row--picker .btn-icon.add-btn { transform: none; }
-.row--picker:hover { background-color: grey; } */
+.row--picker:hover { background-color: grey; }
 
 /* Show play/pause on hover/focus as usual */
 .row:hover .play-btn,
@@ -786,9 +780,10 @@
 
 
 .row.is-playing .play-btn {
+  
+  :hover{
   display: flex;
-  opacity: 1; visibility: visible; pointer-events: auto;
-  transform: scale(1);
+  opacity: 1; visibility: visible; pointer-events: auto;}
 }
 
 
@@ -818,3 +813,37 @@
   background-color: transparent;
 }
 
+/* === Make header use the same grid as rows === */
+/* .songs-list-header {
+  display: grid;
+  grid-template-columns:
+    [index] var(--tracklist-index-column-width, 16px)
+    [first] minmax(var(--col1-min-width, 180px), var(--col1, 6fr))
+    [var1]  minmax(var(--col2-min-width, 120px), var(--col2, 4fr))
+    [var2]  minmax(var(--col3-min-width, 120px), var(--col3, 3fr))
+    [last]  minmax(var(--col4-min-width, 120px), var(--col4, 1fr));
+  gap: 16px;
+  align-items: center;
+  height: 56px;         
+  padding: 0 16px;      
+  box-sizing: border-box;
+} */
+
+/* If you can add classes to your header cells, map them 1:1 like rows */
+.songs-list-header .column--index   { grid-column: index; justify-self: center; padding-left: 16px;}
+.songs-list-header .column--title   { grid-column: first / var1; }
+.songs-list-header .column--album   { grid-column: var1  / var2; }
+.songs-list-header .column--added   { grid-column: var2  / last; }
+.songs-list-header .column--duration{ grid-column: last;  justify-self: end; }
+
+/* Fallback if you don't control classes: place by order */
+.songs-list-header > *:nth-child(1) { grid-column: index;  justify-self: center; }
+.songs-list-header > *:nth-child(2) { grid-column: first / var1; }
+.songs-list-header > *:nth-child(3) { grid-column: var1  / var2; }
+.songs-list-header > *:nth-child(4) { grid-column: var2  / last; }
+.songs-list-header > *:nth-child(5) { grid-column: last;   justify-self: end; }
+
+/* Keep header icons aligned like the duration column in rows */
+.songs-list-header .column-header-item svg { 
+  width: 16px; height: 16px; fill: var(--clr4);
+}

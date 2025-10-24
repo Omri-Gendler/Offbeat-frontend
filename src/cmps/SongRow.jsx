@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { likeSong, unlikeSong } from '../store/actions/station.actions'
-import { IconPlay24, IconPause24, IconKebab16, IconAddCircle24, IconCheckCircle24 } from './Icon.jsx'
+import { IconPlay24, IconPause24, IconKebab16, IconAddCircle24, IconCheckCircle24 ,Equalizer} from './Icon.jsx'
 import { selectIsSongLiked } from '../store/selectors/player.selectors'
+
 
 function formatDuration(ms) {
   if (typeof ms !== 'number') return ''
@@ -111,8 +112,10 @@ export function SongRowBase({
     >
       <div className="song-list-row">
         {/* index / play */}
+     
         <div className="cell index flex" role="gridcell" aria-colindex={1}>
           <div className="index-inner">
+            {/* play/pause control (hidden until hover/focus) */}
             <button
               type="button"
               className={`play-btn ${isActive ? 'is-active' : ''}`}
@@ -121,11 +124,21 @@ export function SongRowBase({
               onClick={() => onPlayToggle?.(song)}
               tabIndex={-1}
             >
-              {pressed ? <IconPause24 /> : <IconPlay24 />}
+              {pressed ? < IconPause24 className='song-pause-icon' /> : <IconPlay24 />}
             </button>
+
+            {/* index number (default state) */}
             {!isPicker && <span className="index-number">{idx + 1}</span>}
+
+            {/* now-playing equalizer (reusing your existing component) */}
+            {isActive && isPlaying && (
+              <span className="np-indicator">
+                <Equalizer playing size={12} color="#1ed760" />
+              </span>
+            )}
           </div>
         </div>
+
 
         {/* title */}
         <div className="cell title container flex" role="gridcell" aria-colindex={2}>

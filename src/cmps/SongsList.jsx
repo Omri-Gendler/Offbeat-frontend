@@ -148,7 +148,6 @@ export function SongsList({
   const colCount = isPicker ? 4 : 5
 
   return (
-    <div className="songs-list-content-spacing">
       <div className="songs-list-container">
         <div
           role="grid"
@@ -241,6 +240,5 @@ export function SongsList({
           </ul>
         </div>
       </div>
-    </div>
   )
 }

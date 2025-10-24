@@ -2,7 +2,7 @@
 @import "setup/typography";
 
 @import "basics/helpers";
-@import "basics/layout";
+@import "basics/layout.css";
 @import "basics/base";
 @import "basics/forms";
 
@@ -33,6 +33,7 @@
 @import "cmps/station/VolumeControl";
 @import "cmps/station/QueueSidebar";
 @import "cmps/station/Browser";
+@import "cmps/station/Equalizer";
 
 
 

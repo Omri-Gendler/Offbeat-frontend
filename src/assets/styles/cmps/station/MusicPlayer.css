@@ -1,12 +1,12 @@
 .music-player {
-    bottom: 0;
-    left: 0;
+
     width: 100%;
     background-color: black;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     align-items: center;
-    justify-content: center;
+    padding-inline-start: 16px;
+    
     color: #fff;
     gap: 16px;
 
@@ -19,8 +19,13 @@
 
     .player-left {
         flex: 1 1 30%;
-        justify-content: flex-start;
+        gap: 5px;
         min-width: 180px;
+
+        svg{
+            width: 16px;
+            margin-left: 10px;
+        }
     }
 
     .player-center {
@@ -42,6 +47,7 @@
     .player-album-cover {
         width: 56px;
         height: 56px;
+        border-radius: 4px;
         margin-right: 12px;
     }
 
@@ -64,6 +70,10 @@
     .player-controls {
         display: flex;
         gap: 1em;
+
+        .shuffle-btn, .repeat-btn{
+            background-color: transparent;
+        }
     }
 
     .control-btn {

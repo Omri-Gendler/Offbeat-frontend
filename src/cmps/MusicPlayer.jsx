@@ -1,16 +1,13 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
-
 import PlayArrowIcon from '@mui/icons-material/PlayArrow'
 import PauseIcon from '@mui/icons-material/Pause'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
-import QueueMusicIcon from '@mui/icons-material/QueueMusic'
-import { likeSong, unlikeSong } from '../store/actions/station.actions'
-import { QueueSidebar } from './QueueSidebar'
-import { VolumeControl } from './VolumeControl'
-import { IconAddCircle24, IconCheckCircle24 } from './Icon'
-import YouTubePlayer from './YouTubePlayer'
+import SlideshowIcon from '@mui/icons-material/Slideshow'
+
+import TapAndPlayIcon from '@mui/icons-material/TapAndPlay'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
 
 import {
   setIndex,
@@ -21,7 +18,12 @@ import {
   // setProgress, // optional if you track progress in Redux
 } from '../store/actions/player.actions'
 
+import { likeSong, unlikeSong } from '../store/actions/station.actions'
+import { QueueSidebar } from './QueueSidebar'
+import { VolumeControl } from './VolumeControl'
+import { IconAddCircle24, IconCheckCircle24, IconView16, IconShuffle16, IconPrev16, IconPlay16, IconNext16, IconRepeat16, IconPause16  } from './Icon'
 
+import YouTubePlayer from './YouTubePlayer'
 
 const FALLBACK = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 
@@ -241,7 +243,7 @@ export function MusicPlayer({ station }) {
   const canGoNext = canControl && index < queue.length - 1
 
   return (
-    <footer className="music-player" role="region" aria-label="Player controls">
+    <div className="music-player" role="region" aria-label="Player controls">
       <div className="player-left">
         <img
           src={currentSong?.imgUrl || '/img/unnamed-song.png'}
@@ -269,12 +271,19 @@ export function MusicPlayer({ station }) {
           {isLiked ? <IconCheckCircle24 className="icon" /> : <IconAddCircle24 className="icon" />}
         </button>
       </div>
-
       <div className="player-center">
         <div className="player-controls" role="group" aria-label="Playback">
-          <button type="button" className="control-btn" onClick={onPrev} disabled={!canGoPrev}>
-            <SkipPreviousIcon style={{ fontSize: '1.563em', }} />
-          </button>
+          <div className='player-controls-left'>
+            <button className='shuffle-btn' aria-label="Enable shuffle"><IconShuffle16 /></button>
+            <button
+              type="button"
+              className="control-btn"
+              onClick={onPrev} 
+              disabled={!canGoPrev} 
+              aria-label="Previous">
+                <IconPrev16 />
+            </button>
+          </div>
           <button
             type="button"
             className="control-btn play-pause-btn"
@@ -284,14 +293,22 @@ export function MusicPlayer({ station }) {
             aria-pressed={isPlaying}
           >
             {isPlaying ? (
-              <PauseIcon style={{ fontSize: '1.563em' }} />
+              <IconPause16 style={{ fontSize: '16px' }} />
             ) : (
-              <PlayArrowIcon style={{ fontSize: '1.563em' }} />
+              <IconPlay16 style={{ fontSize: '16px' }} />
             )}
           </button>
-          <button type="button" className="control-btn" onClick={onNext} disabled={!canGoNext}>
-            <SkipNextIcon style={{ fontSize: '1.563em' }} />
-          </button>
+          <div className='player-conrols-right'>
+            <button 
+            type="button" 
+            className="control-btn" 
+            onClick={onNext} 
+            disabled={!canGoNext}
+            aria-label="Next">
+              <IconNext16 />
+            </button>
+            <button className='repeat-btn' aria-label="Enable repeat"><IconRepeat16 /></button>
+          </div>
         </div>
 
         <div className="progress-bar-container">
@@ -329,7 +346,7 @@ export function MusicPlayer({ station }) {
           aria-expanded={isQueueOpen}
           aria-controls="queue-sidebar"
         >
-          <QueueMusicIcon />
+          <IconView16 />
         </button>
 
         <VolumeControl audioRef={audioRef} ytRef={ytRef} currentSong={currentSong} />
@@ -383,6 +400,6 @@ export function MusicPlayer({ station }) {
           onClose={() => setIsQueueOpen(false)}
         />
       )}
-    </footer>
+    </div>
   )
 }

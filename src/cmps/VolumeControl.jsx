@@ -1,7 +1,8 @@
 // src/cmps/VolumeControl.jsx
 
 import React, { useState, useEffect, useRef } from 'react';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import { IconVolumeHigh16} from './Icon'
+
 
 export function VolumeControl({ audioRef, ytRef, currentSong }) {
     const [volume, setVolume] = useState(80)
@@ -35,7 +36,8 @@ export function VolumeControl({ audioRef, ytRef, currentSong }) {
 
     return (
         <div className="volume-control-container">
-            <VolumeUpIcon />
+            <IconVolumeHigh16
+            size={24}/>
             <input
                 ref={volumeSliderRef}
                 type="range"

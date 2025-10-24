@@ -27,6 +27,7 @@ body,
 .left-side-bar,
 main {
   overflow-y: auto;
+  
   height: 100%;
 }
 

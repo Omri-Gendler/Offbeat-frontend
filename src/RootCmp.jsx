@@ -51,7 +51,7 @@ export function RootCmp() {
                         </Route>
                     </Routes>
                 </main>
-                <AppFooter />
+                <AppFooter className="player"/>
             </div>
         </div>
     )
