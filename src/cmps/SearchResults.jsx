@@ -1,13 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { youtubeService } from '../services/youtube.service'
 import { IconPlay24, IconAddCircle24 } from './Icon'
-import { useDispatch } from 'react-redux'
-import { playContext } from '../store/actions/player.actions'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
+import { playContext, togglePlay } from '../store/actions/player.actions'
+import { PlayPauseButton } from './PlayPauseButton'
+import PauseIcon from '@mui/icons-material/Pause'
+
 export function SearchResults({ searchTerm }) {
     const [songs, setSongs] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const [activeFilter, setActiveFilter] = useState('All')
+    const { queue = [], index = 0, isPlaying = false } = useSelector(
+        s => s.playerModule || {},
+        shallowEqual
+    )
 
     const dispatch = useDispatch()
 
@@ -22,6 +29,12 @@ export function SearchResults({ searchTerm }) {
         searchSongs()
     }, [searchTerm])
 
+    const currentPlayingSong = useMemo(() => {
+        if (!queue.length) return null
+        const i = Math.min(Math.max(index, 0), queue.length - 1)
+        return queue[i] || null
+    }, [queue, index])
+
     async function searchSongs() {
         try {
             setIsLoading(true)
@@ -34,6 +47,38 @@ export function SearchResults({ searchTerm }) {
             setError('Failed to search songs. Please try again.')
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    function handlePlaySong(song, songIndex = 0) {
+        if (!song) return
+        console.log('Playing YouTube song:', song.title, 'isYouTube:', song.isYouTube, 'videoId:', song.youtubeVideoId)
+
+        const context = {
+            contextId: `search-${searchTerm}`,
+            contextType: 'search',
+            tracks: songs, // Full search results as queue
+            index: songIndex, // Which song in the queue to play
+            autoplay: true
+        }
+
+        console.log('Dispatching playContext:', context)
+        playContext(context)
+    }
+
+    const handlePlayPauseClick = (songInList, songIndexInList) => {
+        const isThisSongPlaying = currentPlayingSong?.id === songInList.id
+
+        console.log('--- Play/Pause Click ---');
+        console.log('Song Clicked ID:', songInList?.id);
+        console.log('Current Playing ID:', currentPlayingSong?.id);
+        console.log('Is this song playing?', isThisSongPlaying);
+        console.log('Is player playing (global)?', isPlaying);
+
+        if (isThisSongPlaying) {
+            togglePlay()
+        } else {
+            handlePlaySong(songInList, songIndexInList);
         }
     }
 
@@ -73,23 +118,6 @@ export function SearchResults({ searchTerm }) {
         )
     }
 
-    function handlePlaySong(song, songIndex = 0) {
-        if (!song) return
-        console.log('Playing YouTube song:', song.title, 'isYouTube:', song.isYouTube, 'videoId:', song.youtubeVideoId)
-        
-        // Create a proper context with the search results as queue
-        const context = {
-            contextId: `search-${searchTerm}`,
-            contextType: 'search',
-            tracks: songs, // Full search results as queue
-            index: songIndex, // Which song in the queue to play
-            autoplay: true
-        }
-        
-        console.log('Dispatching playContext:', context)
-        dispatch(playContext(context))
-    }
-
     const topResult = songs[0]
     const songsList = songs.slice(1, 5) // Show top 4 songs
     const featuringList = songs.slice(5, 7) // Show 2 featured items
@@ -119,11 +147,16 @@ export function SearchResults({ searchTerm }) {
                         )}
                         <h2>{topResult.title}</h2>
                         <p>Artist</p>
-                        <button className="play-btn"
-                            aria-label="Play"
-                            onClick={() => handlePlaySong(topResult, 0)}
+                        <button
+                            className="play-btn"
+                            // aria-label={isPlaying && currentPlayingSong?.id === topResult.id ? "Pause" : "Play"}
+                            onClick={() => handlePlayPauseClick(topResult, 0)}
                         >
-                            <IconPlay24 />
+                            {isPlaying && currentPlayingSong?.id === topResult.id ? (
+                                <PauseIcon />
+                            ) : (
+                                <IconPlay24 />
+                            )}
                         </button>
                     </div>
                 )}
@@ -132,34 +165,45 @@ export function SearchResults({ searchTerm }) {
                 <div className="songs-section">
                     <h2>Songs</h2>
                     <div className="songs-list">
-                        {songsList.map((song, index) => (
-                            <div
-                                key={song.id}
-                                className="song-item"
-                                onClick={() => handlePlaySong(song, index + 1)}
-                            >
-                                {song.imgUrl && (
-                                    <img src={song.imgUrl} alt={song.title} />
-                                )}
-                                <div className="song-info">
-                                    <h3 className="song-title">{song.title}</h3>
-                                    <p className="song-artist">{song.artists}</p>
-                                </div>
-                                <div className="song-actions">
-                                    <button
-                                        className="add-btn"
-                                        aria-label="Add to playlist"
+                        {songsList.map((song, index) => {
+                            const isThisSongPlaying = isPlaying && currentPlayingSong?.id === song.id;
+
+                            return (
+                                <div
+                                    key={song.id}
+                                    className="song-item"
+                                    onClick={() => handlePlayPauseClick(song, index + 1)}
+                                >
+                                    <PlayPauseButton
+                                        isPlaying={isThisSongPlaying}
                                         onClick={(e) => {
                                             e.stopPropagation()
-                                            handlePlaySong(song, index + 1)
+                                            handlePlayPauseClick(song, index + 1)
                                         }}
-                                    >
-                                        <IconAddCircle24 />
-                                    </button>
+                                    />
+                                    {song.imgUrl && (
+                                        <img src={song.imgUrl} alt={song.title} />
+                                    )}
+                                    <div className="song-info">
+                                        <h3 className="song-title">{song.title}</h3>
+                                        <p className="song-artist">{song.artists}</p>
+                                    </div>
+                                    <div className="song-actions">
+                                        <button
+                                            className="add-btn"
+                                            aria-label="Add to playlist"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handlePlaySong(song, index + 1)
+                                            }}
+                                        >
+                                            <IconAddCircle24 />
+                                        </button>
+                                    </div>
+                                    <span className="song-duration">{formatDuration(song.durationMs)}</span>
                                 </div>
-                                <span className="song-duration">{formatDuration(song.durationMs)}</span>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </div>
             </div>
