@@ -164,49 +164,93 @@ export function SearchResults({ searchTerm }) {
                 {/* Songs Section */}
                 <div className="songs-section">
                     <h2>Songs</h2>
-                    <div className="songs-list">
-                        {songsList.map((song, index) => {
-                            const isThisSongPlaying = isPlaying && currentPlayingSong?.id === song.id;
+                    <div className="songs-table">
+                        {/* Table Header */}
+                        <div className="songs-table-header">
+                            <div className="col-index">#</div>
+                            <div className="col-title">Title</div>
+                            <div className="col-album">Album</div>
+                            <div className="col-date">Date added</div>
+                            <div className="col-duration">
+                                <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16">
+                                    <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" fill="currentColor"></path>
+                                    <path d="M8 3.25a.75.75 0 0 1 .75.75v3.25H11a.75.75 0 0 1 0 1.5H7.25V4A.75.75 0 0 1 8 3.25z" fill="currentColor"></path>
+                                </svg>
+                            </div>
+                        </div>
 
-                            return (
-                                <div
-                                    key={song.id}
-                                    className="song-item-youtube"
-                                    onClick={() => handlePlayPauseClick(song, index + 1)}
-                                >
-                                    <div className="song-item-img-container"> 
+                        {/* Table Body */}
+                        <div className="songs-table-body">
+                            {songsList.map((song, index) => {
+                                const isThisSongPlaying = isPlaying && currentPlayingSong?.id === song.id;
 
-                                        <PlayPauseButton
-                                            isPlaying={isThisSongPlaying}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handlePlayPauseClick(song, index + 1);
-                                            }}
-                                        />
-                                        {song.imgUrl && (
-                                            <img src={song.imgUrl} alt={song.title} />
-                                        )}
+                                return (
+                                    <div
+                                        key={song.id}
+                                        className={`song-row-youtube ${isThisSongPlaying ? 'active' : ''}`}
+                                        onClick={() => handlePlayPauseClick(song, index + 1)}
+                                    >
+                                        <div className="col-index">
+                                            <div className="track-number">
+                                                <span className="number">{index + 2}</span>
+                                                <div className="play-pause-btn">
+                                                    <PlayPauseButton
+                                                        isPlaying={isThisSongPlaying}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handlePlayPauseClick(song, index + 1);
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="col-title">
+                                            <div className="track-info">
+                                                {song.imgUrl && (
+                                                    <img src={song.imgUrl} alt={song.title} className="track-image" />
+                                                )}
+                                                <div className="track-details">
+                                                    <div className={`track-name ${isThisSongPlaying ? 'playing' : ''}`}>
+                                                        {song.title}
+                                                    </div>
+                                                    <div className="track-artist">{song.artists}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="col-album">
+                                            <span className="album-name">{song.album || 'YouTube'}</span>
+                                        </div>
+                                        
+                                        <div className="col-date">
+                                            <span className="date-added">Today</span>
+                                        </div>
+                                        
+                                        <div className="col-duration">
+                                            <div className="duration-actions">
+                                                <button
+                                                    className="add-btn"
+                                                    aria-label="Add to playlist"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        handlePlaySong(song, index + 1)
+                                                    }}
+                                                >
+                                                    <IconAddCircle24 />
+                                                </button>
+                                                <span className="duration">{formatDuration(song.durationMs)}</span>
+                                                <button className="more-btn" aria-label="More options">
+                                                    <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16">
+                                                        <path d="M3 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm6.5 0a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM16 8a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" fill="currentColor"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="song-info">
-                                        <h3 className="song-title">{song.title}</h3>
-                                        <p className="song-artist">{song.artists}</p>
-                                    </div>
-                                    <div className="song-actions">
-                                        <button
-                                            className="add-btn"
-                                            aria-label="Add to playlist"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                handlePlaySong(song, index + 1)
-                                            }}
-                                        >
-                                            <IconAddCircle24 />
-                                        </button>
-                                    </div>
-                                    <span className="song-duration">{formatDuration(song.durationMs)}</span>
-                                </div>
-                            )
-                        })}
+                                )
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
