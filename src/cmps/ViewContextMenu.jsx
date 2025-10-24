@@ -1,18 +1,16 @@
 // src/cmps/ContextMenu/ViewContextMenu.jsx
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
+import { IconCheckmark16 } from './Icon'
 
 export function ViewContextMenu({
   open,
   onClose,
   groups = [],
-  anchorEl,
-  placement = 'left-start',
-  offset = 8,
+  anchorEl,             // optional, not used for closing anymore
+  closeOnSelect = false,
 }) {
   const ref = useRef(null)
-  const [pos, setPos] = useState({ x: 0, y: 0 })
 
-  // compute groups / selected index FIRST (hooks always run)
   const viewGroup = useMemo(
     () => groups.find(g => /view/i.test(g.title)) || null,
     [groups]
@@ -23,35 +21,13 @@ export function ViewContextMenu({
     return i < 0 ? 0 : i
   }, [viewGroup])
 
-  // position next to anchor
-  useLayoutEffect(() => {
-    if (!open) return
-    const a = anchorEl?.getBoundingClientRect?.()
-    const el = ref.current
-    if (!a || !el) return
-
-    setPos({ x: -9999, y: -9999 })
-    requestAnimationFrame(() => {
-      const r = el.getBoundingClientRect()
-      let x = a.left - r.width - offset
-      let y = a.bottom
-
-      if (placement === 'right-start') { x = a.right + offset; y = a.top }
-      if (placement === 'bottom-start') { x = a.left; y = a.bottom + offset }
-
-      if (x < 0) x = a.right + offset
-      if (x + r.width > innerWidth) x = Math.max(8, innerWidth - r.width - 8)
-      if (y + r.height > innerHeight) y = Math.max(8, innerHeight - r.height - 8)
-      if (y < 0) y = 8
-      setPos({ x, y })
-    })
-  }, [open, anchorEl, placement, offset])
-
-  // dismiss
+  // close on outside click or Esc
   useEffect(() => {
     if (!open) return
     const outside = (e) => {
-      if (!ref.current || ref.current.contains(e.target)) return
+      const el = ref.current
+      if (!el) return
+      if (el.contains(e.target)) return
       onClose?.()
     }
     const esc = (e) => { if (e.key === 'Escape') onClose?.() }
@@ -63,8 +39,12 @@ export function ViewContextMenu({
     }
   }, [open, onClose])
 
-  // now it's safe to bail out
   if (!open) return null
+
+  const handleSelect = (group, optId) => {
+    group.onChange?.(optId)
+    if (closeOnSelect) onClose?.()
+  }
 
   return (
     <div
@@ -72,7 +52,7 @@ export function ViewContextMenu({
       className="contextmenu"
       role="dialog"
       aria-label="View menu"
-      data-anchor="view"
+      data-anchor="library-list-tr"
       style={{ position: 'fixed', zIndex: 9999 }}
       onClick={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
@@ -92,12 +72,11 @@ export function ViewContextMenu({
                       role="menuitemradio"
                       aria-checked={checked}
                       className={`contextmenu-item view-op-cm flex ${checked ? 'checked-context-item' : ''}`}
-                      onClick={() => { g.onChange?.(opt.id); onClose?.() }}
+                      onClick={() => handleSelect(g, opt.id)}
                       aria-label={opt.ariaLabel || opt.label}
                       title={opt.label}
                     >
                       <span className="cm-icon">{opt.icon}</span>
-                     
                     </button>
                   </li>
                 )
@@ -112,12 +91,12 @@ export function ViewContextMenu({
                     type="button"
                     role="menuitemradio"
                     aria-checked={checked}
-                    className={`contextmenu-item  flex ${checked ? 'checked-context-item' : ''}`}
-                    onClick={() => { g.onChange?.(opt.id); onClose?.() }}
+                    className={`contextmenu-item flex ${checked ? 'checked-context-item' : ''}`}
+                    onClick={() => handleSelect(g, opt.id)}
                   >
                     {opt.icon && <span className="cm-icon">{opt.icon}</span>}
                     <span className="cm-label">{opt.label}</span>
-                    {checked && <span className="cm-check">✓</span>}
+                    {checked && <span className="cm-check"><IconCheckmark16 /></span>}
                   </button>
                 </li>
               )

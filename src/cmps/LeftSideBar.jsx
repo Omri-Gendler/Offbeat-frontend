@@ -9,7 +9,7 @@ import { ViewContextMenu } from './ViewContextMenu';
 import { SimpleContextMenu } from './SimpleContextMenu';
 
 import { playContext, togglePlay, setPlay } from "../store/actions/player.actions";
-import { IconListCompact, IconListDefault, IconGridDefault } from './Icon';
+import { IconListCompact, IconListDefault, IconGridDefault, IconPinned, IconSearch16, SearchLensIcon } from './Icon';
 
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
@@ -227,31 +227,66 @@ const sorter = makeSorter(sortBy);
 }, [allStations, filterBy.txt, sortBy, pinnedIds])
 
 
-  function searchBar() {
-    return (
-      <div className={`search-container-left-side-bar ${isSearchOpen ? 'expanded' : ''}`}>
-        <SearchIcon
-          className="search-icon"
-          onClick={() => setIsSearchOpen(true)}
-          style={{ cursor: 'pointer', height: 24 }}
-        />
-        {isSearchOpen ? (
-          <input
-            className="search-input"
-            ref={inputRef}
-            type="text"
-            name="txt"
-            value={filterBy.txt}
-            onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })}
-            placeholder="Search in Your Library"
-            onBlur={() => setIsSearchOpen(false)}
-          />
-        ) : (
-          <span className="search-placeholder" onClick={() => setIsSearchOpen(true)}></span>
-        )}
-      </div>
-    );
-  }
+function searchBar() {
+  const containerRef = useRef(null)
+
+  // close on outside click only when empty
+  useEffect(() => {
+    if (!isSearchOpen) return
+    const onDown = (e) => {
+      if (!containerRef.current) return
+      const clickedInside = containerRef.current.contains(e.target)
+      if (!clickedInside && !filterBy.txt) setIsSearchOpen(false)
+    }
+    const onEsc = (e) => {
+      if (e.key === 'Escape') {
+        if (filterBy.txt) {
+          // keep it open but clear? (Spotify keeps the text; choose your flavor)
+          // setFilterBy({ ...filterBy, txt: '' })
+          inputRef.current?.blur()
+        } else {
+          setIsSearchOpen(false)
+        }
+      }
+    }
+    document.addEventListener('mousedown', onDown, true)
+    document.addEventListener('keydown', onEsc)
+    return () => {
+      document.removeEventListener('mousedown', onDown, true)
+      document.removeEventListener('keydown', onEsc)
+    }
+  }, [isSearchOpen, filterBy.txt])
+
+  return (
+    <div
+      ref={containerRef}
+      className={`search-container-left-side-bar ${isSearchOpen ? 'expanded' : ''}`}
+      onClick={() => !isSearchOpen && setIsSearchOpen(true)}
+      role="search"
+      aria-expanded={isSearchOpen}
+    >
+      <SearchLensIcon
+        className="search-icon"
+        aria-hidden="true"
+        style={{ cursor: 'pointer', height: 16 }}
+        onClick={(e) => { e.stopPropagation(); setIsSearchOpen(true); }}
+      />
+
+      <input
+        ref={inputRef}
+        className="search-input"
+        type="text"
+        name="txt"
+        value={filterBy.txt}
+        onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })}
+        placeholder="Search in Your Library"
+        onFocus={() => setIsSearchOpen(true)}
+
+      />
+    </div>
+  )
+}
+
 
   function leftHeader() {
     return (
@@ -273,7 +308,7 @@ const sorter = makeSorter(sortBy);
       >
         <div className="library-filters">
           {leftHeader()}
-          <section className="search-and-recent">
+          <section className={`search-and-recent ${isSearchOpen ? 'search-open' : ''}`}>
             {searchBar()}
             <div className="recent-btn">
               <button
@@ -285,7 +320,7 @@ const sorter = makeSorter(sortBy);
                 onClick={() => openMenuAtAnchor(recentBtnRef.current)} 
                 style={{ background: 'transparent', display: 'flex', alignItems: 'center' }}
               >
-                <span>{sortLabel}</span>
+                <span className="label">{sortLabel}</span>
                 <ViewIcon style={{ width: 16, height: 16, color: 'var(--clr4)' }} />
               </button>
             </div>
@@ -304,8 +339,8 @@ const sorter = makeSorter(sortBy);
 
 <ViewContextMenu
   open={menu.open && menu.kind === 'view'}
-  anchorEl={recentBtnRef.current}
-  placement="bottom-right"
+  anchorEl={recentBtnRef}
+  
   groups={[
     {
       title: 'Sort by',
@@ -349,47 +384,28 @@ const sorter = makeSorter(sortBy);
           open={menu.open && menu.kind === 'item'}
           x={menu.x}
           y={menu.y}
-          items={[
+          items={
             pinnedIds.has(menu.itemId)
-              ? { id: 'unpin', label: 'Unpin',   onSelect: () => { togglePin(menu.itemId); closeMenu(); } }
-              : { id: 'pin',   label: 'Pin to top', onSelect: () => { togglePin(menu.itemId); closeMenu(); } }
-          ]}
-          onClose={closeMenu}
+              ? [
+                  {
+                    id: 'unpin',
+                    label: 'Unpin playlist',
+                    icon: <IconPinned />,
+                    onSelect: () => { togglePin(menu.itemId); closeMenu(); },
+                  },
+                ]
+              : [
+                  {
+                    id: 'pin',
+                    label: 'Pin playlist',
+                    onSelect: () => { togglePin(menu.itemId); closeMenu(); },
+                  },
+                ]
+          }
+          closeOnSelect
         />
-        <div
-      className="LayoutResizer LayoutResizer__inline-end"
-      role="separator"
-      aria-orientation="vertical"
-      aria-label="Resize library sidebar"
-      onMouseDown={startSidebarDrag}
-      onTouchStart={startSidebarDrag}
-    />
       </aside>
     </section>
   )
 }
 
-function startSidebarDrag(e) {
-  e.preventDefault();
-  const startX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-  const startWidth = parseFloat(getComputedStyle(document.documentElement)
-    .getPropertyValue('--sidebar-width')) || 320;
-
-  const onMove = (ev) => {
-    const x = 'touches' in ev ? ev.touches[0].clientX : ev.clientX;
-    const delta = x - startX;                 // LTR: dragging right widens
-    const next = Math.min(560, Math.max(220, startWidth + delta));
-    document.documentElement.style.setProperty('--sidebar-width', `${next}px`);
-  };
-  const onUp = () => {
-    window.removeEventListener('mousemove', onMove);
-    window.removeEventListener('touchmove', onMove);
-    window.removeEventListener('mouseup', onUp);
-    window.removeEventListener('touchend', onUp);
-  };
-
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('touchmove', onMove, { passive: false });
-  window.addEventListener('mouseup', onUp);
-  window.addEventListener('touchend', onUp);
-}

@@ -27,7 +27,7 @@
         overflow-y: auto;
         grid-area: left-sidebar;
         max-width: 420px;
-        width: calc(var(--left-sidebar-width) * 1px);
+        width: 320px;
         z-index: var(--left-sidebar-grid-area-z-index);
 
         /* Scrollbar styling for sidebar */
