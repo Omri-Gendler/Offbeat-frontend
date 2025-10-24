@@ -13,22 +13,7 @@
 
 }
 
-.station-details::-webkit-scrollbar {
-  width: 8px; 
-}
 
-.station-details::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.station-details::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.3); 
-  border-radius: 20px; 
-}
-
-.station-details::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-}
 
 .station-header {
   display: flex;
