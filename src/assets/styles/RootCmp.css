@@ -14,7 +14,7 @@ body,
 
 /* Global Spotify-style scrollbar */
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 12px;
   height: 12px;
 }
 
@@ -67,6 +67,7 @@ main {
   overflow-y: auto;
   min-width: 0;
   min-height: 0;
+
 }
 
 /* AppFooter (Music Player) positioning */
@@ -85,4 +86,20 @@ main {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
+}
+.main-content {
+  /* base */
+  background-color: #121212;
+
+  /* scrolling gradient at the top only */
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--cover-color) 65%, transparent) 0,
+    color-mix(in srgb, var(--cover-color) 40%, transparent) 100px,
+    color-mix(in srgb, var(--cover-color) 18%, transparent) 150px,
+    transparent 200px
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100px; /* limit to the top 380px */
+  background-position: top left; /* sits at the top and scrolls with content */
 }

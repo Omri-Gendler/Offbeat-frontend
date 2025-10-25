@@ -10,6 +10,7 @@
   min-height: calc(100vh - 160px);
   --content-spacing: clamp(16px, 16px + (var(--main-view-grid-width) - 600px) / 424 * 8, 24px);
   width: 100%;
+  
 
 }
 
@@ -31,33 +32,35 @@
 }
 
 .station-header {
-  display: flex;
+  position: relative;           
   align-items: flex-end;
+  z-index: 0;                   /* content above background, below overlay if needed */
 }
 
 .station-header,
 .station-details-header {
   position: relative;
-  z-index: 2;
+  z-index: 0;
 }
 
-.background-color-details {
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  display: block;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
+.content-spacing-container {
+   border-top: 0px solid  #3d3c3c15 ;
+  padding-top: 0px;
+  background-color: rgba(0, 0, 0, 0.683);
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(74, 74, 74, 0.425) 0%,     /* transparent strip */
+      color-mix(in srgb, var(--cover-color) 5%, transparent 30%) 20px,
+      #0000008e 20%,        /* solid below */
+      #79787800 200%
+    );
+    
+}
+.content-spacing-container{
+  padding: none ;
 }
 
-.background {
-  z-index: -1;
-  /* background: linear-gradient(transparent 0, rgba(0, 0, 0, .5) 100%), var(--background-noise); */
-
-}
 
 /* .background-position{
       display: block;
@@ -73,6 +76,8 @@
   display: flex;
 
 }
+
+
 
 .station-cover-container {
   display: flex;
@@ -139,7 +144,7 @@
   min-width: 0;
 }
 
-.station-header.flex.align-center {
+.station-header.flex {
   --fluid-height: clamp(186px, 186px + (var(--main-view-grid-width) - 600px) / 424 * 150, 336px);
   --min-fluid-height: clamp(186px, 186px + (var(--main-view-grid-width) - 600px) / 424 * 90, 276px);
   --min-fluid-height-large-header: clamp(216px, 216px + (var(--main-view-grid-width) - 600px) / 424 * 60, 276px);
@@ -158,6 +163,7 @@
   }
 
 } */
+
 
 
 
@@ -255,6 +261,7 @@
 
 .station-actions-space {
   display: flex;
+ 
   flex-direction: column;
   align-items: flex-start;
   position: relative;
@@ -410,7 +417,9 @@
   display: grid;
   align-items: center;
   height: 56px;
-  padding: 0 16px 16px;
+  padding: 0 16px ;
+  margin-bottom: 16px;
+ 
 
 }
 
@@ -578,6 +587,10 @@
   display: flex;
 }
 
+.content-spacing-container{
+  padding: 20px;
+  padding-top: 0;
+}
 
 .row:hover .index-number,
 .row:focus-within .index-number,
@@ -835,7 +848,7 @@
 .songs-list-header .column--title   { grid-column: first / var1; }
 .songs-list-header .column--album   { grid-column: var1  / var2; }
 .songs-list-header .column--added   { grid-column: var2  / last; }
-.songs-list-header .column--duration{ grid-column: last;  justify-self: end; }
+.songs-list-header .column--duration{ grid-column: last;  justify-self: end;}
 
 /* Fallback if you don't control classes: place by order */
 .songs-list-header > *:nth-child(1) { grid-column: index;  justify-self: center; }

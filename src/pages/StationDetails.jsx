@@ -9,6 +9,7 @@ import { SongsList } from '../cmps/SongsList.jsx'
 import { StationActions } from '../cmps/StationActions.jsx'
 import { EditStationModal } from '../cmps/EditStationModal.jsx'
 import { useParams } from 'react-router-dom'
+import {PlaylistHeader} from  '../cmps/PlaylistHeader.jsx'
 
 
 import { addStation, loadStation, updateStation, addSongToStation } from '../store/actions/station.actions'
@@ -56,7 +57,7 @@ export function StationDetails() {
 
     fac.getColorAsync(imageUrl, { algorithm: 'dominant', crossOrigin: 'anonymous' })
       .then(({ hex }) => {
-        if (!cancelled) setDynamicBg(`linear-gradient(${hex} 0%, #121212 350px)`)
+        if (!cancelled) setDynamicBg(hex)
       })
       .catch(() => {
         if (!cancelled) setDynamicBg('#121212')
@@ -92,66 +93,20 @@ export function StationDetails() {
   }
 
   return (
-    <section className="station-details" style={{ background: dynamicBg }}>
-      <div className="station-header flex align-center">
-        <div className="background-color-details" />
-        
+    <section className="station-details" >
+<PlaylistHeader station={station} onSaveStation={handleSaveDetails}/>
 
-        <div className="station-details-header content-spacing">
-          <div className="station-cover-container flex">
-            <div className="station-cover-img-wrap" draggable={false}>
-              <img
-                aria-hidden="false"
-                draggable="false"
-                loading="eager"
-                src={station.imgUrl || '/img/unnamed-song.png'}
-                alt=""
-                className="station-cover-img"
-                sizes="(min-width: 1280px) 232px, 192px"
-                onDoubleClick={() => handleCoverChange('/img/unnamed-song.png')}
-              />
-            </div>
-          </div>
-
-          <div className="station-meta">
-            <span className="station-type">Public Playlist</span>
-            <button className="station-title editable" onClick={() => setIsModalOpen(true)}>
-              <span>
-                <h1 className="e-91000-text encore-text-headline-large encore-internal-color-text-base">
-                  {station?.name ?? 'My Station'}
-                </h1>
-              </span>
-            </button>
-            <div className="station-byline">
-              <img src="/img/user-avatar.png" alt="user avatar" style={{ width: '25px', height: '25px' }} />
-              <a className="station-owner">{station?.createdBy?.fullname ?? 'Unknown'}</a>
-              <span className="dot">•</span>
-              <span className="station-stats">{station?.songs?.length ?? 0} songs</span>
-              <span className="dot">•</span>
-              <span className="station-total">{station?.length ?? '—'}</span>
-            </div>
-          </div>
-
-          {isModalOpen && (
-            <EditStationModal
-              station={station}
-              onSave={handleSaveDetails}
-              onClose={() => setIsModalOpen(false)}
-            />
-          )}
-        </div>
-      </div>
-
-      {/* Actions row under header */}
+      
+        <div className="content-spacing-container">
+      <div className="station-details-body">
       <StationActions station={station} />
 
-      <div className="station-details-body">
-        <div className="content-spacing">
-          <div className="actions-bar">{/* put extra actions here */}</div>
+          
 
           <SongsList station={station} />
+          <div className='find-more-container'>
 
-          <button className="btn" onClick={() => setIsPickerOpen(true)}>Add songs</button>
+          <button className="find-more-btn" onClick={() => setIsPickerOpen(true)}>Find more</button>
 
           {isPickerOpen && (
             <SongPicker
@@ -161,8 +116,11 @@ export function StationDetails() {
               onAdd={(song) => addSongToStation(stationId, song)}
             />
           )}
+          </div>
         </div>
       </div>
+      
     </section>
+
   )
 }

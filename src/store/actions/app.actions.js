@@ -1,13 +1,10 @@
-
-// src/store/actions/app.actions.js
 import { store } from '../store'
-import { SET_BG_IMAGE } from '../reducers/app.reducer'
+import { getCmdSetBgImage, getCmdSetCoverHex } from '../reducers/app.reducer'
 
-export function setBgImage(bgImageUrl) {
-  store.dispatch(getCmdSetBgImage(bgImageUrl || null))
+export function setBgImage(url) {
+  store.dispatch(getCmdSetBgImage(url || null))
 }
 
-
-export function getCmdSetBgImage(bgImageUrl) {
-  return { type: SET_BG_IMAGE, bgImageUrl }
+export function setCoverHex(hex) {
+  store.dispatch(getCmdSetCoverHex(hex || '#1f1f1f'))
 }

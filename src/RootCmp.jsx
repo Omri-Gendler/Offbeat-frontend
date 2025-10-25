@@ -19,37 +19,67 @@ import { LoginSignup, Login, Signup } from './pages/LoginSignup.jsx'
 import { AddStationModal } from './cmps/AddStationModal.jsx'
 import { SpatialTracking } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
+import { setCoverHex } from './store/actions/app.actions'
 
 
 
 export function RootCmp() {
   const bgImageUrl = useSelector(s => s.appModule?.bgImageUrl)
   const stations = useSelector(s => s.stationModule?.stations || [])
+  const coverHex   = useSelector(s => s.appModule?.coverHex) || '#1f1f1f'
   const [dynamicBg, setDynamicBg] = useState('#121212')
 
-  // Helper to compute gradient safely
+
+
   useEffect(() => {
     let alive = true
     const fac = new FastAverageColor()
 
     const computeFromUrl = (url) => {
-      if (!url) { if (alive) setDynamicBg('#121212'); return }
+      if (!url) {
+        if (alive) {
+          setDynamicBg('none')
+          setCoverHex('#1f1f1f')
+        }
+        return
+      }
       const img = new Image()
       img.crossOrigin = 'anonymous'
       img.referrerPolicy = 'no-referrer'
       img.onload = async () => {
         try {
           const c = await fac.getColorAsync(img, { algorithm: 'dominant' })
-          if (alive) setDynamicBg(`linear-gradient(${c.hex} 0%, #121212 350px)`)
+          if (!alive) return
+          const [r, g, b] = c.value
+
+          // short, smooth, TALLER hue that scrolls (background-image)
+          const topHue = `linear-gradient(
+            to bottom,
+            rgba(${r},${g},${b},.55) 0,
+            rgba(${r},${g},${b},.40) 180px,
+            rgba(${r},${g},${b},.22) 280px,
+            rgba(${r},${g},${b},.10) 320px,
+            rgba(${r},${g},${b},0) 360px
+          )`
+
+          setDynamicBg(topHue)   // ← only the gradient layer
+          setCoverHex(c.hex)
         } catch {
-          if (alive) setDynamicBg('#121212')
+          if (alive) {
+            setDynamicBg('none')
+            setCoverHex('#1f1f1f')
+          }
         }
       }
-      img.onerror = () => { if (alive) setDynamicBg('#121212') }
+      img.onerror = () => {
+        if (alive) {
+          setDynamicBg('none')
+          setCoverHex('#1f1f1f')
+        }
+      }
       img.src = url
     }
 
-    // Prefer explicit bgImageUrl (from Browser). If absent, fall back to first station.
     const fallbackUrl =
       stations[0]?.imgUrl ||
       stations[0]?.coverUrl ||
@@ -73,7 +103,18 @@ export function RootCmp() {
                 <LeftSideBar />
                 <UserMsg />
 
-                <main className="main-content" style={{ background: dynamicBg }}>
+                    <main
+          className="main-content"
+          // Base color + scrolling top gradient
+          style={{
+            '--cover-color': coverHex,
+            backgroundColor: '#121212',
+            backgroundImage: dynamicBg,     // ← the hue overlay
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '100% 360px',   // ← how tall the tint is
+            backgroundPosition: 'top left', // ← sits at the top, scrolls
+          }}
+        >
                     <Routes>
                         <Route path="" element={<HomePage />} />
                         <Route path="/station/:stationId" element={<StationDetails />} />

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { stationService } from '../services/station';
 import { addStation } from '../store/actions/station.actions';
 import { SongsList } from '../cmps/SongsList.jsx';
-import StationCover from '../cmps/StationCover.jsx';
+import {PlaylistHeader} from './PlaylistHeader.jsx';
 
 export function AddStationModal() {
     const [stationName, setStationName] = useState('')
