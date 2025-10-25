@@ -5,10 +5,31 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 999999;
+}
+
+body.modal-open .song-row:hover {
+    background-color: transparent !important;
+}
+
+body.modal-open .song-row-youtube:hover {
+    background-color: transparent !important;
+}
+
+/* Only disable hover effects and interactions for song rows when modal is open */
+body.modal-open .song-row,
+body.modal-open .song-row-youtube {
+    pointer-events: none !important;
+}
+
+.modal-overlay,
+.modal-overlay * {
+    pointer-events: auto !important;
 }
 
 .modal-content {
@@ -18,6 +39,8 @@
     box-shadow: 0 4px 4px rgba(0, 0, 0, .3);
     min-height: 384px;
     width: 524px;
+    position: relative;
+    z-index: 999998;
 }
 
 .modal-header {
@@ -179,6 +202,8 @@
     justify-content: flex-end;
     padding-inline-end: 17px;
     margin-top: 24px;
+    position: relative;
+    z-index: 999997;
 }
 
 .save-btn {
@@ -190,6 +215,8 @@
     font-weight: bold;
     cursor: pointer;
     transition: transform 0.1s ease;
+    position: relative;
+    z-index: 999996;
 }
 
 .save-btn:hover {

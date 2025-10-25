@@ -27,6 +27,14 @@ export function EditStationModal({ station, onClose, onSave }) {
         }
     }, [station])
 
+    // Add modal-open class to body when modal is open
+    useEffect(() => {
+        document.body.classList.add('modal-open')
+        return () => {
+            document.body.classList.remove('modal-open')
+        }
+    }, [])
+
     function handleChange({ target }) {
         const { name, value } = target
         setDetails(prevDetails => ({ ...prevDetails, [name]: value }))
