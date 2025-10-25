@@ -50,13 +50,21 @@
   background:
     linear-gradient(
       to bottom,
-      rgba(74, 74, 74, 0.425) 0%,     /* transparent strip */
-      color-mix(in srgb, var(--cover-color) 5%, transparent 30%) 20px,
-      #0000008e 20%,        /* solid below */
-      #79787800 200%
+      rgba(74, 74, 74, 0.425) 0%,
+      rgba(74, 74, 74, 0.425) 0%,
+      color-mix(in srgb, var(--cover-color) 1%, transparent 20%) 20px,
+      #000000 20%,
+      #000000 20%,
+      #202020 100%
     );
-    
+
+  /* key bits */
+  background-attachment: scroll;   /* attached to the element (not viewport) */
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-size: 100% 100%;      /* fill the element, not 100vh */
 }
+
 .content-spacing-container{
   padding: none ;
 }
@@ -416,7 +424,7 @@
 .songs-list-header {
   display: grid;
   align-items: center;
-  height: 56px;
+  /* height: 56px; */
   padding: 0 16px ;
   margin-bottom: 16px;
  
@@ -444,7 +452,7 @@
 }
 
 .songs-list-header {
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid hsla(0, 0%, 100%, .1);
   box-sizing: content-box;
   height: 37px;
   position: sticky;
@@ -504,6 +512,7 @@
 }
 
 .column-header-item {
+  border-left: 1px solid hsla(0, 0%, 100%, .1);
   justify-content: center;
   align-items: center;
   background-color: transparent;
@@ -526,7 +535,7 @@
 .duration-container {
 
   justify-content: flex-end;
-  margin-inline-end: 8px;
+  margin-inline-end: 22px;
 }
 
 .index {
@@ -604,6 +613,10 @@
   fill: var(--clr4);
 }
 
+.duration-text{
+  font-size: 18px;
+}
+
 .cell.duration svg {
   width: 16px;
   height: 16px;
@@ -633,6 +646,12 @@
   background-color: var(--clr3);
 }
 
+.cell.album{
+  display: flex;
+  font-size: 20px;
+  align-items: center;
+
+}
 .more-btn {
   justify-content: flex-end;
   padding: 8px 0;
@@ -861,3 +880,55 @@
 .songs-list-header .column-header-item svg { 
   width: 16px; height: 16px; fill: var(--clr4);
 }
+
+button.find-more-btn {
+ display: flex;
+ justify-self: flex-end;
+      font-family: var(--encore-body-font-stack);
+    font-size: var(--encore-text-size-smaller);
+    margin-inline-end: 0;
+  background-color:transparent;
+  :hover{
+    background-color: transparent;
+  }
+}
+ .btn-add-text{
+      box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    background-color: transparent;
+    border-radius: var(--encore-button-corner-radius, 9999px);
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    touch-action: manipulation;
+    transition-duration: var(--shortest-3);
+    transition-timing-function: var(--productive);
+    user-select: none;
+    vertical-align: middle;
+    will-change: transform;
+    border: 1px solid var(--essential-subdued, #818181);
+    color: var(--text-base, #000000);
+    min-inline-size: 0px;
+    min-block-size: var(--encore-control-size-smaller, 32px);
+    display: inline-flex
+;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    transition-property: border-color, transform;
+
+    & span{
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--clr4);
+    }
+    &:hover{
+      border: 2px solid var(--clr4);
+    }
+
+ }
+
+ .song-list-search{
+margin-bottom: 20px;
+ }
