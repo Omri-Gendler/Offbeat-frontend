@@ -104,7 +104,7 @@ export function SongsList({
       <div className="songs-list-content-spacing">
         <div className="songs-list-container">
           <p className="empty-msg">
-            {isPicker && noMatches ? `No results for “${searchQuery}”` : 'No songs in this station yet'}
+            {isPicker && noMatches ? `No results for “${searchQuery}”` : ''}
           </p>
         </div>
       </div>
@@ -119,7 +119,7 @@ export function SongsList({
       playContext({
         contextId: station?._id,
         contextType: 'station',
-        tracks: station?.songs ?? songs,  // fallback if station missing
+        tracks: station?.songs ?? songs,
         trackId: song.id,
         autoplay: true
       })
@@ -160,7 +160,7 @@ export function SongsList({
         aria-colcount={colCount}
         aria-rowcount={songs.length + (showHeader ? 1 : 0)}
       >
-        {showHeader && (
+        {showHeader &&!isPicker && (
           <div className="songs-list-header-spaceing" role="presentation">
             <div role="presentation">
               <div className="songs-list-header" role="row" aria-rowindex={1}>

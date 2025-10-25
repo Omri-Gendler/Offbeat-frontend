@@ -91,10 +91,9 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
           onChange={setQuery}
           onClose={onClose}
         />
-
-        {isLoading && <div className="picker-loading">טוען תוצאות...</div>}
         
 
+      </div>
         <SongsList
           station={station}
           rowVariant="picker"
@@ -106,7 +105,6 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
           showHeader={true}
           isExternalResults={true}
         />
-      </div>
     </div>
   )
 }

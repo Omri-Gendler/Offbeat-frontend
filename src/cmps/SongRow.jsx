@@ -178,17 +178,18 @@ export function SongRowBase({
           )}
         </div>
 
-        {/* actions — duration then kebab at the VERY end */}
+       
         <div className="cell actions" role="gridcell" aria-colindex={5} aria-label="Actions">
           {isPicker ? (
-            // PICKER: text Add only
             <button
               className="btn btn-add-text"
               aria-label="Add to playlist"
               onClick={(e) => { e.stopPropagation(); onAdd?.(song) }}
               tabIndex={-1}
             >
+              <span>
               Add
+              </span>
             </button>
           ) : (
             <>

@@ -1,3 +1,5 @@
+import { computeAndSetCoverFromHex } from '../store/actions/app.actions.js'
+
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -10,9 +12,10 @@ import { StationActions } from '../cmps/StationActions.jsx'
 import { EditStationModal } from '../cmps/EditStationModal.jsx'
 import { useParams } from 'react-router-dom'
 import {PlaylistHeader} from  '../cmps/PlaylistHeader.jsx'
+import { setCoverHex,setCoverHue } from '../store/actions/app.actions.js'
 
 
-import { addStation, loadStation, updateStation, addSongToStation } from '../store/actions/station.actions'
+import { addStation, loadStation, updateStation, addSongToStation ,} from '../store/actions/station.actions'
 import { addStationToLibrary } from '../store/actions/station.actions'
 
 export function StationDetails() {
@@ -46,33 +49,42 @@ export function StationDetails() {
 
 
 
-  useEffect(() => {
-    const fac = new FastAverageColor()
-    const imageUrl = station?.imgUrl
-    let cancelled = false
-    if (!imageUrl) {
-      setDynamicBg('#121212')
-      return () => fac.destroy()
-    }
 
-    fac.getColorAsync(imageUrl, { algorithm: 'dominant', crossOrigin: 'anonymous' })
-      .then(({ hex }) => {
-        if (!cancelled) setDynamicBg(hex)
-      })
-      .catch(() => {
-        if (!cancelled) setDynamicBg('#121212')
-      })
 
-    return () => {
-      cancelled = true
-      fac.destroy()
-    }
-  }, [station?.imgUrl])
+useEffect(() => {
+  const fac = new FastAverageColor()
+  const imageUrl = station?.imgUrl
+  let cancelled = false
+
+  if (!imageUrl) {
+    setDynamicBg('#121212')
+    setCoverHex('#1f1f1f')
+    setCoverHue(0)
+    return () => fac.destroy()
+  }
+
+fac.getColorAsync(imageUrl, { algorithm: 'dominant', mode: 'precision', step: 1, crossOrigin: 'anonymous' })
+  .then(({ hex }) => {
+    if (cancelled) return
+    const { hex: boosted } = computeAndSetCoverFromHex(hex) // sets both
+    setDynamicBg(boosted)
+  })
+  .catch(() => {
+    if (cancelled) return
+    setDynamicBg('#121212')
+    setCoverHex('#1f1f1f')
+    setCoverHue(0)
+  })
+
+
+  return () => { cancelled = true; fac.destroy() }
+}, [station?.imgUrl])
+
 
   const handleCoverChange = useCallback((newUrl) => {
     if (station) updateStation({ ...station, imgUrl: newUrl })
   }, [station])
-  // Set of ids already in this station (for picker to disable/hide)
+
   const existingIds = useMemo(
     () => new Set(songs.map(t => t.id)),
     [songs]
@@ -83,7 +95,7 @@ export function StationDetails() {
     await updateStation({ ...station, ...updatedDetails })
   }
 
-  // Early return AFTER hooks
+
   if (!station) {
     return (
       <section className="station-details">
@@ -105,8 +117,8 @@ export function StationDetails() {
 
           <SongsList station={station} />
           <div className='find-more-container'>
-
-          <button className="find-more-btn" onClick={() => setIsPickerOpen(true)}>Find more</button>
+        {!isPickerOpen &&
+          <button className="find-more-btn" onClick={() => setIsPickerOpen(true)}>Find more</button>}
 
           {isPickerOpen && (
             <SongPicker

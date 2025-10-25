@@ -305,29 +305,29 @@ function _generateDemoSongs(count, artists) {
 /**
  * @param {Array} allStations 
  */
-// function _createLikedSongsStation(allStations) {
-//     const allSongs = allStations.flatMap(station => station.songs)
+function _createLikedSongsStation(allStations) {
+    const allSongs = allStations.flatMap(station => station.songs)
+    
+    const likedSongsSample = []
+    for (let i = 0; i < 25; i++) {
+        if (allSongs.length > 0) {
+            likedSongsSample.push(getRandomItem(allSongs));
+        }
+    }
 
-//     const likedSongsSample = []
-//     for (let i = 0; i < 25; i++) {
-//         if (allSongs.length > 0) {
-//             likedSongsSample.push(getRandomItem(allSongs));
-//         }
-//     }
-
-//     return {
-//         _id: 'liked-songs-station', 
-//         name: 'Liked Songs',
-//         description: 'Your collection of liked songs.',
-//         imgUrl: `https://picsum.photos/id/10/200`, 
-//         createdBy: {
-//             _id: 'u100',
-//             username: 'YOU'
-//         },
-//         songs: likedSongsSample, 
-//         likedByUsers: []
-//     };
-// }
+    return {
+        _id: 'liked-songs-station', 
+        name: 'Liked Songs',
+        description: 'Your collection of liked songs.',
+        imgUrl: `https://picsum.photos/id/10/200`, 
+        createdBy: {
+            _id: 'u100',
+            username: 'YOU'
+        },
+        songs: likedSongsSample, 
+        likedByUsers: []
+    };
+}
 
 
 
