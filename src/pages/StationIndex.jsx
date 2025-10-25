@@ -1,16 +1,31 @@
-import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useState, useEffect, useCallback } from 'react'
+import { useSelector, shallowEqual } from 'react-redux'
+import { useNavigate, Outlet } from 'react-router-dom'
 
-import { loadStations, addStation, updateStation, removeStation, addStationMsg } from '../store/actions/station.actions'
+import { StationList } from '../cmps/StationList'
+import { Recents } from '../cmps/Recents.jsx' // ← make sure this file exists
+
+import {
+  loadStations,
+  addStation,
+  updateStation,
+  removeStation,
+} from '../store/actions/station.actions'
+
+import {
+  playContext,
+  togglePlay,
+  setPlay,
+} from '../store/actions/player.actions'
 
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { stationService } from '../services/station'
 import { userService } from '../services/user'
-import { Outlet } from 'react-router-dom'
 
-import { StationList } from '../cmps/StationList'
+
+
 import { IconPlay24 } from '../cmps/Icon'
-import { playContext } from '../store/actions/player.actions'
+
 
 
 export function StationIndex() {
@@ -45,25 +60,25 @@ export function StationIndex() {
         })
     }
 
-    async function onRemoveStation(stationId) {
-        try {
-            await removeStation(stationId)
-            showSuccessMsg('Station removed')
-        } catch (err) {
-            showErrorMsg('Cannot remove station')
-        }
+  async function onRemoveStation(stationId) {
+    try {
+      await removeStation(stationId)
+      showSuccessMsg('Station removed')
+    } catch (err) {
+      showErrorMsg('Cannot remove station')
     }
+  }
 
-    async function onAddStation() {
-        const station = stationService.getEmptyStation()
-        station.name = prompt('Name?', 'Some Name')
-        try {
-            const savedStation = await addStation(station)
-            showSuccessMsg(`Station added (id: ${savedStation._id})`)
-        } catch (err) {
-            showErrorMsg('Cannot add station')
-        }
+  async function onAddStation() {
+    const station = stationService.getEmptyStation()
+    station.name = prompt('Name?', 'Some Name')
+    try {
+      const saved = await addStation(station)
+      showSuccessMsg(`Station added (id: ${saved._id})`)
+    } catch {
+      showErrorMsg('Cannot add station')
     }
+  }
 
     async function onLikeStation(station) {
         const stationToSave = { ...station, likes: (station.likes || 0) + 1 }

@@ -12,12 +12,14 @@ export const REMOVE_SONG_FROM_STATION = 'STATION/REMOVE_SONG_FROM_STATION'
 
 
 
+
 export const LIKED_ID = 'liked-songs-station'
 
 const initialState = {
     stations: [],
     station: null
 }
+
 
 
 export function stationReducer(state = initialState, action) {

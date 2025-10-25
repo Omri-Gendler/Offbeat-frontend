@@ -1,26 +1,27 @@
 
 
-.station.list-content{
-    background-color: red;
-}
-.station-list-container{
-    overflow-y: auto;
-    overflow-x: hidden;
+
+.station-list{
+    overflow-y: hidden
 }
 /* .station-list-container::-webkit-scrollbar{
     max-width: 0;
 } */
+ /* .station-list-container{
+    overflow-y: scroll;
+    overflow-x: hidden;
+ } */
 
-.station-list-container::-webkit-scrollbar {
+.station-index::-webkit-scrollbar {
     width: 8px;
 }
 
-.station-list-container::-webkit-scrollbar-thumb {
+.station-index::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 20px;
 }
 
-.station-list-container::-webkit-scrollbar-track {
+.station-index::-webkit-scrollbar-track {
     background: transparent;
 }
 .station-list-title {
@@ -67,7 +68,7 @@
 
 
 
-.station-list .station-list-wrapper {
+.station-list-scroll .station-list-wrapper {
     flex-shrink: 0;
     width: 180px;
 }
@@ -80,10 +81,7 @@
     margin-left: 21px;
 }
 
-.station-list-list {
-    display: flex;
-    
-}
+
 
 .recent-item-list {
     display: flex;
@@ -119,7 +117,7 @@
     }
 }
 
-.station-list li {
+.station-list-scroll li {
     display: flex;
     flex-direction: column;
 
@@ -155,7 +153,7 @@ button {
     }
 }
 
-.station-list li .station-preview {
+.station-list-scroll li .station-preview {
     font-weight: 700;
     font-size: 0.75em;
     margin: 0;
@@ -192,7 +190,7 @@ button {
     padding-inline: 10px;
 }
 
-.station-list .station-preview header {
+.station-list-scroll .station-preview header {
     display: flex;
     flex-direction: column;
 }

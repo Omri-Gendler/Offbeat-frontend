@@ -1,7 +1,5 @@
 .home {
     width: 100%;
-    & ::-webkit-scrollbar{
-        max-width: none;
-    }
+
 }
 

@@ -45,6 +45,18 @@
 
 
     }
+    .browser-categories{
+        background-color: var(--clr1);
+        height: 100%;
+        width: 100%;
+    }
+
+
+
+ 
+    .station-list-conain{
+        background-color: transparent;
+    }
 
 
     .user-msg {

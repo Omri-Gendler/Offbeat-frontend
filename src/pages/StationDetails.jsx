@@ -95,7 +95,7 @@ export function StationDetails() {
     <section className="station-details" style={{ background: dynamicBg }}>
       <div className="station-header flex align-center">
         <div className="background-color-details" />
-        <div className="background background-position" />
+        
 
         <div className="station-details-header content-spacing">
           <div className="station-cover-container flex">
