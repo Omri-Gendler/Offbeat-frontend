@@ -93,8 +93,8 @@ export function StationIndex() {
 
     // Get stations for different sections
     const recentStations = stations?.slice(0, 6) || []
-    const madeForYouStations = showAllMadeForYou ? (stations || []) : (stations?.slice(0, 5) || [])
-    const jumpBackStations = showAllJumpBack ? (stations || []) : (stations?.slice(0, 6) || [])
+    const madeForYouStations = showAllMadeForYou ? (stations || []) : (stations?.slice(0, 15) || [])
+    const jumpBackStations = showAllJumpBack ? (stations || []) : (stations?.slice(0, 15) || [])
 
     return (
         <section className="station-index">

@@ -6,6 +6,7 @@ const searchCache = new Map()
 
 export const youtubeService = {
     searchSongs,
+    searchArtists,
 }
 
 export const searchVideos = async (query, maxResults) => {
@@ -30,26 +31,74 @@ async function searchSongs(query) {
 
     console.log('Fetching from API:', cacheKey)
     try {
+        // First search for general content
         const searchResponse = await axios.get(`${BASE_URL}/search`, {
             params: {
                 part: 'snippet',
                 q: query,
                 key: API_KEY,
                 type: 'video,channel',
-                maxResults: 10
+                maxResults: 25
             }
         })
 
-        const items = searchResponse.data.items || []
+        // Second search specifically for artists/channels
+        const artistSearchResponse = await axios.get(`${BASE_URL}/search`, {
+            params: {
+                part: 'snippet',
+                q: query + ' artist music channel',
+                key: API_KEY,
+                type: 'channel',
+                maxResults: 15,
+                order: 'relevance'
+            }
+        })
+
+        // Third search for related/similar artists
+        const relatedSearchResponse = await axios.get(`${BASE_URL}/search`, {
+            params: {
+                part: 'snippet',
+                q: query + ' similar artists like',
+                key: API_KEY,
+                type: 'channel',
+                maxResults: 10,
+                order: 'relevance'
+            }
+        })
+
+        const generalItems = searchResponse.data.items || []
+        const artistItems = artistSearchResponse.data.items || []
+        const relatedItems = relatedSearchResponse.data.items || []
 
         const channels = []
         const videos = []
 
-        items.forEach(item => {
+        // Process general search results  
+        generalItems.forEach(item => {
             if (item.id.kind === 'youtube#channel') {
                 channels.push(item)
             } else if (item.id.kind === 'youtube#video') {
                 videos.push(item)
+            }
+        })
+
+        // Add artist-specific search results (avoid duplicates)
+        artistItems.forEach(item => {
+            if (item.id.kind === 'youtube#channel') {
+                const exists = channels.some(existing => existing.id.channelId === item.id.channelId)
+                if (!exists) {
+                    channels.push(item)
+                }
+            }
+        })
+
+        // Add related artist search results (avoid duplicates)
+        relatedItems.forEach(item => {
+            if (item.id.kind === 'youtube#channel') {
+                const exists = channels.some(existing => existing.id.channelId === item.id.channelId)
+                if (!exists) {
+                    channels.push(item)
+                }
             }
         })
 
@@ -120,6 +169,73 @@ async function searchSongs(query) {
 
     } catch (err) {
         console.error('Error searching YouTube', err)
+        throw err
+    }
+}
+
+async function searchArtists(query, skip = 0) {
+    try {
+        // Multiple search strategies to find more artists
+        const searches = [
+            {
+                q: query + ' artist music channel',
+                maxResults: 10
+            },
+            {
+                q: query + ' band musician',
+                maxResults: 10
+            },
+            {
+                q: query + ' official channel music',
+                maxResults: 10
+            }
+        ]
+
+        const allChannels = []
+
+        for (const searchParams of searches) {
+            const searchResponse = await axios.get(`${BASE_URL}/search`, {
+                params: {
+                    part: 'snippet',
+                    key: API_KEY,
+                    type: 'channel',
+                    order: 'relevance',
+                    ...searchParams
+                }
+            })
+
+            const items = searchResponse.data.items || []
+            items.forEach(item => {
+                const exists = allChannels.some(existing => existing.id.channelId === item.id.channelId)
+                if (!exists) {
+                    allChannels.push(item)
+                }
+            })
+        }
+
+        const artists = allChannels.map(item => {
+            const cleanArtistName = item.snippet.channelTitle
+                .replace(/\s*-\s*Topic$/gi, '')
+                .replace(/\s*VEVO$/gi, '')
+                .replace(/\s*Music$/gi, '')
+                .replace(/\s*Official$/gi, '')
+                .trim()
+
+            return {
+                id: item.id.channelId,
+                type: 'artist',
+                title: cleanArtistName,
+                imgUrl: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
+            }
+        })
+
+        return {
+            artists: artists.slice(skip),
+            songs: []
+        }
+
+    } catch (err) {
+        console.error('Error searching YouTube artists', err)
         throw err
     }
 }

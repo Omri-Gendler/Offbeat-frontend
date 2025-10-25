@@ -10,13 +10,14 @@ import { PlayPauseButton } from './PlayPauseButton'
 import PauseIcon from '@mui/icons-material/Pause'
 
 export function SearchResults({ searchTerm }) {
-    console.log('🎯 SearchResults component rendered with searchTerm:', searchTerm)
-    
+
     const [allSongs, setAllSongs] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [allArtists, setAllArtists] = useState([])
     const [error, setError] = useState(null)
     const [activeFilter, setActiveFilter] = useState('All')
+    const [displayedArtistsCount, setDisplayedArtistsCount] = useState(6)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
     const { queue = [], index = 0, isPlaying = false } = useSelector(
         s => s.playerModule || {},
         shallowEqual
@@ -60,25 +61,38 @@ export function SearchResults({ searchTerm }) {
         try {
             setIsLoading(true)
             setError(null)
-            console.log('🔍 Starting YouTube search for:', searchTerm)
             const results = await youtubeService.searchSongs(searchTerm)
-            console.log('✅ YouTube search results:', results)
-            console.log('📊 Artists found:', results.artists?.length || 0)
-            console.log('🎵 Songs found:', results.songs?.length || 0)
             setAllArtists(results.artists || [])
             setAllSongs(results.songs || [])
         } catch (err) {
-            console.error('❌ YouTube search failed:', err)
-            console.error('Error details:', err.response?.data || err.message)
             setError(`Failed to search songs: ${err.message}. Check console for details.`)
         } finally {
             setIsLoading(false)
         }
     }
 
+    async function loadMoreArtists() {
+        if (isLoadingMore) return
+
+        try {
+            setIsLoadingMore(true)
+
+            // Search for more artists specifically
+            const moreResults = await youtubeService.searchArtists(searchTerm, allArtists.length)
+
+            if (moreResults.artists && moreResults.artists.length > 0) {
+                setAllArtists(prev => [...prev, ...moreResults.artists])
+                setDisplayedArtistsCount(prev => prev + 6)
+            }
+        } catch (err) {
+            console.error('❌ Failed to load more artists:', err)
+        } finally {
+            setIsLoadingMore(false)
+        }
+    }
+
     function handlePlaySong(song, songIndex = 0) {
         if (!song) return
-        console.log('Playing YouTube song:', song.title, 'isYouTube:', song.isYouTube, 'videoId:', song.youtubeVideoId)
 
         const context = {
             contextId: `search-${searchTerm}`,
@@ -88,18 +102,11 @@ export function SearchResults({ searchTerm }) {
             autoplay: true
         }
 
-        console.log('Dispatching playContext:', context)
         playContext(context)
     }
 
     const handlePlayPauseClick = (songInList, songIndexInList) => {
         const isThisSongPlaying = currentPlayingSong?.id === songInList.id
-
-        console.log('--- Play/Pause Click ---');
-        console.log('Song Clicked ID:', songInList?.id);
-        console.log('Current Playing ID:', currentPlayingSong?.id);
-        console.log('Is this song playing?', isThisSongPlaying);
-        console.log('Is player playing (global)?', isPlaying);
 
         if (isThisSongPlaying) {
             togglePlay()
@@ -127,9 +134,62 @@ export function SearchResults({ searchTerm }) {
 
     if (isLoading) {
         return (
-            <div className="search-results loading">
-                <h2>Searching...</h2>
-                <div className="loading-spinner"></div>
+            <div className="search-container">
+                {/* Filter Tabs */}
+                <div className="search-filters">
+                    {filters.map(filter => (
+                        <button
+                            key={filter}
+                            className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
+                            onClick={() => setActiveFilter(filter)}
+                        >
+                            {filter}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Loading Animation */}
+                <div className="spotify-loading-container">
+                    <div className="spotify-loading-content">
+                        <h2>Searching...</h2>
+                        <div className="spotify-loading-dots-big">
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                            <div className="dot"></div>
+                        </div>
+                    </div>
+
+                    {/* Loading Skeleton */}
+                    <div className="search-content-grid loading-skeleton">
+                        <div className="top-result-skeleton">
+                            <h2 className="section-title-youtube">Top result</h2>
+                            <div className="skeleton-card">
+                                <div className="skeleton-avatar"></div>
+                                <div className="skeleton-text">
+                                    <div className="skeleton-line skeleton-title"></div>
+                                    <div className="skeleton-line skeleton-subtitle"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="songs-skeleton">
+                            <h2 className="section-title">Songs</h2>
+                            <div className="skeleton-songs-list">
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} className="skeleton-song-row">
+                                        <div className="skeleton-song-img"></div>
+                                        <div className="skeleton-song-info">
+                                            <div className="skeleton-line skeleton-song-title"></div>
+                                            <div className="skeleton-line skeleton-song-artist"></div>
+                                        </div>
+                                        <div className="skeleton-duration"></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         )
     }
@@ -149,7 +209,7 @@ export function SearchResults({ searchTerm }) {
     const featuringList = allSongs.slice(5, 7)
 
     return (
-        <div className="search-container">
+        <div className="search-container-youtube">
             {/* Filter Tabs */}
             <div className="search-filters">
                 {filters.map(filter => (
@@ -226,18 +286,64 @@ export function SearchResults({ searchTerm }) {
                 </div>
             </div>
 
+            {/* Artists Section */}
+            {(() => {
+                return displayedArtists.length > 0
+            })() && (
+                    <div className="artists-section">
+                        <h2 className="section-title">Artists</h2>
+                        <div className="artists-grid">
+                            {displayedArtists.slice(0, displayedArtistsCount).map((artist, index) => (
+                                <div key={artist.id} className="artist-card">
+                                    <div className="artist-image-container">
+                                        {artist.imgUrl && (
+                                            <img src={artist.imgUrl} alt={artist.title} />
+                                        )}
+                                    </div>
+                                    <div className="artist-info">
+                                        <h3>{artist.title}</h3>
+                                        <p>Artist</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Load More Button */}
+                        {allArtists.length > displayedArtistsCount && (
+                            <div className="load-more-container">
+                                <button
+                                    className="load-more-btn"
+                                    onClick={loadMoreArtists}
+                                    disabled={isLoadingMore}
+                                >
+                                    {isLoadingMore ? (
+                                        <>
+                                            <div className="mini-spinner"></div>
+                                            Loading more...
+                                        </>
+                                    ) : (
+                                        'Show more artists'
+                                    )}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
             {/* Featuring Section */}
             {featuringList.length > 0 && (
                 <div className="featuring-section">
-                    <h2>Featuring {searchTerm}</h2>
+                    <h2 className="section-title">Featuring {searchTerm}</h2>
                     <div className="featuring-grid">
                         {featuringList.map((item, index) => (
                             <div key={item.id} className="featuring-card">
                                 {item.imgUrl && (
                                     <img src={item.imgUrl} alt={item.title} />
                                 )}
-                                <h3>{item.title}</h3>
-                                <p>By {item.artists}</p>
+                                <div className="featuring-card-content">
+                                    <h3>{item.title}</h3>
+                                    <p>By {item.artists}</p>
+                                </div>
                             </div>
                         ))}
                     </div>
