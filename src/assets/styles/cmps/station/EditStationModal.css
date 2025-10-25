@@ -1,5 +1,10 @@
 .modal-overlay {
     position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -50,9 +55,18 @@
     padding: 0 24px 24px;
 }
 
-.image-uploader .image-placeholder {
+.image-container {
     width: 180px;
     height: 180px;
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 100%;
     background-color: #3e3e3e;
     display: flex;
     flex-direction: column;
@@ -60,13 +74,65 @@
     align-items: center;
     border-radius: 4px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
     color: #fff;
     transition: background-color 0.2s;
 }
 
-.image-uploader .image-placeholder:hover {
+.image-placeholder:hover {
     background-color: #4a4a4a;
+}
+
+.image-preview {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.image-preview:hover .image-overlay {
+    opacity: 1;
+}
+
+.remove-image-btn {
+    margin-top: 12px;
+    background: none;
+    border: 1px solid #727272;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.remove-image-btn:hover {
+    border-color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .image-uploader .MuiSvgIcon-root {
