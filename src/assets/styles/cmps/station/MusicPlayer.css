@@ -1,12 +1,11 @@
 .music-player {
-
     width: 100%;
-    background-color: black;
+    height: 80px;
+    background-color: #181818;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     align-items: center;
-    padding-inline-start: 16px;
-    
+    padding: 0 16px;
     color: #fff;
     gap: 16px;
 

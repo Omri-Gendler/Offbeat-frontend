@@ -7,7 +7,7 @@ import { ContextMenu } from './ContextMenu'
 import { StationPreview } from './StationPreview'
 import { playContext, togglePlay, setPlay } from '../store/actions/player.actions'
 
-export function StationList({ stations, onRemoveStation, onUpdateStation }) {
+export function StationList({ stations, onRemoveStation, onUpdateStation, variant = 'default' }) {
   const [dynamicBgColor, setDynamicBgColor] = useState('#121212')
   const navigate = useNavigate()
   const recentsScrollRef = useRef(null)
@@ -138,6 +138,22 @@ export function StationList({ stations, onRemoveStation, onUpdateStation }) {
           )}
         </button>
       </li>
+    )
+  }
+
+  // Grid variant for homepage sections
+  if (variant === 'grid') {
+    return (
+      <>
+        {stations.map(station => (
+          <StationPreview
+            key={station._id}
+            station={station}
+            onRemoveStation={onRemoveStation}
+            onUpdateStation={onUpdateStation}
+          />
+        ))}
+      </>
     )
   }
 

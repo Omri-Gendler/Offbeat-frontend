@@ -5,6 +5,8 @@ export function AppFooter() {
 	const station = useSelector(storeState => storeState.stationModule.station)
 
 	return (
-		<MusicPlayer station={station} />
+		<footer className="app-footer">
+			<MusicPlayer station={station} />
+		</footer>
 	)
 }

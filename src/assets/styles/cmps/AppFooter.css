@@ -1,28 +1,11 @@
-.music-player {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;;
-    /* min-height: 3.5rem; */
-    /* max-height: 200px; */
-    /* max-height: 45px; */
-
-    /* padding: .8rem 1rem; */
-    background-color: var(--clr1);
-
-    & p {
-        margin: 0;
-        color: var(--clr5);
-    }
-    
-    > span {
-        font-size: .8em;
-        
-        &.local-services {
-            color: --var(clr1);
-        }
-        
-        &.remote-services {
-            color: --var(clr5);
-        }
-    }
+/* AppFooter container - positions the music player at bottom */
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    z-index: 1000;
+    background-color: #181818;
+    border-top: 1px solid #282828;
 }

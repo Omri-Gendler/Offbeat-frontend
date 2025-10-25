@@ -1,25 +1,273 @@
+/* Main content area with Spotify-style gradient */
 .station-index {
-    display: grid;
-    height: 100vh;
-    min-width: 0;
-    width: 100%;
-    margin-inline-end: 15px;
-    overflow-x: hidden;
+  flex: 1;
+  background: linear-gradient(180deg, 
+    rgba(83, 83, 83, 0.6) 0%, 
+    rgba(18, 18, 18, 0.9) 15%, 
+    #121212 100%);
+  border-radius: 8px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  position: relative;
+}
 
-    & header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
+/* Content sections */
+.content-section {
+  padding: 16px 24px 0;
+}
 
-        /* padding-block: .3em; */
-    }
+.content-section:first-child {
+  padding-top: 24px;
+}
 
-    & h2 {
-        /* margin: 0; */
-        font-size: 1.3em;
-        margin-left: 28px;
-        color: white;
-        margin-top: 3.75em;
-    }
+.content-section:last-child {
+  padding-bottom: 24px;
+}
 
+/* Section headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.show-all-btn {
+  font-size: 14px;
+  font-weight: 700;
+  color: #b3b3b3;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.show-all-btn:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+/* Quick access grid (top row) */
+.quick-access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.quick-access-item {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-height: 64px;
+  position: relative;
+}
+
+.quick-access-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.quick-access-item img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.quick-access-content {
+  padding: 0 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.quick-access-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Quick access play button */
+.quick-access-play-btn {
+  position: absolute;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  background: #1ed760;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.quick-access-item:hover .quick-access-play-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.quick-access-play-btn:hover {
+  transform: scale(1.05);
+  background: #1fdf64;
+}
+
+.quick-access-play-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: black;
+  margin-left: 2px;
+}
+
+/* Station grid (cards) */
+.station-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+/* Made for user section */
+.made-for-section {
+  margin-bottom: 48px;
+}
+
+.made-for-section .section-title {
+  margin-bottom: 8px;
+}
+
+.made-for-subtitle {
+  font-size: 14px;
+  color: #b3b3b3;
+  margin: 0 0 16px 0;
+}
+
+/* Jump back in section */
+.jump-back-section {
+  margin-bottom: 48px;
+}
+
+/* Spotify-style scrollbar */
+.station-index::-webkit-scrollbar {
+  width: 12px;
+}
+
+.station-index::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.station-index::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+.station-index::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+  background-clip: content-box;
+}
+
+/* Horizontal scrolling for station grids */
+.station-grid-container {
+  position: relative;
+}
+
+.station-grid {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.station-grid.show-all {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  overflow-x: visible;
+}
+
+.station-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.station-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.station-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.station-grid::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.station-grid .station-preview {
+  min-width: 160px;
+  flex-shrink: 0;
+}
+
+.station-grid.show-all .station-preview {
+  min-width: auto;
+  flex-shrink: 1;
+  width: 160px;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+  
+  .station-grid .station-preview {
+    min-width: 140px;
+    width: 140px;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-section {
+    padding: 16px 16px 0;
+  }
+  
+  .quick-access-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .station-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
 }

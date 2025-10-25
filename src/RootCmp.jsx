@@ -22,14 +22,14 @@ import { SpatialTracking } from '@mui/icons-material'
 
 export function RootCmp() {
     return (
-        <div className="main-content-wrapper">
-
-            <div className="main-container">
-                <AppHeader />
+        <div className="app-layout">
+            <AppHeader />
+            <UserMsg />
+            
+            <div className="content-layout">
                 <LeftSideBar />
-                <UserMsg />
-
-                <main className="main-content">
+                
+                <main>
                     <Routes>
                         <Route path="" element={<HomePage />} />
                         <Route path="/station/:stationId" element={<StationDetails />} />
@@ -51,8 +51,9 @@ export function RootCmp() {
                         </Route>
                     </Routes>
                 </main>
-                <AppFooter className="player"/>
             </div>
+            
+            <AppFooter />
         </div>
     )
 }
