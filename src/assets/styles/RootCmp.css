@@ -14,7 +14,7 @@ body,
 
 /* Global Spotify-style scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 0px;
   height: 12px;
 }
 

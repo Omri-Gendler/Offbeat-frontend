@@ -3,12 +3,13 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
 import { Recents } from './Recents'
 
+
 import { maxLength } from '../services/util.service'
 import { ContextMenu } from './ContextMenu'
 import { StationPreview } from './StationPreview'
 import { playContext, togglePlay, setPlay } from '../store/actions/player.actions'
 
-export function StationList({ stations, onRemoveStation, onUpdateStation, variant = 'default' }) {
+export function StationList({ stations, onRemoveStation, onUpdateStation, variant = 'default',index=false }) {
   const [dynamicBgColor, setDynamicBgColor] = useState('#121212')
   const navigate = useNavigate()
 
@@ -140,11 +141,25 @@ export function StationList({ stations, onRemoveStation, onUpdateStation, varian
   }
 
   return (
-    <section className="station-list-contain">
+    <section className="station-list-container" style={{ background: dynamicBgColor }}>
+      <div className='main-station-list-header'>
+        <div className='main-station-list-filters'>
+          <button>All</button>
+        </div>
+{index && 
+       <Recents
+  stations={stations}
+  take={6}
+  isActive={(st) => isActiveStation(st) && isPlaying}
+  onOpen={(id) => navigate(`/station/${id}`)}
+  onPlay={(st) => makeHandlePlayClick(st)()}
+/>}
 
-      
-        <h2 className="station-list-title">All Stations</h2>
-        <ul className="station-list-scroll">
+        <h2 className='station-list-title'>All Stations</h2>
+      </div>
+
+      <div className="station-list-content">
+        <ul className="station-list">
           {stations.map(renderStationItem)}
         </ul>
 
@@ -152,6 +167,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation, varian
         <ul className="station-list-scroll">
           {stations.slice(10, 28).map(renderStationItem)}
         </ul>
+        </div>
 
     </section>
   )

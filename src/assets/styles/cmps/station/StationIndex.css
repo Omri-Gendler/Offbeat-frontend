@@ -1,10 +1,9 @@
 /* Main content area with Spotify-style gradient */
 .station-index {
   flex: 1;
-  background: linear-gradient(180deg, 
-    rgba(83, 83, 83, 0.6) 0%, 
-    rgba(18, 18, 18, 0.9) 15%, 
-    #121212 100%);
+  width: 100%;
+
+  background: transparent;
   border-radius: 8px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -172,6 +171,7 @@
 /* Spotify-style scrollbar */
 .station-index::-webkit-scrollbar {
   width: 12px;
+  z-index: 9999;
 }
 
 .station-index::-webkit-scrollbar-track {
@@ -214,6 +214,7 @@
 
 .station-grid::-webkit-scrollbar {
   height: 8px;
+  z-index: 9999;
 }
 
 .station-grid::-webkit-scrollbar-track {

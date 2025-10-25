@@ -34,14 +34,13 @@
     .main-content {
         grid-area: main-view;
         container-type: size;
-        /* background-color: black; */
+        background-color: transparent;
         border-radius: 9px;
         display: flex;
         position: relative;
         flex: 1;
         min-height: 0;
         width: 100%;
-        padding-inline-end: px;
 
 
     }

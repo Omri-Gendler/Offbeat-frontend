@@ -1,5 +1,9 @@
 .home {
     width: 100%;
+      background: linear-gradient(180deg, 
+    rgba(83, 83, 83, 0) 0%,
+    rgba(18, 18, 18, 0.9) 15%, 
+    #121212 100%);
 
 }
 

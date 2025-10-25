@@ -23,8 +23,8 @@ import { stationService } from '../services/station'
 import { userService } from '../services/user'
 
 
-
 import { IconPlay24 } from '../cmps/Icon'
+
 
 
 
@@ -142,7 +142,8 @@ export function StationIndex() {
                             onRemoveStation={onRemoveStation}
                             onEditStation={updateStation}
                             onLikeStation={onLikeStation}
-                            variant="grid" />
+                            variant="grid" 
+                            index={true}/>
                     </div>
                 </div>
             )}

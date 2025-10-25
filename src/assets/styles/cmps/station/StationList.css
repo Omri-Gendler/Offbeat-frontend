@@ -63,6 +63,7 @@
     margin: 0;
     list-style: none;
     margin-left: 1.9em;
+    background-color: transparent;
 
 }
 
@@ -88,7 +89,7 @@
     align-items: center;
     gap: 16px;
 
-    background-color: hsla(0, 0%, 100%, .1);
+    background-color:transparent;
     border-radius: 4px;
     overflow: hidden;
 
@@ -117,7 +118,7 @@
     }
 }
 
-.station-list-scroll li {
+.station-list li {
     display: flex;
     flex-direction: column;
 
@@ -153,7 +154,7 @@ button {
     }
 }
 
-.station-list-scroll li .station-preview {
+.station-list li .station-preview {
     font-weight: 700;
     font-size: 0.75em;
     margin: 0;
@@ -190,29 +191,19 @@ button {
     padding-inline: 10px;
 }
 
-.station-list-scroll .station-preview header {
+.station-list .station-preview header {
     display: flex;
     flex-direction: column;
 }
 
-.station-list-wrapper {
-    padding: 10px;
-
-    &:hover {
-        background-color: var(--text-shadow);
-    }
-}
 
 .station-list-wrapper {
     position: relative;
-    padding: 10px;
+    padding: 5px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
 }
 
-.station-list-wrapper:hover {
-    background-color: var(--text-shadow);
-}
+
 
 
 .station-list-wrapper .play-button {
