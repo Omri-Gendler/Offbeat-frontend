@@ -10,6 +10,8 @@ import { PlayPauseButton } from './PlayPauseButton'
 import PauseIcon from '@mui/icons-material/Pause'
 
 export function SearchResults({ searchTerm }) {
+    console.log('🎯 SearchResults component rendered with searchTerm:', searchTerm)
+    
     const [allSongs, setAllSongs] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [allArtists, setAllArtists] = useState([])
@@ -26,7 +28,8 @@ export function SearchResults({ searchTerm }) {
 
     useEffect(() => {
         if (!searchTerm?.trim()) {
-            setSongs([])
+            setAllSongs([])
+            setAllArtists([])
             return
         }
 
@@ -57,13 +60,17 @@ export function SearchResults({ searchTerm }) {
         try {
             setIsLoading(true)
             setError(null)
+            console.log('🔍 Starting YouTube search for:', searchTerm)
             const results = await youtubeService.searchSongs(searchTerm)
-            console.log('Search results:', results)
+            console.log('✅ YouTube search results:', results)
+            console.log('📊 Artists found:', results.artists?.length || 0)
+            console.log('🎵 Songs found:', results.songs?.length || 0)
             setAllArtists(results.artists || [])
             setAllSongs(results.songs || [])
         } catch (err) {
-            console.error('Search failed:', err)
-            setError('Failed to search songs. Please try again.')
+            console.error('❌ YouTube search failed:', err)
+            console.error('Error details:', err.response?.data || err.message)
+            setError(`Failed to search songs: ${err.message}. Check console for details.`)
         } finally {
             setIsLoading(false)
         }
@@ -76,7 +83,7 @@ export function SearchResults({ searchTerm }) {
         const context = {
             contextId: `search-${searchTerm}`,
             contextType: 'search',
-            tracks: songs, // Full search results as queue
+            tracks: allSongs, // Full search results as queue
             index: songIndex, // Which song in the queue to play
             autoplay: true
         }

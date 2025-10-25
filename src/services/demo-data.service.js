@@ -1,6 +1,6 @@
-const NUM_STATIONS = 100      
-const SONGS_PER_STATION = 40   
- 
+const NUM_STATIONS = 100
+const SONGS_PER_STATION = 40
+
 export function initDemoData() {
     const stations = getFromStorage('stationDB')
     const artists = getFromStorage('artistDB')
@@ -16,12 +16,30 @@ export function initDemoData() {
         }
     }
 
+    function _createLikedSongsStation(allStations) {
+        const allSongs = allStations.flatMap(station => station.songs)
+        return {
+            _id: 'liked-songs-station',
+            name: 'Liked Songs',
+            songs: allSongs.filter(song => song.likedBy && song.likedBy.includes('u100')),
+            imgUrl: '/img/liked-songs.jpeg',
+            isLikedSongs: true,
+            createdBy: {
+                fullname: 'You'
+            }
+        }
+    }
+
     console.log('Generating new demo data...')
-    
+
     const generatedArtists = _generateDemoArtists()
     saveToStorage('artistDB', generatedArtists)
 
     let generatedStations = _generateDemoStations(generatedArtists)
+    
+    // Add some hardcoded stations with guaranteed audio
+    const hardcodedStations = _createHardcodedStations()
+    generatedStations = [...hardcodedStations, ...generatedStations]
 
     const likedStation = _createLikedSongsStation(generatedStations)
     generatedStations.push(likedStation)
@@ -39,6 +57,41 @@ export function clearAndRegenerateDemoData() {
     initDemoData()
 }
 
+// Function to add audio URLs to existing demo data
+export function upgradeExistingDemoDataWithAudio() {
+    console.log('Upgrading existing demo data with audio URLs...')
+    const stations = getFromStorage('stationDB')
+    
+    if (!stations || stations.length === 0) {
+        console.log('No existing data found, generating new data...')
+        initDemoData()
+        return
+    }
+    
+    // Add audio URLs to existing songs that don't have them
+    const updatedStations = stations.map(station => {
+        if (station.songs && Array.isArray(station.songs)) {
+            const updatedSongs = station.songs.map(song => {
+                if (!song.url) {
+                    return {
+                        ...song,
+                        url: getRandomItem(SAMPLE_AUDIO_URLS)
+                    }
+                }
+                return song
+            })
+            return {
+                ...station,
+                songs: updatedSongs
+            }
+        }
+        return station
+    })
+    
+    saveToStorage('stationDB', updatedStations)
+    console.log('Demo data upgraded with audio URLs!')
+}
+
 
 function _generateDemoArtists() {
     const ARTIST_NAMES = [
@@ -49,7 +102,7 @@ function _generateDemoArtists() {
     ];
 
     return ARTIST_NAMES.map((name, index) => ({
-        id: _makeId(10), 
+        id: _makeId(10),
         type: 'artist',
         title: name,
         imgUrl: `https://picsum.photos/id/${100 + index}/200`
@@ -69,15 +122,15 @@ function _generateDemoStations(artists) {
     for (let i = 0; i < NUM_STATIONS; i++) {
         const stationName = `${getRandomItem(STATION_NAMES)} #${i + 1}`
         const songCount = getRandomInt(SONGS_PER_STATION - 15, SONGS_PER_STATION + 15)
-        
+
         stations.push({
-            _id: _makeId(12), 
+            _id: _makeId(12),
             name: stationName,
             description: `A collection of ${songCount} great tracks for your ${getRandomItem(['morning', 'workout', 'commute'])}.`,
             imgUrl: `https://picsum.photos/id/${200 + i}/200`,
             createdBy: {
                 _id: 'u100',
-                username: 'YOU' 
+                username: 'YOU'
             },
             songs: _generateDemoSongs(songCount, artists),
             likedByUsers: []
@@ -85,6 +138,140 @@ function _generateDemoStations(artists) {
     }
     return stations
 }
+
+/**
+ * Creates specific hardcoded stations with guaranteed working audio URLs
+ */
+function _createHardcodedStations() {
+    return [
+        {
+            _id: "st_chill_vibes",
+            name: "Chill Vibes",
+            description: "Relaxing tunes for a peaceful mood",
+            imgUrl: "https://picsum.photos/id/1/200",
+            createdBy: {
+                _id: "u100",
+                username: "YOU"
+            },
+            songs: [
+                {
+                    id: "s_chill_1",
+                    title: "Serenity",
+                    artists: "Ambient Artist",
+                    album: "Peaceful Moments",
+                    durationMs: 210000,
+                    imgUrl: "https://picsum.photos/id/101/200",
+                    addedAt: Date.now(),
+                    addedBy: "u100",
+                    likedBy: [],
+                    isYouTube: false,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+                },
+                {
+                    id: "s_chill_2", 
+                    title: "Tranquil Waters",
+                    artists: "Nature Sounds",
+                    album: "Calm Collection",
+                    durationMs: 195000,
+                    imgUrl: "https://picsum.photos/id/102/200",
+                    addedAt: Date.now(),
+                    addedBy: "u100",
+                    likedBy: [],
+                    isYouTube: false,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+                },
+                {
+                    id: "s_chill_3",
+                    title: "Gentle Breeze",
+                    artists: "Relaxation Masters",
+                    album: "Wind Songs", 
+                    durationMs: 240000,
+                    imgUrl: "https://picsum.photos/id/103/200",
+                    addedAt: Date.now(),
+                    addedBy: "u100",
+                    likedBy: [],
+                    isYouTube: false,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+                }
+            ],
+            likedByUsers: [],
+            tags: ["chill", "ambient", "relaxing"]
+        },
+        {
+            _id: "st_energetic_beats",
+            name: "Energetic Beats",
+            description: "High-energy music to get you moving",
+            imgUrl: "https://picsum.photos/id/2/200",
+            createdBy: {
+                _id: "u100", 
+                username: "YOU"
+            },
+            songs: [
+                {
+                    id: "s_energy_1",
+                    title: "Power Drive",
+                    artists: "Electronic Pulse",
+                    album: "High Voltage",
+                    durationMs: 180000,
+                    imgUrl: "https://picsum.photos/id/201/200",
+                    addedAt: Date.now(),
+                    addedBy: "u100",
+                    likedBy: [],
+                    isYouTube: false,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+                },
+                {
+                    id: "s_energy_2",
+                    title: "Adrenaline Rush", 
+                    artists: "Beat Masters",
+                    album: "Pump It Up",
+                    durationMs: 220000,
+                    imgUrl: "https://picsum.photos/id/202/200",
+                    addedAt: Date.now(),
+                    addedBy: "u100",
+                    likedBy: [],
+                    isYouTube: false,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+                },
+                {
+                    id: "s_energy_3",
+                    title: "Lightning Strike",
+                    artists: "Thunder Wave",
+                    album: "Storm Collection",
+                    durationMs: 195000,
+                    imgUrl: "https://picsum.photos/id/203/200", 
+                    addedAt: Date.now(),
+                    addedBy: "u100",
+                    likedBy: [],
+                    isYouTube: false,
+                    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
+                }
+            ],
+            likedByUsers: [],
+            tags: ["energetic", "electronic", "workout"]
+        }
+    ]
+}
+
+// Array of sample audio URLs that can be used for demo songs
+const SAMPLE_AUDIO_URLS = [
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", 
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3",
+    "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3"
+];
 
 /**
  * @param {number} count 
@@ -97,17 +284,19 @@ function _generateDemoSongs(count, artists) {
         const songId = _makeId(12)
 
         songs.push({
-            id: songId, 
+            id: songId,
             title: `${getRandomItem(SONG_ADJ)} ${getRandomItem(SONG_NOUN)}`,
-            artists: artist.title, 
+            artists: artist.title,
             album: `${getRandomItem(ALBUM_NOUN)} ${getRandomItem(ALBUM_NOUN)}`,
-            durationMs: getRandomInt(150000, 360000), 
+            durationMs: getRandomInt(150000, 360000),
             imgUrl: artist.imgUrl,
-            addedAt: Date.now() - getRandomInt(0, 31536000000), 
+            addedAt: Date.now() - getRandomInt(0, 31536000000),
             addedBy: 'u100',
             likedBy: [],
-            isYouTube: false, 
-            youtubeVideoId: songId
+            isYouTube: false,
+            youtubeVideoId: songId,
+            // Add hard-coded audio URL for playback
+            url: getRandomItem(SAMPLE_AUDIO_URLS)
         })
     }
     return songs
@@ -118,7 +307,7 @@ function _generateDemoSongs(count, artists) {
  */
 // function _createLikedSongsStation(allStations) {
 //     const allSongs = allStations.flatMap(station => station.songs)
-    
+
 //     const likedSongsSample = []
 //     for (let i = 0; i < 25; i++) {
 //         if (allSongs.length > 0) {

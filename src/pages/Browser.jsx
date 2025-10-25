@@ -66,7 +66,8 @@ export function Browser() {
               <StationList stations={filteredStations} />
             </div>
           )}
-          {/* Use the explicit search term if present; otherwise fall back to :genre */}
+          {/* Show YouTube search results when there's any search term (query param or route param) */}
+          {searchTerm && <SearchResults searchTerm={searchTerm} />}
         </>
       )}
     </>

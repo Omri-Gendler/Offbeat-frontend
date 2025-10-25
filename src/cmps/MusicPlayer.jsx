@@ -54,6 +54,18 @@ export function MusicPlayer({ station }) {
   const [currentTime, setCurrentTime] = useState(0)
   const [isQueueOpen, setIsQueueOpen] = useState(false)
 
+  // Debug logging for audio playback issues
+  useEffect(() => {
+    if (currentSong) {
+      console.log('🎵 Current Song Debug:')
+      console.log('- Title:', currentSong.title)
+      console.log('- URL:', currentSong.url)
+      console.log('- isYouTube:', currentSong.isYouTube)
+      console.log('- Has audioRef:', !!audioRef.current)
+      console.log('- Song object:', currentSong)
+    }
+  }, [currentSong])
+
   // Reflect store -> audio or YouTube player
   // On track change: reset and load into the appropriate player
   useEffect(() => {
@@ -70,11 +82,21 @@ export function MusicPlayer({ station }) {
       }
     } else {
       const el = audioRef.current
-      if (!el) return
+      if (!el) {
+        console.log('❌ No audio element reference')
+        return
+      }
+      console.log('🔄 Loading audio:', currentSong.url)
       el.pause()
       el.currentTime = 0
       el.load()
-      if (isPlaying) el.play().catch(() => setPlay(false))
+      if (isPlaying) {
+        console.log('▶️ Attempting to play audio')
+        el.play().catch((error) => {
+          console.error('❌ Audio play failed:', error)
+          setPlay(false)
+        })
+      }
     }
   }, [currentSong?.id])
 
@@ -359,18 +381,37 @@ export function MusicPlayer({ station }) {
       {!currentSong?.isYouTube && (
         <audio
           ref={audioRef}
-          src={currentSong?.url}
+          src={currentSong?.url || FALLBACK}
           preload="metadata"
           onLoadedMetadata={() => {
             const d = audioRef.current?.duration || 0
+            console.log('✅ Audio loaded, duration:', d, 'seconds')
             setDuration(Number.isFinite(d) ? d : 0)
-            if (isPlaying) audioRef.current?.play().catch(() => setPlay(false))
+            if (isPlaying) audioRef.current?.play().catch((error) => {
+              console.error('❌ Auto-play failed:', error)
+              setPlay(false)
+            })
           }}
           onTimeUpdate={() => {
             const t = audioRef.current?.currentTime || 0
             setCurrentTime(t)
           }}
           onEnded={onNext}
+          onError={(e) => {
+            console.error('❌ Audio error:', e.target.error)
+            console.error('❌ Failed URL:', currentSong?.url)
+            console.log('🔄 Trying fallback URL:', FALLBACK)
+            if (currentSong?.url !== FALLBACK) {
+              // Try fallback URL
+              e.target.src = FALLBACK
+            }
+          }}
+          onCanPlay={() => {
+            console.log('✅ Audio can play')
+          }}
+          onLoadStart={() => {
+            console.log('🔄 Audio load started for:', currentSong?.url)
+          }}
         />
       )}
 
