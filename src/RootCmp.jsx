@@ -20,7 +20,9 @@ import { AddStationModal } from './cmps/AddStationModal.jsx'
 import { SpatialTracking } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import { setCoverHex } from './store/actions/app.actions'
-import { clearAndRegenerateDemoData } from './services/demo-data.service'
+import { clearAndRegenerateDemoData, addDefaultStationsToUserLibrary } from './services/demo-data.service'
+import { userService } from './services/user'
+import { loadStations } from './store/actions/station.actions'
 
 
 
@@ -38,6 +40,24 @@ export function RootCmp() {
   // Temporary: Clear old data and regenerate only Spotify stations
   useEffect(() => {
     clearAndRegenerateDemoData()
+    
+    // Always clear the flag for testing - remove this line in production
+    localStorage.removeItem('defaultStationsAdded')
+    
+    // Check if default stations have been added (for any user/guest)
+    const hasDefaultStations = localStorage.getItem('defaultStationsAdded')
+    
+    if (!hasDefaultStations) {
+      console.log('Adding 15 default stations to library...')
+      const guestUser = { _id: 'guest', fullname: 'Guest', username: 'guest' }
+      const addedStations = addDefaultStationsToUserLibrary(guestUser)
+      console.log('Added default stations:', addedStations.length)
+      localStorage.setItem('defaultStationsAdded', 'true')
+      // Reload stations to reflect changes
+      setTimeout(() => loadStations(), 500)
+    } else {
+      console.log('Default stations already added')
+    }
   }, [])
 
   useEffect(() => {

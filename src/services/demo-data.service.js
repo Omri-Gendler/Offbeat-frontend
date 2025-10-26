@@ -749,3 +749,93 @@ function getRandomItem(arr) {
 const SONG_ADJ = ['Electric', 'Silent', 'Golden', 'Lost', 'Midnight', 'Crimson', 'Fading', 'Broken', 'Wild', 'Cosmic'];
 const SONG_NOUN = ['Echo', 'Stars', 'Night', 'Dream', 'Fire', 'Rain', 'Moment', 'Heart', 'Sun', 'Future'];
 const ALBUM_NOUN = ['Chronicles', 'Journey', 'Tapes', 'Horizon', 'Odyssey', 'Letters', 'Memories', 'Spectrum'];
+
+// Function to add 15 default stations to a user's library
+export function addDefaultStationsToUserLibrary(user) {
+    try {
+        console.log('Adding 15 default stations to user library for:', user?.fullname || user?.username || 'Guest')
+        
+        // Ensure demo data exists
+        if (!getFromStorage('stationDB')) {
+            initDemoData()
+        }
+        
+        // Get all available stations
+        const allStations = getFromStorage('stationDB') || []
+        
+        // Filter stations that are not already owned by the user and not the liked songs station
+        const availableStations = allStations.filter(station => 
+            station._id !== 'liked-songs-station' && 
+            station.createdBy?.fullname !== 'You'
+        )
+        
+        if (availableStations.length === 0) {
+            console.log('No available stations to add to library')
+            return []
+        }
+        
+        // Select 15 random stations (or all available if less than 15)
+        const numberOfStationsToAdd = Math.min(15, availableStations.length)
+        
+        // Create a copy of available stations to avoid modifying original
+        const shuffledStations = [...availableStations].sort(() => Math.random() - 0.5)
+        const selectedStations = shuffledStations.slice(0, numberOfStationsToAdd)
+        
+        // Create copies of selected stations and mark them as owned by the user
+        const userStations = selectedStations.map(station => ({
+            ...station,
+            _id: _makeId(10), // Generate new unique ID
+            createdBy: { 
+                _id: user?._id || 'guest',
+                fullname: 'You' 
+            },
+            originalStationId: station._id, // Keep reference to original
+            addedToLibrary: Date.now()
+        }))
+        
+        // Add these new user stations to the database
+        const updatedStations = [...allStations, ...userStations]
+        saveToStorage('stationDB', updatedStations)
+        
+        console.log(`Added ${userStations.length} default stations to user library:`, userStations.map(s => s.name))
+        return userStations
+        
+    } catch (err) {
+        console.error('Error adding default stations to user library:', err)
+        return []
+    }
+}
+
+// Test function for manual testing
+export function testAddDefaultStations() {
+    const testUser = {
+        _id: 'test_user_123',
+        fullname: 'Test User',
+        username: 'testuser'
+    }
+    
+    return addDefaultStationsToUserLibrary(testUser)
+}
+
+// Function to manually add 15 default stations to simulate a logged-in user
+export function addDefaultStationsManually() {
+    console.log('Manually adding default stations...')
+    
+    const mockUser = {
+        _id: 'guest_user',
+        fullname: 'Guest User',
+        username: 'guest'
+    }
+    
+    const stationsAdded = addDefaultStationsToUserLibrary(mockUser)
+    console.log('Manually added stations:', stationsAdded.length)
+    
+    return stationsAdded
+}
+
+// Make functions available globally for debugging
+if (typeof window !== 'undefined') {
+    window.testAddDefaultStations = testAddDefaultStations
+    window.addDefaultStationsToUserLibrary = addDefaultStationsToUserLibrary
+    window.addDefaultStationsManually = addDefaultStationsManually
+}

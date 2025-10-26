@@ -1,5 +1,6 @@
 import { userService } from '../../services/user'
 import { store } from '../store'
+import { addDefaultStationsToUserLibrary } from '../../services/demo-data.service'
 
 import { showErrorMsg } from '../../services/event-bus.service'
 import { LOADING_DONE, LOADING_START } from '../reducers/system.reducer'
@@ -29,6 +30,22 @@ export async function removeUser(userId) {
 export async function login(credentials) {
     try {
         const user = await userService.login(credentials)
+        
+        // Check if user already has default stations (avoid adding duplicates)
+        const userLibraryKey = `userLibrary_${user._id}`
+        const hasDefaultStations = localStorage.getItem(userLibraryKey)
+        
+        if (!hasDefaultStations) {
+            // Add 15 default stations to user's library
+            addDefaultStationsToUserLibrary(user)
+            // Mark that user has received default stations
+            localStorage.setItem(userLibraryKey, 'true')
+            
+            // Reload stations to show the new ones in the library
+            const { loadStations } = await import('./station.actions')
+            loadStations()
+        }
+        
         store.dispatch({
             type: SET_USER,
             user
@@ -43,6 +60,18 @@ export async function login(credentials) {
 export async function signup(credentials) {
     try {
         const user = await userService.signup(credentials)
+        
+        // Add 15 default stations to new user's library
+        addDefaultStationsToUserLibrary(user)
+        
+        // Mark that user has received default stations
+        const userLibraryKey = `userLibrary_${user._id}`
+        localStorage.setItem(userLibraryKey, 'true')
+        
+        // Reload stations to show the new ones in the library
+        const { loadStations } = await import('./station.actions')
+        loadStations()
+        
         store.dispatch({
             type: SET_USER,
             user
