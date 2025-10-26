@@ -25,7 +25,7 @@ import { IconPlay24 } from '../cmps/Icon'
 
 export function StationIndex() {
 
-    const [filterBy, setFilterBy] = useState(stationService.getDefaultFilter())
+    const [filterBy, setFilterBy] = useState({ ...stationService.getDefaultFilter(), kind: 'all' })
     const [showAllMadeForYou, setShowAllMadeForYou] = useState(false)
     const [showAllJumpBack, setShowAllJumpBack] = useState(false)
     const stations = useSelector(storeState => storeState.stationModule.stations)
@@ -87,10 +87,29 @@ export function StationIndex() {
         }
     }
 
+    function filterStationsByKind(stations, kind) {
+        if (kind === 'all') return stations
+        if (kind === 'music') {
+            return stations.filter(station => station.isSpotifyPlaylist || station.tags?.includes('music'))
+        }
+        if (kind === 'podcasts') {
+            return stations.filter(station => station.tags?.includes('podcasts'))
+        }
+        return stations
+    }
+
+    function getFilterDisplayText(kind, count) {
+        const kindText = kind === 'all' ? 'All' : kind === 'music' ? 'Music' : 'Podcasts'
+        return kindText
+    }
+
+    // Apply filtering to stations
+    const filteredStations = filterStationsByKind(stations || [], filterBy.kind)
+
     // Get stations for different sections
-    const recentStations = stations?.slice(0, 6) || []
-    const madeForYouStations = showAllMadeForYou ? (stations || []) : (stations?.slice(0, 15) || [])
-    const jumpBackStations = showAllJumpBack ? (stations || []) : (stations?.slice(0, 15) || [])
+    const recentStations = filteredStations?.slice(1, 9) || []
+    const madeForYouStations = showAllMadeForYou ? filteredStations : (filteredStations?.slice(1, 15) || [])
+    const jumpBackStations = showAllJumpBack ? filteredStations : (filteredStations?.slice(1, 15) || [])
 
     return (
         <section className="station-index">
@@ -98,6 +117,20 @@ export function StationIndex() {
 
             {/* Quick access grid */}
             <div className="content-section">
+                <div className='filter-by-kind'>
+                    <button
+                        className={filterBy.kind === 'all' ? 'active' : ''}
+                        onClick={() => setFilterBy({ ...filterBy, kind: 'all' })}
+                    >
+                        {getFilterDisplayText('all', stations?.length || 0)}
+                    </button>
+                    <button
+                        className={filterBy.kind === 'music' ? 'active' : ''}
+                        onClick={() => setFilterBy({ ...filterBy, kind: 'music' })}
+                    >
+                        {getFilterDisplayText('music', filterStationsByKind(stations || [], 'music').length)}
+                    </button>
+                </div>
                 <div className="quick-access-grid">
                     {recentStations.map(station => (
                         <div key={station._id} className="quick-access-item" onClick={() => navigate(`/station/${station._id}`)}>

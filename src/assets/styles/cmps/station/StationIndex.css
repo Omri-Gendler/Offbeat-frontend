@@ -11,6 +11,41 @@
   position: relative;
 }
 
+/* Filter by kind buttons */
+.filter-by-kind {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filter-by-kind button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-by-kind button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.02);
+}
+
+.filter-by-kind button.active {
+  background: white;
+  color: black;
+  font-weight: 600;
+}
+
+.filter-by-kind button.active:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
 /* Content sections */
 .content-section {
   padding: 16px 24px 0;
@@ -140,12 +175,16 @@
   margin-left: 2px;
 }
 
-/* Station grid (cards) */
+/* Station grid (cards) - Default horizontal scrolling */
 .station-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 24px;
-  margin-bottom: 40px;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
 }
 
 /* Made for user section */
@@ -195,50 +234,30 @@
   position: relative;
 }
 
-.station-grid {
-  display: flex;
-  gap: 24px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-behavior: smooth;
-  padding-bottom: 16px;
-  margin-bottom: 24px;
-  transition: all 0.3s ease;
-}
-
 .station-grid.show-all {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   overflow-x: visible;
 }
 
 .station-grid::-webkit-scrollbar {
-  height: 8px;
-  z-index: 9999;
+  display: none;
 }
 
-.station-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.station-grid::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
-}
-
-.station-grid::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+.station-grid {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .station-grid .station-preview {
-  min-width: 160px;
+  min-width: 200px;
   flex-shrink: 0;
 }
 
 .station-grid.show-all .station-preview {
   min-width: auto;
   flex-shrink: 1;
-  width: 160px;
+  width: 200px;
 }
 
 /* Spotify loading state */
@@ -327,7 +346,7 @@
   
   .station-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
+    /* gap: 12px; */
   }
   
   .section-title {

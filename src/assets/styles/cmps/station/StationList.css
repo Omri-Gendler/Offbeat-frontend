@@ -13,9 +13,9 @@
     overflow-x: hidden;
  } */
 
-.station-index::-webkit-scrollbar {
+/* .station-index::-webkit-scrollbar {
     width: 8px;
-}
+} */
 
 .station-index::-webkit-scrollbar-thumb {
     background-color: rgba(255, 255, 255, 0.3);
@@ -72,7 +72,7 @@
 
 .station-list-scroll .station-list-wrapper {
     flex-shrink: 0;
-    width: 180px;
+    width: 200px;
 }
 
 .station-list-recents {
@@ -209,7 +209,7 @@ button {
 
 .station-list-wrapper .play-button {
     position: absolute;
-    bottom: 49px;
+    bottom: 57px;
     right: 15px;
 
     width: 50px;

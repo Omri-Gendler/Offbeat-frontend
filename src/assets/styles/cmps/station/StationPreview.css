@@ -1,19 +1,19 @@
 /* Spotify-style station card */
 .station-preview {
-  background: #181818;
+  /* background: #181818; */
   border-radius: 6px;
   padding: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  width: 160px;
+  width: 200px;
 }
 
 .station-preview:hover {
-  background: #282828;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  background: #181818;
+  /* transform: translateY(-2px); */
+  /* box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); */
 }
 
 .station-preview-image {
@@ -53,10 +53,10 @@
 /* Play button that appears on hover */
 .station-preview-play-btn {
   position: absolute;
-  bottom: 68px;
+  bottom: 86px;
   right: 12px;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   background: #1ed760;
   border: none;
   border-radius: 50%;

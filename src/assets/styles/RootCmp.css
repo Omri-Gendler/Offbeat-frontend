@@ -90,8 +90,7 @@ main {
 .main-content {
   /* base */
   background-color: #121212;
-
-  /* scrolling gradient at the top only */
+  border-radius: 8px;
   background-image: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--cover-color) 65%, transparent) 0,

@@ -20,6 +20,7 @@ import { AddStationModal } from './cmps/AddStationModal.jsx'
 import { SpatialTracking } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import { setCoverHex } from './store/actions/app.actions'
+import { clearAndRegenerateDemoData } from './services/demo-data.service'
 
 
 
@@ -33,6 +34,11 @@ export function RootCmp() {
   const [searchResults, setSearchResults] = useState([])
   const [albums, setAlbums] = useState([])
   const [artists, setArtists] = useState([])
+
+  // Temporary: Clear old data and regenerate only Spotify stations
+  useEffect(() => {
+    clearAndRegenerateDemoData()
+  }, [])
 
   useEffect(() => {
     var authParameters = {
