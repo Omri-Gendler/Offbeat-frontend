@@ -10,6 +10,7 @@
 
 @import "cmps/SearchBar";
 @import "cmps/SearchResults";
+@import "cmps/Categories";
 @import "cmps/AboutUs";
 @import "cmps/HomePage";
 @import "cmps/UserDetails";
@@ -23,6 +24,8 @@
 @import "cmps/station/StationList";
 @import "cmps/station/StationPreview";
 @import "cmps/station/StationFilter";
+@import "cmps/ArtistPreview";
+@import "cmps/ArtistList";
 @import "cmps/station/LeftSideBar";
 @import "cmps/station/StationDetails";
 @import "cmps/station/StationCover";

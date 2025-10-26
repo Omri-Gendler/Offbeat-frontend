@@ -1,0 +1,17 @@
+.artist-list {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+}
+
+.artist-list::-webkit-scrollbar {
+    display: none;
+}
+
+.artist-list-empty {
+    color: #b3b3b3;
+    font-size: 14px;
+    padding: 32px 0;
+    text-align: center;
+}

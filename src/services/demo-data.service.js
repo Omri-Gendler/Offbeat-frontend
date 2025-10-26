@@ -60,6 +60,11 @@ export function clearAndRegenerateDemoData() {
     initDemoData()
 }
 
+// Function to get artists from localStorage
+export function getArtists() {
+    return getFromStorage('artistDB') || []
+}
+
 // Utility functions to access Spotify playlist data
 export function getSpotifyPlaylistsByCategory(category) {
     return SPOTIFY_PLAYLISTS[category] || []
@@ -120,6 +125,7 @@ function _generateDemoArtists() {
         'Starlight Brigade', 'Desert Runners', 'Tidal Wave', 'Crimson Peak', 'Ghost Hardware',
         'The Synthetics', 'Vache', 'Moonlit Sonata', 'Golden Rain', 'Lost Frequencies'
     ];
+
 
     return ARTIST_NAMES.map((name, index) => ({
         id: _makeId(10),

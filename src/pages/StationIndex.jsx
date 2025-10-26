@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
 import { useNavigate, Outlet } from 'react-router-dom'
 import { StationList } from '../cmps/StationList'
+import { ArtistList } from '../cmps/ArtistList'
 import { Recents } from '../cmps/Recents.jsx' // ← make sure this file exists
 import {
     loadStations,
@@ -18,6 +19,7 @@ import {
 import { showSuccessMsg, showErrorMsg } from '../services/event-bus.service'
 import { stationService } from '../services/station'
 import { userService } from '../services/user'
+import { getArtists } from '../services/demo-data.service'
 import { IconPlay24 } from '../cmps/Icon'
 
 
@@ -28,16 +30,24 @@ export function StationIndex() {
     const [filterBy, setFilterBy] = useState({ ...stationService.getDefaultFilter(), kind: 'all' })
     const [showAllMadeForYou, setShowAllMadeForYou] = useState(false)
     const [showAllJumpBack, setShowAllJumpBack] = useState(false)
+    const [showAllPop, setShowAllPop] = useState(false)
+    const [showAllArtists, setShowAllArtists] = useState(false)
+    const [artists, setArtists] = useState([])
     const stations = useSelector(storeState => storeState.stationModule.stations)
     console.log('stations', stations)
     const navigate = useNavigate()
 
     useEffect(() => {
         loadStations(filterBy)
+        setArtists(getArtists())
     }, [filterBy])
 
     function onShowAllMadeForYou() {
         setShowAllMadeForYou(!showAllMadeForYou)
+    }
+
+    function onShowAllArtists() {
+        setShowAllArtists(!showAllArtists)
     }
 
     function onShowAllJumpBack() {
@@ -54,6 +64,12 @@ export function StationIndex() {
             index: 0,
             autoplay: true
         })
+    }
+
+    function onPlayArtist(artist) {
+        // For now, we'll just log the artist - later you can implement artist playlists
+        console.log('Playing artist:', artist.title)
+        showSuccessMsg(`Playing top tracks by ${artist.title}`)
     }
 
     async function onRemoveStation(stationId) {
@@ -103,13 +119,21 @@ export function StationIndex() {
         return kindText
     }
 
+    function onShowAllPop() {
+        setShowAllPop(!showAllPop)
+    }
+
     // Apply filtering to stations
     const filteredStations = filterStationsByKind(stations || [], filterBy.kind)
 
     // Get stations for different sections
     const recentStations = filteredStations?.slice(1, 9) || []
     const madeForYouStations = showAllMadeForYou ? filteredStations : (filteredStations?.slice(1, 15) || [])
-    const jumpBackStations = showAllJumpBack ? filteredStations : (filteredStations?.slice(1, 15) || [])
+    const jumpBackStations = showAllJumpBack ? filteredStations : (filteredStations?.slice(9, 23) || [])
+    const popStations = showAllPop ? filteredStations : (filteredStations?.slice(28, 41) || [])
+    
+    // Get artists for artists section
+    const displayedArtists = showAllArtists ? artists : (artists?.slice(0, 7) || [])
 
     return (
         <section className="station-index">
@@ -196,6 +220,50 @@ export function StationIndex() {
                             onEditStation={updateStation}
                             onLikeStation={onLikeStation}
                             variant="grid" />
+                    </div>
+
+                </div>
+            )}
+            {popStations.length > 0 && (
+                <div className="content-section jump-back-section">
+                    <div className="section-header">
+                        <h2 className="section-title">Popular Stations</h2>
+                        <button
+                            className="show-all-btn"
+                            onClick={onShowAllPop}
+                        >
+                            {showAllPop ? 'Show less' : 'Show all'}
+                        </button>
+                    </div>
+                    <div className={`station-grid ${showAllPop ? 'show-all' : ''}`}>
+                        <StationList
+                            stations={popStations}
+                            onRemoveStation={onRemoveStation}
+                            onEditStation={updateStation}
+                            onLikeStation={onLikeStation}
+                            variant="grid" />
+                    </div>
+
+                </div>
+            )}
+
+            {/* Artists section */}
+            {displayedArtists.length > 0 && (
+                <div className="content-section artists-section">
+                    <div className="section-header">
+                        <h2 className="section-title">Popular Artists</h2>
+                        <button
+                            className="show-all-btn"
+                            onClick={onShowAllArtists}
+                        >
+                            {showAllArtists ? 'Show less' : 'Show all'}
+                        </button>
+                    </div>
+                    <div className={`artist-grid ${showAllArtists ? 'show-all' : ''}`}>
+                        <ArtistList
+                            artists={artists}
+                            onPlayArtist={onPlayArtist}
+                        />
                     </div>
                 </div>
             )}

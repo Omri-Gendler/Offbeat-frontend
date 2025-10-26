@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { youtubeService } from '../services/youtube.service'
 import { IconPlay24, IconAddCircle24 } from './Icon'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
@@ -10,7 +11,8 @@ import { PlayPauseButton } from './PlayPauseButton'
 import PauseIcon from '@mui/icons-material/Pause'
 
 export function SearchResults({ searchTerm }) {
-
+    const navigate = useNavigate()
+    
     const [allSongs, setAllSongs] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [allArtists, setAllArtists] = useState([])
@@ -366,6 +368,13 @@ export function SearchResults({ searchTerm }) {
         return `${mins}:${secs.toString().padStart(2, '0')}`
     }
 
+    function handleArtistClick(artist) {
+        // Navigate to search page with the artist name
+        const artistName = artist.title || artist.name
+        navigate(`/search/${encodeURIComponent(artistName)}`)
+        console.log('Navigate to search for artist:', artistName)
+    }
+
     if (!searchTerm?.trim()) {
         return (
             <div className="search-results empty">
@@ -470,7 +479,11 @@ export function SearchResults({ searchTerm }) {
             <div className="search-results">
                 {/* Top Result */}
                 {topResultArtist && (
-                    <div className="top-result">
+                    <div 
+                        className="top-result"
+                        onClick={() => handleArtistClick(topResultArtist)}
+                        style={{ cursor: 'pointer' }}
+                    >
                         {topResultArtist.imgUrl && (
                             <img src={topResultArtist.imgUrl} alt={topResultArtist.title} />
                         )}
@@ -479,7 +492,10 @@ export function SearchResults({ searchTerm }) {
                         <button
                             className="play-btn"
                             // aria-label={isPlaying && currentPlayingSong?.id === topResultArtist.id ? "Pause" : "Play"}
-                            onClick={() => handlePlayPauseClick(topResultArtist, 0)}
+                            onClick={(e) => {
+                                e.stopPropagation() // Prevent triggering the artist click
+                                handlePlayPauseClick(topResultArtist, 0)
+                            }}
                         >
                             {isPlaying && currentPlayingSong?.id === topResultArtist.id ? (
                                 <PauseIcon />
@@ -537,7 +553,12 @@ export function SearchResults({ searchTerm }) {
                         <h2 className="section-title">Artists</h2>
                         <div className="artists-grid">
                             {displayedArtists.slice(0, displayedArtistsCount).map((artist, index) => (
-                                <div key={artist.id} className="artist-card">
+                                <div 
+                                    key={artist.id} 
+                                    className="artist-card"
+                                    onClick={() => handleArtistClick(artist)}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <div className="artist-image-container">
                                         {artist.imgUrl && (
                                             <img src={artist.imgUrl} alt={artist.title} />

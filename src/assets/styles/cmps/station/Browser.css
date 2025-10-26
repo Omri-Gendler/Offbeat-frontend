@@ -2,17 +2,11 @@
     width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
+    background: linear-gradient(180deg, #121212 0%, #121212 100%);
+    min-height: 100vh;
+}
 
-    .categories {
-        margin: 0;
-        padding: 0;
-
-        h2{
-            margin-left: 0.4em;
-        }
-    }
-
-    .category-grid {
-        padding: 0.625em;
-    }
+.browser-categories {
+    width: 100%;
+    max-width: 100%;
 }

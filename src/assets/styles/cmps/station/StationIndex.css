@@ -73,6 +73,11 @@
   color: white;
   margin: 0;
   line-height: 1.2;
+  margin-inline-start: 2em;
+
+  h2 {
+    margin-inline-start: 2em;
+  }
 }
 
 .show-all-btn {
@@ -205,6 +210,37 @@
 /* Jump back in section */
 .jump-back-section {
   margin-bottom: 48px;
+}
+
+/* Artists section */
+.artists-section {
+  margin-bottom: 48px;
+}
+
+.artist-grid {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.artist-grid.show-all {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  overflow-x: visible;
+}
+
+.artist-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.artist-grid {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
 }
 
 /* Spotify-style scrollbar */

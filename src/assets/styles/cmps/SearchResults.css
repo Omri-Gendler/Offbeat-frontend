@@ -449,7 +449,7 @@
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -457,6 +457,8 @@
 
 .artist-card:hover {
   background-color: #282828;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .artist-image-container {
