@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect,useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router'
 import { FastAverageColor } from 'fast-average-color'
 import { HomePage } from './pages/HomePage'
@@ -26,10 +26,52 @@ import { setCoverHex } from './store/actions/app.actions'
 export function RootCmp() {
   const bgImageUrl = useSelector(s => s.appModule?.bgImageUrl)
   const stations = useSelector(s => s.stationModule?.stations || [])
-  const coverHex   = useSelector(s => s.appModule?.coverHex) || '#1f1f1f'
+  const coverHex = useSelector(s => s.appModule?.coverHex) || '#1f1f1f'
   const [dynamicBg, setDynamicBg] = useState('#121212')
+  const [searchInput, setSearchInput] = useState('')
+  const [accessToken, setAccessToken] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [albums, setAlbums] = useState([])
+  const [artists, setArtists] = useState([])
 
+  useEffect(() => {
+    var authParameters = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=client_credentials&client_id=' + import.meta.env.VITE_SPOTIFY_API_KEY + '&client_secret=' + import.meta.env.VITE_SPOTIFY_API_KEY_SECRET,
+    }
 
+    fetch('https://accounts.spotify.com/api/token', authParameters)
+      .then((response) => response.json())
+      .then((data) => {
+        setAccessToken(data.access_token)
+      })
+      .catch((err) => console.error(err))
+  }, [])
+
+  async function search() {
+    var artistParameters = {
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': `Bearer ` + accessToken,
+      },
+    }
+    var artistId = await fetch('https://api.spotify.com/v1/search?q=' + searchInput + '&type=artist', artistParameters)
+      .then((response) => response.json())
+      .then((data) => {
+        return data.artists.items[0].id
+      })
+      .catch((err) => console.error(err))
+
+    var albums = await fetch('https://api.spotify.com/v1/artists/' + artistId + '/albums' + '?include_groups=album&market=US&limit=50', artistParameters)
+      .then((response) => response.json())
+      .then((data) => {
+        return data.items
+      })
+  }
 
   useEffect(() => {
     let alive = true
@@ -93,17 +135,17 @@ export function RootCmp() {
 
     return () => { alive = false; fac.destroy() }
   }, [bgImageUrl, stations])
-  
-    return (
-        <div className="app-layout">
-            <AppHeader />
-            <UserMsg />
-            
-            <div className="content-layout">
-                <LeftSideBar />
-                <UserMsg />
 
-                    <main
+  return (
+    <div className="app-layout">
+      <AppHeader />
+      <UserMsg />
+
+      <div className="content-layout">
+        <LeftSideBar />
+        <UserMsg />
+
+        <main
           className="main-content"
           // Base color + scrolling top gradient
           style={{
@@ -115,33 +157,33 @@ export function RootCmp() {
             backgroundPosition: 'top left', // ← sits at the top, scrolls
           }}
         >
-                    <Routes>
-                        <Route path="" element={<HomePage />} />
-                        <Route path="/station/:stationId" element={<StationDetails />} />
-                        <Route path="/search" element={<Browser />} />
-                        <Route path="/search/:genre" element={<Browser />} />
-                        
-                        <Route path="about" element={<AboutUs />}>
-                            <Route path="team" element={<AboutTeam />} />
-                            <Route path="vision" element={<AboutVision />} />
-                        </Route>
-                        <Route path="stations" element={<StationIndex />} />
-                        <Route path="/stations/add" element={<AddStationModal />} />
-                        <Route path="stations/:stationId" element={<StationDetails />} />
-                        <Route path="user/:id" element={<UserDetails />} />
-                        <Route path="review" element={<ReviewIndex />} />
-                        <Route path="admin" element={<AdminIndex />} />
-                        <Route path="auth" element={<LoginSignup />}>
-                            <Route path="login" element={<Login />} />
-                            <Route path="signup" element={<Signup />} />
-                        </Route>
-                    </Routes>
-                </main>
-            </div>
-            
-            <AppFooter />
-        </div>
-    )
+          <Routes>
+            <Route path="" element={<HomePage />} />
+            <Route path="/station/:stationId" element={<StationDetails />} />
+            <Route path="/search" element={<Browser />} />
+            <Route path="/search/:genre" element={<Browser />} />
+
+            <Route path="about" element={<AboutUs />}>
+              <Route path="team" element={<AboutTeam />} />
+              <Route path="vision" element={<AboutVision />} />
+            </Route>
+            <Route path="stations" element={<StationIndex />} />
+            <Route path="/stations/add" element={<AddStationModal />} />
+            <Route path="stations/:stationId" element={<StationDetails />} />
+            <Route path="user/:id" element={<UserDetails />} />
+            <Route path="review" element={<ReviewIndex />} />
+            <Route path="admin" element={<AdminIndex />} />
+            <Route path="auth" element={<LoginSignup />}>
+              <Route path="login" element={<Login />} />
+              <Route path="signup" element={<Signup />} />
+            </Route>
+          </Routes>
+        </main>
+      </div>
+
+      <AppFooter />
+    </div>
+  )
 }
 
 
