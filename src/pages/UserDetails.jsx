@@ -31,7 +31,18 @@ export function UserDetails() {
         <h3>
           {user.fullname}
         </h3>
-        <img src={user.imgUrl} style={{ width: '100px' }} />
+        <img 
+          src={user.imgUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'} 
+          alt={user.fullname}
+          className="user-img" 
+          style={{ 
+            width: '120px', 
+            height: '120px', 
+            borderRadius: '50%', 
+            objectFit: 'cover',
+            border: '3px solid #333'
+          }} 
+        />
         <pre> {JSON.stringify(user, null, 2)} </pre>
       </div>}
     </section>

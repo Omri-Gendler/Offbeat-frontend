@@ -46,19 +46,26 @@ export function AppHeader() {
 
 				{user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
 
-				{/* {!user && <NavLink to="auth/login" className="login-link">Login</NavLink>} */}
-				<img src="/img/user-avatar.png" alt="" style={{ width: '25px', height: '25px' }} />
-				{/* {user && (
-					<div className="user-info">
-						<Link to={`user/${user._id}`}>
-							{user.imgUrl && <img src={user.imgUrl} />}
-							{user.fullname}
-							1
+				{!user && <NavLink to="auth/login" className="login-link">Login</NavLink>}
+				
+				{/* User Avatar */}
+				<div className="user-avatar-container">
+					{user ? (
+						<Link to={`user/${user._id}`} className="user-profile-link">
+							<img 
+								src={user.imgUrl || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face'} 
+								alt={user.fullname || 'User'} 
+								className="user-avatar"
+							/>
 						</Link>
-						<span className="score">{user.score?.toLocaleString()}</span>
-						<button onClick={onLogout}>logout</button>
-					</div>
-				)} */}
+					) : (
+						<img 
+							src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face" 
+							alt="Default User" 
+							className="user-avatar"
+						/>
+					)}
+				</div>
 			</nav>
 		</header>
 	)

@@ -48,7 +48,11 @@ export function PlaylistHeader({ station, onSaveStation }) {
               </h1>
             </button>
             <div className="station-byline">
-              <img src="/img/user-avatar.png" alt="user avatar" style={{ width: 25, height: 25 }} />
+              <img 
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face" 
+                alt="user avatar" 
+                style={{ width: 25, height: 25, borderRadius: '50%', objectFit: 'cover' }} 
+              />
               <a className="station-owner">{station?.createdBy?.fullname ?? 'Unknown'}</a>
               <span className="dot">•</span>
               <span className="station-stats">{station?.songs?.length ?? 0} songs</span>
