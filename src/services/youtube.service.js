@@ -1,14 +1,18 @@
 import axios from 'axios'
+import { demoYouTubeResults } from './demo-youtube.service.js'
 
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const BASE_URL = 'https://www.googleapis.com/youtube/v3'
 const searchCache = new Map()
+const USE_DEMO_MODE = !API_KEY || API_KEY === 'demo' // Use demo if no API key
 
 // Debug logging for production
 console.log('YouTube Service initialized')
 console.log('API_KEY exists:', !!API_KEY)
+console.log('API_KEY (first 10 chars):', API_KEY?.substring(0, 10) + '...')
 if (!API_KEY) {
-    console.error('VITE_YOUTUBE_API_KEY is not set in environment variables')
+    console.error('❌ VITE_YOUTUBE_API_KEY is not set in environment variables')
+    console.error('Please check your .env file and restart the development server')
 }
 
 export const youtubeService = {
@@ -32,12 +36,36 @@ export const searchVideos = async (query, maxResults) => {
 async function searchSongs(query) {
     const cacheKey = query.toLowerCase().trim()
     if (searchCache.has(cacheKey)) {
-        console.log('Serving from cache:', cacheKey)
+        console.log('🎵 Serving from cache:', cacheKey)
         return searchCache.get(cacheKey)
     }
 
+    // Use demo mode if no valid API key
+    if (USE_DEMO_MODE) {
+        console.warn('⚠️ Using demo YouTube data (API key not configured)')
+        const filteredResults = {
+            songs: demoYouTubeResults.songs.filter(song => 
+                song.title.toLowerCase().includes(query.toLowerCase()) ||
+                song.artist.toLowerCase().includes(query.toLowerCase())
+            ),
+            artists: demoYouTubeResults.artists.filter(artist =>
+                artist.title.toLowerCase().includes(query.toLowerCase())
+            )
+        }
+        
+        // If no matches found, return some default results
+        if (filteredResults.songs.length === 0 && filteredResults.artists.length === 0) {
+            return {
+                songs: demoYouTubeResults.songs.slice(0, 3),
+                artists: demoYouTubeResults.artists.slice(0, 2)
+            }
+        }
+        
+        return filteredResults
+    }
+
     if (!API_KEY) {
-        console.error('YouTube API key is missing')
+        console.error('❌ YouTube API key is missing')
         throw new Error('YouTube API key is not configured')
     }
 
@@ -181,15 +209,55 @@ async function searchSongs(query) {
         return results
 
     } catch (err) {
-        console.error('Error searching YouTube:', err)
-        console.error('Error details:', {
+        console.error('❌ Error searching YouTube:', err.message)
+        console.error('📊 Error details:', {
             message: err.message,
             status: err.response?.status,
             statusText: err.response?.statusText,
-            data: err.response?.data
+            data: err.response?.data,
+            config: err.config ? {
+                url: err.config.url,
+                params: err.config.params
+            } : null
         })
         
-        // Return empty results instead of throwing to prevent app crash
+        // Specific error messages for common issues
+        if (err.response?.status === 403) {
+            console.error('🚨 YouTube API 403 Error - Possible causes:')
+            console.error('   1. Invalid or expired API key')
+            console.error('   2. API key not enabled for YouTube Data API v3')
+            console.error('   3. Quota exceeded (10,000 units/day limit)')
+            console.error('   4. API key has HTTP referrer restrictions')
+            console.error('   5. Billing not enabled on Google Cloud project')
+            console.error('💡 Check YOUTUBE_API_SETUP.md for instructions')
+            console.warn('🔄 Falling back to demo data...')
+            
+            // Fallback to demo data for 403 errors
+            const filteredResults = {
+                songs: demoYouTubeResults.songs.filter(song => 
+                    song.title.toLowerCase().includes(query.toLowerCase()) ||
+                    song.artist.toLowerCase().includes(query.toLowerCase())
+                ),
+                artists: demoYouTubeResults.artists.filter(artist =>
+                    artist.title.toLowerCase().includes(query.toLowerCase())
+                )
+            }
+            
+            // If no matches found, return some default results
+            if (filteredResults.songs.length === 0 && filteredResults.artists.length === 0) {
+                return {
+                    songs: demoYouTubeResults.songs.slice(0, 3),
+                    artists: demoYouTubeResults.artists.slice(0, 2)
+                }
+            }
+            
+            return filteredResults
+            
+        } else if (err.response?.status === 400) {
+            console.error('🚨 YouTube API 400 Error - Bad request parameters')
+        }
+        
+        // Return empty results for other errors
         return {
             artists: [],
             songs: []
