@@ -7,12 +7,20 @@ const searchCache = new Map()
 const USE_DEMO_MODE = !API_KEY || API_KEY === 'demo' // Use demo if no API key
 
 // Debug logging for production
-console.log('YouTube Service initialized')
-console.log('API_KEY exists:', !!API_KEY)
-console.log('API_KEY (first 10 chars):', API_KEY?.substring(0, 10) + '...')
+console.log('🎵 YouTube Service initialized')
+console.log('📍 Environment:', import.meta.env.MODE)
+console.log('🔑 API_KEY exists:', !!API_KEY)
+console.log('🔑 API_KEY (first 10 chars):', API_KEY?.substring(0, 10) + '...')
+console.log('🌐 Current origin:', window.location.origin)
+
 if (!API_KEY) {
     console.error('❌ VITE_YOUTUBE_API_KEY is not set in environment variables')
-    console.error('Please check your .env file and restart the development server')
+    if (import.meta.env.MODE === 'production') {
+        console.error('🚨 Production Error: Environment variables not configured on Render')
+        console.error('💡 Add VITE_YOUTUBE_API_KEY in Render dashboard > Environment tab')
+    } else {
+        console.error('💡 Please check your .env file and restart the development server')
+    }
 }
 
 export const youtubeService = {
@@ -229,7 +237,15 @@ async function searchSongs(query) {
             console.error('   3. Quota exceeded (10,000 units/day limit)')
             console.error('   4. API key has HTTP referrer restrictions')
             console.error('   5. Billing not enabled on Google Cloud project')
-            console.error('💡 Check YOUTUBE_API_SETUP.md for instructions')
+            
+            if (import.meta.env.MODE === 'production') {
+                console.error('🌐 Production-specific issues:')
+                console.error('   6. API key not configured for domain:', window.location.origin)
+                console.error('   7. Environment variables not set on Render')
+                console.error('💡 Check PRODUCTION_FIX.md for deployment instructions')
+            } else {
+                console.error('💡 Check YOUTUBE_API_SETUP.md for local development instructions')
+            }
             console.warn('🔄 Falling back to demo data...')
             
             // Fallback to demo data for 403 errors

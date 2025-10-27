@@ -1,0 +1,14 @@
+# Environment Variables for Render.com Deployment
+
+# Add these environment variables in your Render dashboard:
+# Go to: Dashboard > Your Service > Environment Tab
+
+# YouTube API
+VITE_YOUTUBE_API_KEY=AIzaSyCXADIPq03jMwdp-917sLcary9kX4VojBQ
+
+# Spotify API  
+VITE_SPOTIFY_API_KEY=2134594e2b14492f8bb393661edf8d7c
+VITE_SPOTIFY_API_KEY_SECRET=89559a7c86c14556ad23aa5892387e29
+
+# Optional: Set production mode
+VITE_ENVIRONMENT=production
