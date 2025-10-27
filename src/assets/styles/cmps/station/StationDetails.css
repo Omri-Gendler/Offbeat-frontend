@@ -34,7 +34,7 @@
 .station-header {
   position: relative;           
   align-items: flex-end;
-  z-index: 0;                   /* content above background, below overlay if needed */
+  z-index: 1;                   /* content above background, below overlay if needed */
 }
 
 .station-header,
@@ -164,131 +164,13 @@
 
 }
 
-/* Mobile Styles for Songs List */
-@media (max-width: 414px) {
-  .station-details {
-    padding: 12px;
-    min-height: calc(100vh - 120px);
-  }
-
-  .songs-list-header {
-    position: static;
-    display: none; /* Hide header on mobile for cleaner look */
-  }
-
-  .songs-list-grid {
-    --row-height: 64px;
-    --tracklist-index-column-width: 32px;
-  }
-
-  .songs-list-header,
-  .songs-list-grid,
-  .song-list-row {
-    grid-template-columns: [index] 32px [first] 1fr [actions] 60px;
-    grid-gap: 12px;
-    padding: 0 8px;
-  }
-
-  .song-list-row {
-    border-radius: 8px;
-    margin-bottom: 4px;
-    padding: 8px;
-    
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-  }
-
-  .cell {
-    font-size: 14px;
-    line-height: 1.4;
-  }
-
-  .cell.index {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-  }
-
-  .cell.title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-
-    .song-meta {
-      min-width: 0;
-      flex: 1;
-
-      .track-link .title {
-        font-size: 14px;
-        font-weight: 500;
-        color: #fff;
-        margin-bottom: 2px;
-      }
-
-      .track-link .artist {
-        font-size: 12px;
-        color: #b3b3b3;
-      }
-    }
-
-    .track-image {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-  }
-
-  /* Hide album and date columns on mobile */
-  .cell.album,
-  .cell.added,
-  .date-added-container {
-    display: none;
-  }
-
-  .cell.duration,
-  .duration-container {
-    grid-column: actions;
-    justify-content: center;
-    font-size: 12px;
-    color: #b3b3b3;
-  }
-
-  .songs-list {
-    padding-bottom: 80px; /* Account for fixed music player */
-  }
-
-  .songs-list-container {
-    padding: 0;
-  }
-}
-
-@media (max-width: 700px) and (min-width: 415px) {
+/* 
+@media (max-width: 700px) {
   .songs-list-header {
     position: static;
   }
 
-  .songs-list-grid {
-    --row-height: 56px;
-  }
-
-  .songs-list-header,
-  .songs-list-grid,
-  .song-list-row {
-    grid-template-columns: [index] 24px [first] 2fr [var1] 1fr [last] 80px;
-    grid-gap: 12px;
-  }
-
-  /* Hide date added on tablets */
-  .cell.added,
-  .date-added-container {
-    display: none;
-  }
-}
+} */
 
 
 
