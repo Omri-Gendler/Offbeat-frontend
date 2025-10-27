@@ -84,27 +84,60 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
   return (
     <div className="picker-backdrop" role="dialog" aria-modal="true">
       <div className="picker-panel">
-        <div className="picker-header" />
+        <div className="picker-header">
+          <h2>Let's find something for your playlist</h2>
+        </div>
 
-        <StationSearch
-          value={query}
-          onChange={setQuery}
-          onClose={onClose}
-        />
-        
+        <div className="station-search">
+          <StationSearch
+            value={query}
+            onChange={setQuery}
+            onClose={onClose}
+            showTitle={false}
+          />
+        </div>
 
+        <div className="songs-list-container">
+          {isLoading && (
+            <div className="picker-loading">
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z" fill="currentColor">
+                  <animateTransform 
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="rotate"
+                    from="0 12 12"
+                    to="360 12 12"
+                    dur="1s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+              </svg>
+              Searching...
+            </div>
+          )}
+          
+          {error && (
+            <div className="empty-msg" style={{color: '#ff6b6b'}}>
+              {error}
+            </div>
+          )}
+
+          {!isLoading && !error && (
+            <SongsList
+              station={station}
+              rowVariant="picker"
+              songs={youtubeResults}
+              searchQuery={query}
+              maxResults={maxResults}
+              existingIds={existingIdsSet}
+              onAdd={handleAddToCurrent}
+              showHeader={false}
+              isExternalResults={true}
+            />
+          )}
+        </div>
       </div>
-        <SongsList
-          station={station}
-          rowVariant="picker"
-          songs={youtubeResults}
-          searchQuery={query}
-          maxResults={maxResults}
-          existingIds={existingIdsSet}
-          onAdd={handleAddToCurrent}
-          showHeader={true}
-          isExternalResults={true}
-        />
     </div>
   )
 }

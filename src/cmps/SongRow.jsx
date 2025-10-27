@@ -163,7 +163,7 @@ export function SongRowBase({
         {/* album */}
         <div className="cell album" role="gridcell" aria-colindex={3}>
           {song.album ? (
-            <a className="standalone-ellipsis-one-line" tabIndex={-1}>{song.album}</a>
+            <a className="standalone-ellipsis-one-line" tabIndex={-1}></a>
           ) : (
             <span className="standalone-ellipsis-one-line">—</span>
           )}

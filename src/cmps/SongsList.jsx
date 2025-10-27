@@ -116,11 +116,14 @@ export function SongsList({
     if (song.id === playingId) {
       togglePlay()
     } else {
+      const tracksToUse = isPicker && isExternalResults ? songs : (station?.songs ?? songs)
+      
       playContext({
-        contextId: station?._id,
-        contextType: 'station',
-        tracks: station?.songs ?? songs,
+        contextId: isPicker ? `search-${searchQuery}` : station?._id,
+        contextType: isPicker ? 'search' : 'station',
+        tracks: tracksToUse,
         trackId: song.id,
+        index: tracksToUse.findIndex(track => track.id === song.id),
         autoplay: true
       })
     }
