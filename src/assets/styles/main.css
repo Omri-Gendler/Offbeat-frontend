@@ -46,4 +46,5 @@
 @import "cmps/review/ReviewList";
 @import "cmps/review/ReviewPreview";
 
-
+/* iPhone 6/7/8 Plus Media Queries */
+@import "iphone-plus";
