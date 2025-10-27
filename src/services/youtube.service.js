@@ -4,6 +4,13 @@ const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const BASE_URL = 'https://www.googleapis.com/youtube/v3'
 const searchCache = new Map()
 
+// Debug logging for production
+console.log('YouTube Service initialized')
+console.log('API_KEY exists:', !!API_KEY)
+if (!API_KEY) {
+    console.error('VITE_YOUTUBE_API_KEY is not set in environment variables')
+}
+
 export const youtubeService = {
     searchSongs,
     searchArtists,
@@ -29,7 +36,13 @@ async function searchSongs(query) {
         return searchCache.get(cacheKey)
     }
 
+    if (!API_KEY) {
+        console.error('YouTube API key is missing')
+        throw new Error('YouTube API key is not configured')
+    }
+
     console.log('Fetching from API:', cacheKey)
+    console.log('Using API key:', API_KEY ? 'Yes' : 'No')
     try {
         // First search for general content
         const searchResponse = await axios.get(`${BASE_URL}/search`, {
@@ -168,8 +181,19 @@ async function searchSongs(query) {
         return results
 
     } catch (err) {
-        console.error('Error searching YouTube', err)
-        throw err
+        console.error('Error searching YouTube:', err)
+        console.error('Error details:', {
+            message: err.message,
+            status: err.response?.status,
+            statusText: err.response?.statusText,
+            data: err.response?.data
+        })
+        
+        // Return empty results instead of throwing to prevent app crash
+        return {
+            artists: [],
+            songs: []
+        }
     }
 }
 
@@ -235,8 +259,19 @@ async function searchArtists(query, skip = 0) {
         }
 
     } catch (err) {
-        console.error('Error searching YouTube artists', err)
-        throw err
+        console.error('Error searching YouTube artists:', err)
+        console.error('Error details:', {
+            message: err.message,
+            status: err.response?.status,
+            statusText: err.response?.statusText,
+            data: err.response?.data
+        })
+        
+        // Return empty results instead of throwing to prevent app crash
+        return {
+            artists: [],
+            songs: []
+        }
     }
 }
 
