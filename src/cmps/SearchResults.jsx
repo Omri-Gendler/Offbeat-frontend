@@ -223,8 +223,21 @@ export function SearchResults({ searchTerm }) {
 
             console.log('✅ Hybrid search complete:', {
                 hybridSongs: hybridSongs.length,
-                allArtists: allArtists.length
+                allArtists: allArtists.length,
+                displayedSongs: hybridSongs.slice(0, 4).length,
+                activeFilter
             })
+
+            // Debug: Log the first few songs to see their structure
+            if (hybridSongs.length > 0) {
+                console.log('🎵 Sample songs:', hybridSongs.slice(0, 3).map(s => ({
+                    id: s.id,
+                    title: s.title,
+                    artist: s.artist,
+                    isYouTube: s.isYouTube,
+                    durationMs: s.durationMs
+                })))
+            }
 
         } catch (err) {
             console.error('❌ Search failed:', err)
@@ -507,42 +520,29 @@ export function SearchResults({ searchTerm }) {
                 )}
 
                 {/* Songs Section */}
-                <div className="songs-section">
-                    <h2>Songs</h2>
-                    <div className="songs-table">
-                        {/* Table Header */}
-                        {/* <div className="songs-table-header"> */}
-                        {/* <div className="col-index">#</div>
-                            <div className="col-title">Title</div>
-                            <div className="col-album">Album</div>
-                            <div className="col-date">Date added</div> */}
-                        <div className="col-duration">
-                            {/* <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16">
-                                    <path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z" fill="currentColor"></path>
-                                    <path d="M8 3.25a.75.75 0 0 1 .75.75v3.25H11a.75.75 0 0 1 0 1.5H7.25V4A.75.75 0 0 1 8 3.25z" fill="currentColor"></path>
-                                </svg> */}
-                        </div>
-                        {/* </div> */}
+                {displayedSongs.length > 0 && (
+                    <div className="songs-section">
+                        <h2>Songs</h2>
+                        <div className="songs-table">
+                            <div className="songs-table-body">
+                                {songsList.map((song, index) => {
+                                    const isThisSongPlaying = isPlaying && currentPlayingSong?.id === song.id;
 
-                        {/* Table Body */}
-                        <div className="songs-table-body">
-                            {songsList.map((song, index) => {
-                                const isThisSongPlaying = isPlaying && currentPlayingSong?.id === song.id;
-
-                                return (
-                                    <SearchResultSongRow
-                                        key={song.id}
-                                        song={song}
-                                        mapIndex={index}
-                                        isThisSongPlaying={isThisSongPlaying}
-                                        handlePlayPauseClick={handlePlayPauseClick}
-                                        formatDuration={formatDuration}
-                                    />
-                                )
-                            })}
+                                    return (
+                                        <SearchResultSongRow
+                                            key={song.id}
+                                            song={song}
+                                            mapIndex={index}
+                                            isThisSongPlaying={isThisSongPlaying}
+                                            handlePlayPauseClick={handlePlayPauseClick}
+                                            formatDuration={formatDuration}
+                                        />
+                                    )
+                                })}
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Artists Section */}
