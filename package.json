@@ -10,6 +10,7 @@
     "dev:local": "set VITE_LOCAL=true&&vite",
     "dev:local:mac": "export VITE_LOCAL=true && vite",
     "build": "vite build",
+    "start": "vite preview --host --port $PORT",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

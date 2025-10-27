@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react-swc'
 // https://vitejs.dev/config/
 export default defineConfig({
 	plugins: [react()],
+	preview: {
+		port: process.env.PORT || 4173,
+		host: true
+	},
 	// After setting-up a backend, this can automoate the copying process of the built files:
 	// build: {
 	// 	outDir: '../backend/public',
