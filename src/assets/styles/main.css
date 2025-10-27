@@ -37,7 +37,7 @@
 @import "cmps/station/QueueSidebar";
 @import "cmps/station/Browser";
 @import "cmps/station/Equalizer";
-@import "cmps/station-cover";
+/* @import "cmps/station-cover"; */
 @import "cmps/song-picker";
 
 @import "cmps/review/ReviewEdit";
