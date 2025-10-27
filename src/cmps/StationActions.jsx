@@ -95,7 +95,7 @@ export function StationActions({ station }) {
     <div className="station-actions-space content-spacing">
       <div className="station-actions flex">
         <PlayPauseButton
-          isPlaying={isThisStationActive && isPlaying}  // ← controlled by Redux
+          isPlaying={isThisStationActive && isPlaying}  
           onPlay={handlePlay}
           onPause={handlePause}
           disabled={!stationSongs.length}
@@ -110,7 +110,7 @@ export function StationActions({ station }) {
           data-added={added ? 'true' : 'false'}
           disabled={!station?._id}
         >
-          {added ? <IconCheckCircle24 /> : <IconAddCircle24 />}
+          {!added ? <IconCheckCircle24 /> : <IconAddCircle24 />}
         </button>
 
         <button type="button" className="tertiary-btn" aria-label="More options">

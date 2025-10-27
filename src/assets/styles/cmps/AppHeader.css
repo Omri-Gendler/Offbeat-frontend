@@ -266,9 +266,9 @@ button:hover {
     border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Mobile Menu Button */
+/* Mobile Menu Button - Hidden by default, only shown on mobile */
 .mobile-menu-btn {
-    display: none;
+    display: none !important;
     background: none;
     border: none;
     color: #fff;
@@ -288,8 +288,12 @@ button:hover {
     }
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for tablets - keep menu button hidden */
 @media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: none !important;
+    }
+    
     .app-header nav {
         padding-left: 1em;
         padding-right: 1em;
@@ -308,9 +312,10 @@ button:hover {
     }
 }
 
+/* Only show mobile menu on very small screens (true mobile devices) */
 @media (max-width: 480px) {
     .mobile-menu-btn {
-        display: block;
+        display: block !important;
     }
     
     .middle-app-header {
