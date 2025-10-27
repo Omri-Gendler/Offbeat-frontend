@@ -61,17 +61,17 @@ export function PlaylistHeader({ station, onSaveStation }) {
             </div>
           </div>
 
-          {isModalOpen && (
-            <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-              <EditStationModal
-                station={station}
-                onSave={handleSaveDetails}
-                onClose={() => setIsModalOpen(false)}
-              />
-            </div>
-          )}
         </div>
       </div>
+      {isModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <EditStationModal
+            station={station}
+            onSave={handleSaveDetails}
+            onClose={() => setIsModalOpen(false)}
+          />
+        </div>
+      )}
     </div>
 
   )
