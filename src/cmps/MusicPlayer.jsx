@@ -44,8 +44,8 @@ export function MusicPlayer({ station }) {
     return queue[realIdx] || null
   }, [queue, playOrder, index])
 
-  const likedSongs = likedStation?.songs || []
-  const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
+ const likedSongs = likedStation?.songs || []
+ const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
 
   const audioRef = useRef(null)
   const ytRef = useRef(null)
