@@ -26,53 +26,11 @@ export function AppHeader() {
 		}
 	}
 
-	function toggleMobileMenu() {
-		setIsMobileMenuOpen(prev => !prev)
-		// Add/remove class to sidebar for mobile menu
-		const sidebar = document.querySelector('.left-side-bar')
-		const overlay = document.querySelector('.mobile-overlay')
-		const body = document.body
-		
-		if (sidebar) {
-			sidebar.classList.toggle('mobile-menu-open')
-		}
-		if (overlay) {
-			overlay.classList.toggle('active')
-		}
-		// Prevent body scroll when menu is open
-		body.style.overflow = isMobileMenuOpen ? 'auto' : 'hidden'
-	}
-
-	function closeMobileMenu() {
-		setIsMobileMenuOpen(false)
-		const sidebar = document.querySelector('.left-side-bar')
-		const overlay = document.querySelector('.mobile-overlay')
-		const body = document.body
-		
-		if (sidebar) {
-			sidebar.classList.remove('mobile-menu-open')
-		}
-		if (overlay) {
-			overlay.classList.remove('active')
-		}
-		body.style.overflow = 'auto'
-	}
-
-	// Close mobile menu on route change
-	useEffect(() => {
-		closeMobileMenu()
-	}, [location.pathname])
 
 	return (
 		<header className="app-header full">
 
 			<nav>
-				{/* Mobile Menu Button */}
-				<button className="mobile-menu-btn" onClick={toggleMobileMenu}>
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-					</svg>
-				</button>
 
 				<div className='logo-container'>
 					<img className='app-header-logo' src="/img/spotify-white-icon.webp" alt="Offbeat Logo" onClick={() => navigate('')} />

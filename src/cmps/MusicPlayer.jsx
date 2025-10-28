@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
-import PlayArrowIcon from '@mui/icons-material/PlayArrow'
-import PauseIcon from '@mui/icons-material/Pause'
-import SkipNextIcon from '@mui/icons-material/SkipNext'
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious'
-import SlideshowIcon from '@mui/icons-material/Slideshow'
 
-import TapAndPlayIcon from '@mui/icons-material/TapAndPlay'
-import FullscreenIcon from '@mui/icons-material/Fullscreen'
+
 
 import {
   setIndex,
@@ -15,8 +9,13 @@ import {
   nextTrack,
   prevTrack,
   togglePlay,
+  cycleRepeatMode,
+  toggleShuffle,
+
   // setProgress, // optional if you track progress in Redux
 } from '../store/actions/player.actions'
+
+import { selectCurrentSong } from '../store/selectors/player.selectors'
 
 import { likeSong, unlikeSong } from '../store/actions/station.actions'
 import { QueueSidebar } from './QueueSidebar'
@@ -31,20 +30,27 @@ export function MusicPlayer({ station }) {
   const stations = useSelector(s => s.stationModule.stations, shallowEqual)
   const likedStation = stations.find(s => s._id === 'liked-songs-station') || null
 
-  const { queue = [], index = 0, isPlaying = false } = useSelector(
-    s => s.playerModule || {},
-    shallowEqual
-  )
 
-  // Derive current song strictly from queue/index (Spotify-style, context-agnostic)
-  const currentSong = useMemo(() => {
-    if (!queue.length) return null
-    const i = Math.min(Math.max(index, 0), queue.length - 1)
-    return queue[i] || null
-  }, [queue, index])
 
-  const likedSongs = likedStation?.songs || []
-  const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
+ const {
+   queue = [],
+   index = 0,
+   isPlaying = false,
+   shuffle = false,
+   repeat = 'off',
+  
+   playOrder = []} = useSelector(s => s.playerModule || {}, shallowEqual)
+   
+
+ const currentSong = useMemo(() => {
+   if (!queue?.length || !playOrder?.length) return null
+   const safeIdx = Math.min(Math.max(index, 0), playOrder.length - 1)
+   const realIdx = playOrder[safeIdx] ?? safeIdx
+   return queue[realIdx] || null
+ }, [queue, playOrder, index])
+
+ const likedSongs = likedStation?.songs || []
+ const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
 
   const audioRef = useRef(null)
   const ytRef = useRef(null)
@@ -261,8 +267,8 @@ export function MusicPlayer({ station }) {
   }
 
   const canControl = !!currentSong
-  const canGoPrev = canControl && index > 0         // Spotify: prev disabled at start (no wrap)
-  const canGoNext = canControl && index < queue.length - 1
+ const canGoPrev = canControl && index > 0
+ const canGoNext = canControl && index < (playOrder?.length || 0) - 1
 
   return (
     <div className="music-player" role="region" aria-label="Player controls">
@@ -296,7 +302,14 @@ export function MusicPlayer({ station }) {
       <div className="player-center">
         <div className="player-controls" role="group" aria-label="Playback">
           <div className='player-controls-left'>
-            <button className='shuffle-btn' aria-label="Enable shuffle"><IconShuffle16 /></button>
+            <button
+                className={`shuffle-btn ${shuffle ? 'is-active' : ''}`}
+                onClick={() => toggleShuffle()}
+                aria-pressed={shuffle}
+                aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
+              >
+                <IconShuffle16 />
+              </button>
             <button
               type="button"
               className="control-btn"
@@ -329,7 +342,14 @@ export function MusicPlayer({ station }) {
             aria-label="Next">
               <IconNext16 />
             </button>
-            <button className='repeat-btn' aria-label="Enable repeat"><IconRepeat16 /></button>
+            <button
+              className={`repeat-btn repeat-${repeat} ${repeat ? 'is-active' : ''}`}
+              onClick={() => cycleRepeatMode()}
+              aria-pressed={repeat !== 'off'}
+              aria-label={`Repeat: ${repeat}`}
+            >
+              <IconRepeat16 />
+            </button>
           </div>
         </div>
 
@@ -396,7 +416,14 @@ export function MusicPlayer({ station }) {
             const t = audioRef.current?.currentTime || 0
             setCurrentTime(t)
           }}
-          onEnded={onNext}
+           onEnded={() => {
+              if (repeat === 'one') {
+                const el = audioRef.current
+                if (el) { el.currentTime = 0; el.play?.().catch(() => setPlay(false)) }
+              } else {
+                onNext()
+              }
+            }}
           onError={(e) => {
             console.error('❌ Audio error:', e.target.error)
             console.error('❌ Failed URL:', currentSong?.url)
@@ -425,7 +452,15 @@ export function MusicPlayer({ station }) {
             setDuration(Number.isFinite(d) ? d : 0)
           }}
           onTimeUpdate={(t) => setCurrentTime(Number.isFinite(t) ? t : 0)}
-          onEnded={onNext}
+         
+            onEnded={() => {
+              if (repeat === 'one') {
+                try { ytRef.current?.seekTo(0); ytRef.current?.play() } catch {}
+              } else {
+                onNext()
+              }
+            }}
+
           onPlayingChange={(playing) => {
             if (playing !== isPlaying) {
               setPlay(playing)

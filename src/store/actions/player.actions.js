@@ -9,7 +9,9 @@ import {
   SET_QUEUE,
   NEXT,
   PREV,
-  RESET
+  RESET,
+  TOGGLE_SHUFFLE,
+  CYCLE_REPEAT,
 } from '../reducers/player.reducer'
 
 
@@ -19,12 +21,24 @@ export function setIndex(index) {
   return action
 }
 
+
 export function setPlay(isPlaying) {
   const action = { type: SET_PLAY, isPlaying }
   store.dispatch(action)
   return action
 }
 
+export function toggleShuffle() {
+  const action = { type: TOGGLE_SHUFFLE }
+  store.dispatch(action)
+  return action
+}
+
+export function cycleRepeatMode() {
+  const action = { type: CYCLE_REPEAT }
+  store.dispatch(action)
+  return action
+}
 
 
 export function playContext(payload) {
@@ -84,6 +98,19 @@ export function setQueueIfChanged(queue = [], startIndex = 0, contextId = null, 
 
   store.dispatch({
     type: SET_QUEUE,
-    payload: { queue, index: startIndex, contextId, contextType },
+    payload: {
+      queue,
+      index: startIndex,
+      contextId,
+      contextType, 
+      preserveCurrent: true,
+    },
   })
+}
+
+export const selectCurrentSong = (s) => {
+  const { queue = [], playOrder = [], index = 0 } = s.playerModule || {}
+  if (!queue.length || !playOrder.length) return null
+  const safeIdx = Math.max(0, Math.min(index, playOrder.length - 1))
+  return queue[playOrder[safeIdx]] || null
 }
