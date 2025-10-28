@@ -110,6 +110,7 @@ export function StationActions({ station }) {
           data-added={isAdded ? 'true' : 'false'}
           disabled={!station?._id}
         >
+          {isAdded ? <IconCheckCircle24 /> : <IconAddCircle24 />}
           {isAdded ? <IconCheckCircle24 style={{ color: 'var(--clr3)' }} /> : <IconAddCircle24 />}
         </button>
 

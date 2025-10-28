@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { playContext, togglePlay } from '../store/actions/player.actions'
 import { IconPause24, IconPlay24 } from './Icon'
+import { IconPause24, IconPlay24 } from './Icon'
 
 export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
   const navigate = useNavigate()
@@ -33,25 +34,25 @@ export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
     return `${station.songs?.length || 0} songs`
   }
 
-  return (
-    <article className="station-preview" onClick={handleStationClick}>
-      <img
-        className="station-preview-image"
-        src={station.imgUrl}
-        alt={station.name}
-      />
-
-      <h3 className="station-preview-title">{station.name}</h3>
-      <p className="station-preview-description">{getDescription()}</p>
-
-      <button
-        type="button"
-        className="station-preview-play-btn"
-        onClick={handlePlayClick}
-        aria-label={isThisStationPlaying ? 'Pause' : 'Play'}
-      >
-        {isThisStationPlaying ? <IconPause24 /> : <IconPlay24 />}
-      </button>
-    </article>
-  )
+    return (
+        <article className="station-preview" onClick={handleStationClick}>
+            <img 
+                className="station-preview-image" 
+                src={station.imgUrl} 
+                alt={station.name} 
+            />
+            
+            <h3 className="station-preview-title">{station.name}</h3>
+            
+            <p className="station-preview-description">{getDescription()}</p>
+            
+            <button 
+                className="station-preview-play-btn"
+                onClick={handlePlayClick}
+                aria-label={isThisStationPlaying ? 'Pause' : 'Play'}
+            >
+                {isPlaying ? <IconPause24/> : <IconPlay24 /> }
+            </button>
+        </article>
+    )
 }
