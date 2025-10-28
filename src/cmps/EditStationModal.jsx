@@ -3,6 +3,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import { updateStation } from '../store/actions/station.actions';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { showErrorMsg, showSuccessMsg } from '../services/event-bus.service';
+import { uploadService } from '../services/upload.service';
 
 export function EditStationModal({ station, onClose, onSave }) {
 
@@ -47,25 +50,19 @@ export function EditStationModal({ station, onClose, onSave }) {
     function handleImageChange(event) {
         const file = event.target.files[0]
         if (file) {
-            // Validate file type
             if (!file.type.startsWith('image/')) {
                 alert('Please select an image file')
                 return
             }
-
-            // Validate file size (max 5MB)
             if (file.size > 5 * 1024 * 1024) {
                 alert('Image size should be less than 5MB')
                 return
             }
 
             setSelectedImage(file)
-            
-            // Create preview URL
             const reader = new FileReader()
             reader.onload = (e) => {
                 setImagePreview(e.target.result)
-                setDetails(prev => ({ ...prev, imgUrl: e.target.result }))
             }
             reader.readAsDataURL(file)
         }
@@ -81,25 +78,22 @@ export function EditStationModal({ station, onClose, onSave }) {
     }
 
     async function onSaveStation(ev) {
+        ev.preventDefault()
         try {
-            ev.preventDefault()
-            
-            // Prepare the updated station data
             const updatedDetails = { ...details }
-            
-            // If there's a selected image file, we could upload it here
-            // For now, we're using the base64 data URL
+
             if (selectedImage) {
-                console.log('New image selected:', selectedImage.name)
-                // In a real app, you might upload to a service like Cloudinary or AWS S3
-                // updatedDetails.imgUrl = await uploadImageToService(selectedImage)
+                console.log('New image selected, uploading...')
+                const uploadData = await uploadService.uploadImg(selectedImage)
+                console.log('Upload successful:', uploadData)
+                updatedDetails.imgUrl = uploadData.secure_url
             }
-            
+            console.log('Saving station details:', updatedDetails)
             onSave(updatedDetails)
             onClose()
-            navigate('/station/' + station._id)
         } catch (err) {
-            console.error('Failed to update station:', err)
+            console.error('Failed to upload image or update station:', err)
+            alert('Failed to save changes. Please try again.')
         }
     }
 
@@ -123,7 +117,7 @@ export function EditStationModal({ station, onClose, onSave }) {
                                 accept="image/*"
                                 style={{ display: 'none' }}
                             />
-                            
+
                             <div className="image-container" onClick={handleImageClick}>
                                 {imagePreview ? (
                                     <div className="image-preview">
@@ -140,10 +134,10 @@ export function EditStationModal({ station, onClose, onSave }) {
                                     </div>
                                 )}
                             </div>
-                            
+
                             {imagePreview && (
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     className="remove-image-btn"
                                     onClick={handleRemoveImage}
                                 >

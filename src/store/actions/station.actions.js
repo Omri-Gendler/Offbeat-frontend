@@ -1,5 +1,5 @@
-// import { stationService } from '../../services/station'
-import { stationService } from '../../services/station/station.service.local'
+import { stationService } from '../../services/station'
+// import { stationService } from '../../services/station/station.service.local'
 import { store } from '../store'
 import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, LIKE_SONG, UNLIKE_SONG, ADD_SONG_TO_STATION, REMOVE_SONG_FROM_STATION } from '../reducers/station.reducer'
 import { PLAY_CONTEXT, SET_PLAY } from '../reducers/player.reducer'
@@ -97,28 +97,15 @@ export async function addStationToLibrary(station) {
 
 export async function addSongToStation(stationId, song) {
   try {
+    const updatedStation = await stationService.addSong(stationId, song)
 
-    const station = await stationService.getById(stationId)
+    store.dispatch(getCmdUpdateStation(updatedStation))
+    showSuccessMsg('Song added to playlist')
+    return updatedStation
 
-    if (station.songs?.some(s => s.id === song.id)) return station
-
-    const songToAdd = {
-      ...song,
-      addedAt: Date.now(),
-    }
-
-    const updatedStation = {
-      ...station,
-      songs: [...(station.songs || []), songToAdd],
-    }
-
-    const saved = await stationService.save(updatedStation)
-
-
-    store.dispatch({ type: UPDATE_STATION, station: saved })
-    return saved
   } catch (err) {
-    console.error('Failed to add song to station', err)
+    console.error('Failed to add song to station via backend', err)
+    showErrorMsg(`Could not add song: ${err.response?.data?.err || err.message || 'Server error'}`)
     throw err
   }
 }
@@ -171,14 +158,18 @@ export async function addStationMsg(stationId, txt) {
 
 
 export async function removeSongFromStation(stationId, songId) {
-  if (typeof stationService.removeSongFromStation === 'function') {
-    const updated = await stationService.removeSongFromStation(stationId, songId)
-    store.dispatch(getCmdUpdateStation(updated))
-    return updated
+  try {
+    const updatedStation = await stationService.removeSong(stationId, songId)
+
+    store.dispatch(getCmdUpdateStation(updatedStation))
+    showSuccessMsg('Song removed from playlist')
+    return updatedStation
+
+  } catch (err) {
+    console.error('Failed to remove song from station via backend', err)
+    showErrorMsg(`Could not remove song: ${err.response?.data?.err || err.message || 'Server error'}`)
+    throw err
   }
-  const action = getCmdRemoveSongFromStation(stationId, songId)
-  store.dispatch(action)
-  return action
 }
 
 

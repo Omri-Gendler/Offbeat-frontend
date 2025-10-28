@@ -15,11 +15,11 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
 
-const VIEW_KEY = 'libraryViewMode'; 
+const VIEW_KEY = 'libraryViewMode';
 const VIEW_META = {
-  grid:          { label: 'Default grid',  Icon: IconGridDefault },
-  'grid-compact':{ label: 'Compact grid',  Icon: IconListCompact },
-  list:          { label: 'Default list',  Icon: IconListDefault },
+  grid: { label: 'Default grid', Icon: IconGridDefault },
+  'grid-compact': { label: 'Compact grid', Icon: IconListCompact },
+  list: { label: 'Default list', Icon: IconListDefault },
 }
 const SORT_LABELS = {
   recent: 'Recents',
@@ -42,7 +42,7 @@ export function LeftSideBar() {
   const PINNED_KEY = 'libraryPinnedIds'
 
 
-const [menu, setMenu] = useState({ open: false, x: 0, y: 0, kind: null, itemId: null })
+  const [menu, setMenu] = useState({ open: false, x: 0, y: 0, kind: null, itemId: null })
 
 
   const inputRef = useRef(null);
@@ -53,24 +53,24 @@ const [menu, setMenu] = useState({ open: false, x: 0, y: 0, kind: null, itemId: 
   useEffect(() => { localStorage.setItem(VIEW_KEY, viewMode); }, [viewMode]);
 
   const { label: viewLabel, Icon: ViewIcon } = VIEW_META[viewMode] || VIEW_META.grid;
- const sortLabel = SORT_LABELS[sortBy] || 'Recents'
+  const sortLabel = SORT_LABELS[sortBy] || 'Recents'
 
-const [pinnedIds, setPinnedIds] = useState(() => {
-  try { return new Set(JSON.parse(localStorage.getItem(PINNED_KEY) || '[]')) }
-  catch { return new Set() }
-})
-
-useEffect(() => {
-  localStorage.setItem(PINNED_KEY, JSON.stringify([...pinnedIds]))
-}, [pinnedIds])
-
-const togglePin = (id) => {
-  setPinnedIds(prev => {
-    const next = new Set(prev)
-    next.has(id) ? next.delete(id) : next.add(id)
-    return next
+  const [pinnedIds, setPinnedIds] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(PINNED_KEY) || '[]')) }
+    catch { return new Set() }
   })
-}
+
+  useEffect(() => {
+    localStorage.setItem(PINNED_KEY, JSON.stringify([...pinnedIds]))
+  }, [pinnedIds])
+
+  const togglePin = (id) => {
+    setPinnedIds(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
 
 
   // ---- playback helpers ----
@@ -102,16 +102,16 @@ const togglePin = (id) => {
   };
 
   // ---- menus helpers ----
-const openItemMenuAt = (x, y, itemId) => setMenu({ open: true, x, y, kind: 'item', itemId });
-const closeMenu = () => setMenu(m => ({ ...m, open: false, kind: null, itemId: null }));
+  const openItemMenuAt = (x, y, itemId) => setMenu({ open: true, x, y, kind: 'item', itemId });
+  const closeMenu = () => setMenu(m => ({ ...m, open: false, kind: null, itemId: null }));
   const openViewMenuAt = (x, y) => setMenu({ open: true, x, y, kind: 'view' });
   const openGlobalMenuAt = (x, y) => setMenu({ open: true, x, y, kind: 'global' });
 
   const handleItemContextMenu = (e, station) => {
-  const x = e.clientX ?? e.x ?? 0;
-  const y = e.clientY ?? e.y ?? 0;
-  openItemMenuAt(x, y, station._id);
-};
+    const x = e.clientX ?? e.x ?? 0;
+    const y = e.clientY ?? e.y ?? 0;
+    openItemMenuAt(x, y, station._id);
+  };
 
 
   const openMenuAtAnchor = (el) => {
@@ -165,127 +165,121 @@ const closeMenu = () => setMenu(m => ({ ...m, open: false, kind: null, itemId: n
     }
   };
 
+  const library = useMemo(() => {
+    let list = allStations.filter(s =>
+      s._id === LIKED_ID ||
+      s.owner?._id ||
+      s.createdBy?.fullname === 'You'
+    );
 
- const library = useMemo(() => {
+    console.log('Stations matching library filter:', list.map(s => s.name))
 
-  let list = allStations.filter(s => s._id === LIKED_ID || s.createdBy?.fullname === 'You')
-
-
-  if (filterBy.txt) {
-    const rx = new RegExp(filterBy.txt, 'i')
-    list = list.filter(s => rx.test(s.name || ''))
-  }
-
-
-  const decorated = list.map(s => ({ ...s, isPinned: pinnedIds.has(s._id) }))
-
-  const liked = decorated.find(s => s._id === LIKED_ID)
-  const rest  = decorated.filter(s => s._id !== LIKED_ID)
-
-
-
-const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
-
-const makeSorter = (sortBy) => {
-  switch (sortBy) {
-    case 'recent':
-      return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
-
-    case 'recentlyAdded':
-      return (a, b) => (b.createdAt || 0) - (a.createdAt || 0);
-
-    case 'alphabetical': 
-      return (a, b) => {
-        const byName = collator.compare(a.name || '', b.name || '');
-        if (byName !== 0) return byName;
-        
-        return (a._id || '').localeCompare(b._id || '');
-      };
-
-    case 'creator': 
-      return (a, b) => {
-        const byCreator = collator.compare(a.createdBy?.fullname || '', b.createdBy?.fullname || '');
-        if (byCreator !== 0) return byCreator;
-        const byName = collator.compare(a.name || '', b.name || '');
-        if (byName !== 0) return byName;
-        return (a._id || '').localeCompare(b._id || '');
-      };
-
-    default:
-      return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
-  }
-};
-
-
-const sorter = makeSorter(sortBy);
-
-
-  const pinned = rest.filter(s => s.isPinned).sort(sorter)
-  const unpinned = rest.filter(s => !s.isPinned).sort(sorter)
-
-    return liked ? [liked, ...pinned, ...unpinned] : [...pinned, ...unpinned]
-}, [allStations, filterBy.txt, sortBy, pinnedIds])
-
-
-function searchBar() {
-  const containerRef = useRef(null)
-
-  // close on outside click only when empty
-  useEffect(() => {
-    if (!isSearchOpen) return
-    const onDown = (e) => {
-      if (!containerRef.current) return
-      const clickedInside = containerRef.current.contains(e.target)
-      if (!clickedInside && !filterBy.txt) setIsSearchOpen(false)
+    if (filterBy.txt) {
+      const rx = new RegExp(filterBy.txt, 'i')
+      list = list.filter(s => rx.test(s.name || ''))
     }
-    const onEsc = (e) => {
-      if (e.key === 'Escape') {
-        if (filterBy.txt) {
-          // keep it open but clear? (Spotify keeps the text; choose your flavor)
-          // setFilterBy({ ...filterBy, txt: '' })
-          inputRef.current?.blur()
-        } else {
-          setIsSearchOpen(false)
-        }
+
+    const decorated = list.map(s => ({ ...s, isPinned: pinnedIds.has(s._id) }))
+    const liked = decorated.find(s => s._id === LIKED_ID)
+    const rest = decorated.filter(s => s._id !== LIKED_ID)
+
+    const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true })
+
+    const makeSorter = (sortBy) => {
+      switch (sortBy) {
+        case 'recent':
+          return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0)
+        case 'recentlyAdded':
+          return (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
+        case 'alphabetical':
+          return (a, b) => {
+            const byName = collator.compare(a.name || '', b.name || '')
+            if (byName !== 0) return byName
+            return (a._id || '').localeCompare(b._id || '')
+          };
+        case 'creator':
+          return (a, b) => {
+            const creatorA = a.owner?.fullname || a.createdBy?.fullname || ''
+            const creatorB = b.owner?.fullname || b.createdBy?.fullname || ''
+            const byCreator = collator.compare(creatorA, creatorB)
+            if (byCreator !== 0) return byCreator
+            const byName = collator.compare(a.name || '', b.name || '')
+            if (byName !== 0) return byName
+            return (a._id || '').localeCompare(b._id || '')
+          }
+        default:
+          return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0)
       }
     }
-    document.addEventListener('mousedown', onDown, true)
-    document.addEventListener('keydown', onEsc)
-    return () => {
-      document.removeEventListener('mousedown', onDown, true)
-      document.removeEventListener('keydown', onEsc)
-    }
-  }, [isSearchOpen, filterBy.txt])
 
-  return (
-    <div
-      ref={containerRef}
-      className={`search-container-left-side-bar ${isSearchOpen ? 'expanded' : ''}`}
-      onClick={() => !isSearchOpen && setIsSearchOpen(true)}
-      role="search"
-      aria-expanded={isSearchOpen}
-    >
-      <SearchLensIcon
-        className="search-icon"
-        aria-hidden="true"
-        style={{ cursor: 'pointer', height: 16 }}
-        onClick={(e) => { e.stopPropagation(); setIsSearchOpen(true); }}
-      />
+    const sorter = makeSorter(sortBy);
+    const pinned = rest.filter(s => s.isPinned).sort(sorter);
+    const unpinned = rest.filter(s => !s.isPinned).sort(sorter);
 
-      <input
-        ref={inputRef}
-        className="search-input"
-        type="text"
-        name="txt"
-        value={filterBy.txt}
-        onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })}
-        placeholder="Search in Your Library"
-        onFocus={() => setIsSearchOpen(true)}
+    return liked ? [liked, ...pinned, ...unpinned] : [...pinned, ...unpinned];
 
-      />
-    </div>
-  )
-}
+  }, [allStations, filterBy.txt, sortBy, pinnedIds]);
+
+
+  function searchBar() {
+    const containerRef = useRef(null)
+
+    // close on outside click only when empty
+    useEffect(() => {
+      if (!isSearchOpen) return
+      const onDown = (e) => {
+        if (!containerRef.current) return
+        const clickedInside = containerRef.current.contains(e.target)
+        if (!clickedInside && !filterBy.txt) setIsSearchOpen(false)
+      }
+      const onEsc = (e) => {
+        if (e.key === 'Escape') {
+          if (filterBy.txt) {
+            // keep it open but clear? (Spotify keeps the text; choose your flavor)
+            // setFilterBy({ ...filterBy, txt: '' })
+            inputRef.current?.blur()
+          } else {
+            setIsSearchOpen(false)
+          }
+        }
+      }
+      document.addEventListener('mousedown', onDown, true)
+      document.addEventListener('keydown', onEsc)
+      return () => {
+        document.removeEventListener('mousedown', onDown, true)
+        document.removeEventListener('keydown', onEsc)
+      }
+    }, [isSearchOpen, filterBy.txt])
+
+    return (
+      <div
+        ref={containerRef}
+        className={`search-container-left-side-bar ${isSearchOpen ? 'expanded' : ''}`}
+        onClick={() => !isSearchOpen && setIsSearchOpen(true)}
+        role="search"
+        aria-expanded={isSearchOpen}
+      >
+        <SearchLensIcon
+          className="search-icon"
+          aria-hidden="true"
+          style={{ cursor: 'pointer', height: 16 }}
+          onClick={(e) => { e.stopPropagation(); setIsSearchOpen(true); }}
+        />
+
+        <input
+          ref={inputRef}
+          className="search-input"
+          type="text"
+          name="txt"
+          value={filterBy.txt}
+          onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })}
+          placeholder="Search in Your Library"
+          onFocus={() => setIsSearchOpen(true)}
+
+        />
+      </div>
+    )
+  }
 
 
   function leftHeader() {
@@ -317,7 +311,7 @@ function searchBar() {
                 className="view-toggle-btn flex ctx-anchor-view"
                 title={`View: ${viewLabel}`}
                 aria-label={`View: ${viewLabel}`}
-                onClick={() => openMenuAtAnchor(recentBtnRef.current)} 
+                onClick={() => openMenuAtAnchor(recentBtnRef.current)}
                 style={{ background: 'transparent', display: 'flex', alignItems: 'center' }}
               >
                 <span className="label">{sortLabel}</span>
@@ -337,35 +331,35 @@ function searchBar() {
           onItemContextMenu={handleItemContextMenu}   // <-- new
         />
 
-<ViewContextMenu
-  open={menu.open && menu.kind === 'view'}
-  anchorEl={recentBtnRef}
-  
-  groups={[
-    {
-      title: 'Sort by',
-      value: sortBy,
-      onChange: setSortBy,
-      items: [
-        { id: 'recent',        label: 'Recents' },
-        { id: 'recentlyAdded', label: 'Recently Added' },
-        { id: 'alphabetical',  label: 'Alphabetical' },
-        { id: 'creator',       label: 'Creator' },
-      ],
-    },
-    {
-      title: 'View as',
-      value: viewMode,
-      onChange: setViewMode,
-      items: [
-        { id: 'grid-compact', label: 'Compact grid', icon: <IconListCompact /> },
-        { id: 'list',         label: 'Default list', icon: <IconListDefault /> },
-        { id: 'grid',         label: 'Default grid', icon: <IconGridDefault /> },
-      ],
-    },
-  ]}
-  onClose={closeMenu}
-/>
+        <ViewContextMenu
+          open={menu.open && menu.kind === 'view'}
+          anchorEl={recentBtnRef}
+
+          groups={[
+            {
+              title: 'Sort by',
+              value: sortBy,
+              onChange: setSortBy,
+              items: [
+                { id: 'recent', label: 'Recents' },
+                { id: 'recentlyAdded', label: 'Recently Added' },
+                { id: 'alphabetical', label: 'Alphabetical' },
+                { id: 'creator', label: 'Creator' },
+              ],
+            },
+            {
+              title: 'View as',
+              value: viewMode,
+              onChange: setViewMode,
+              items: [
+                { id: 'grid-compact', label: 'Compact grid', icon: <IconListCompact /> },
+                { id: 'list', label: 'Default list', icon: <IconListDefault /> },
+                { id: 'grid', label: 'Default grid', icon: <IconGridDefault /> },
+              ],
+            },
+          ]}
+          onClose={closeMenu}
+        />
 
 
         <SimpleContextMenu
@@ -387,20 +381,20 @@ function searchBar() {
           items={
             pinnedIds.has(menu.itemId)
               ? [
-                  {
-                    id: 'unpin',
-                    label: 'Unpin playlist',
-                    icon: <IconPinned />,
-                    onSelect: () => { togglePin(menu.itemId); closeMenu(); },
-                  },
-                ]
+                {
+                  id: 'unpin',
+                  label: 'Unpin playlist',
+                  icon: <IconPinned />,
+                  onSelect: () => { togglePin(menu.itemId); closeMenu(); },
+                },
+              ]
               : [
-                  {
-                    id: 'pin',
-                    label: 'Pin playlist',
-                    onSelect: () => { togglePin(menu.itemId); closeMenu(); },
-                  },
-                ]
+                {
+                  id: 'pin',
+                  label: 'Pin playlist',
+                  onSelect: () => { togglePin(menu.itemId); closeMenu(); },
+                },
+              ]
           }
           closeOnSelect
         />

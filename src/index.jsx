@@ -12,7 +12,7 @@ import { initDemoData, clearAndRegenerateDemoData } from './services/demo-data.s
 
 import './assets/styles/main.css'
 
-initDemoData()
+// initDemoData()
 
 // Debug function - available in browser console
 window.resetStationData = clearAndRegenerateDemoData
