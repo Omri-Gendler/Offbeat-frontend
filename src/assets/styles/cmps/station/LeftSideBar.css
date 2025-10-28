@@ -489,14 +489,7 @@ width: max-content;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
   }
   
-  .left-side-bar.mobile-menu-open {
-    left: 0;
-    opacity: 1;
-    visibility: visible;
-    backdrop-filter: none;
-    filter: none;
-    transform: translateZ(0);
-  }
+
   
   .left-header {
     padding-top: 60px; /* Account for header height */

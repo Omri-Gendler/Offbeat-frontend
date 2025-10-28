@@ -1,12 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { playContext, togglePlay } from '../store/actions/player.actions'
-import { addSongToStation } from '../store/actions/station.actions'
+import { addSongToStation, likeSong, unlikeSong } from '../store/actions/station.actions'
 import { SongRow } from './SongRow.jsx'
 import { selectCurrentSong, selectIsPlaying } from '../store/selectors/player.selectors'
 import { DurationIcon } from './Icon.jsx'
 import { useMemo, useState } from 'react'
-
-
 
 function normalize(str = '') {
   return String(str).toLowerCase().trim()
@@ -20,7 +18,6 @@ function scoreField(text, q, weight) {
   if (t === s) score += 6
   if (t.startsWith(s)) score += 3
   if (t.includes(s)) score += 1
-  // token overlap bonus
   const tokens = s.split(/\s+/).filter(Boolean)
   for (const tok of tokens) if (t.includes(tok)) score += 1
   return score * weight
@@ -48,48 +45,66 @@ export function SongsList({
   rowVariant = 'station',
   existingIds = new Set(),
   onAdd,
+  onToggleLike,            // optional: pass through to SongRow
   searchQuery = '',
   maxResults = 5,
   isLiked = false,
-  isExternalResults = false  // New prop to indicate external search results (like YouTube)
+  isExternalResults = false
 }) {
-
   const dispatch = useDispatch()
+
+  // These selectors are already playOrder-aware if you implemented them as discussed
   const nowPlaying = useSelector(selectCurrentSong)
   const isPlaying = useSelector(selectIsPlaying)
   const playingId = nowPlaying?.id ?? null
 
   const isPicker = rowVariant === 'picker'
-  const songSource = songsOverride ?? station?.songs ?? []
-  const allSongs = (isExternalResults && songSource && !Array.isArray(songSource) && Array.isArray(songSource.songs))
-    ? songSource.songs
-    : songSource;
+
+  // Normalize incoming list source (support { songs } for external results)
+  const baseSongs = useMemo(() => {
+    if (songsOverride) return songsOverride
+    if (station?.songs) return station.songs
+    if (isExternalResults && Array.isArray((songsOverride || station)?.songs)) {
+      return (songsOverride || station).songs
+    }
+    return []
+  }, [songsOverride, station, isExternalResults])
+
+  const allSongs = useMemo(() => {
+    if (isExternalResults && baseSongs && !Array.isArray(baseSongs) && Array.isArray(baseSongs.songs)) {
+      return baseSongs.songs
+    }
+    return Array.isArray(baseSongs) ? baseSongs : []
+  }, [baseSongs, isExternalResults])
 
   const [selectedId, setSelectedId] = useState(null)
   const handleSelectRow = (song) => setSelectedId(song?.id ?? null)
 
+  // Build the list to render (picker vs. station)
+  const { songs, showNothingYet, noMatches } = useMemo(() => {
+    let list = allSongs
+    let _showNothingYet = false
+    let _noMatches = false
 
-  let songs = allSongs
-  let showNothingYet = false
-  let noMatches = false
+    if (isPicker) {
+      const q = normalize(searchQuery)
 
-  if (isPicker) {
-    const q = normalize(searchQuery)
-
-    if (isExternalResults) {
-      // For external results (like YouTube), use them directly without filtering
-      songs = allSongs.filter(s => !existingIds.has(s.id))
-      showNothingYet = false
-      noMatches = songs.length === 0 && q
-    } else if (!q) {
-      showNothingYet = true
-      songs = []
-    } else {
-      songs = getTopMatches(allSongs, searchQuery, maxResults)
-        .filter(s => !existingIds.has(s.id))
-      noMatches = songs.length === 0
+      if (isExternalResults) {
+        list = (allSongs || []).filter(s => !existingIds.has(s.id))
+        _showNothingYet = false
+        _noMatches = list.length === 0 && !!q
+      } else if (!q) {
+        _showNothingYet = true
+        list = []
+      } else {
+        list = getTopMatches(allSongs, searchQuery, maxResults).filter(s => !existingIds.has(s.id))
+        _noMatches = list.length === 0
+      }
     }
-  }
+
+    return { songs: list, showNothingYet: _showNothingYet, noMatches: _noMatches }
+  }, [allSongs, isPicker, isExternalResults, existingIds, searchQuery, maxResults])
+
   if (isPicker && showNothingYet) {
     return (
       <div className="songs-list-content-spacing">
@@ -142,14 +157,12 @@ export function SongsList({
   const handleToggleLike = async (song, nextLiked) => {
     try {
       if (onToggleLike) return onToggleLike(song, nextLiked)
-
       if (nextLiked) await likeSong(song)
       else await unlikeSong(song.id)
     } catch (err) {
       console.error('toggle like failed', err)
     }
   }
-
 
   const colCount = isPicker ? 4 : 5
 
@@ -163,7 +176,7 @@ export function SongsList({
         aria-colcount={colCount}
         aria-rowcount={songs.length + (showHeader ? 1 : 0)}
       >
-        {showHeader &&!isPicker && (
+        {showHeader && !isPicker && (
           <div className="songs-list-header-spaceing" role="presentation">
             <div role="presentation">
               <div className="songs-list-header" role="row" aria-rowindex={1}>
@@ -230,6 +243,9 @@ export function SongsList({
                 isPlaying={isPlaying}
                 isInStation={existingIds.has(song.id)}
                 onAdd={handleAddToCurrent}
+                onToggleLike={handleToggleLike}
+                onSelectRow={handleSelectRow}
+                selectedId={selectedId}
               />
             ) : (
               <SongRow
@@ -240,6 +256,9 @@ export function SongsList({
                 isActive={playingId === song.id}
                 isPlaying={isPlaying}
                 onPlayToggle={handleRowPlay}
+                onToggleLike={handleToggleLike}
+                onSelectRow={handleSelectRow}
+                selectedId={selectedId}
               />
             )
           )}

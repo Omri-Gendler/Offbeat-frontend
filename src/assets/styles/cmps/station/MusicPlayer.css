@@ -180,6 +180,14 @@
     .progress-bar:hover::-webkit-slider-thumb {
         opacity: 1;
     }
+    .shuffle-btn.is-active{
+        svg{
+        fill: var(--clr3);}
+    }
+    .repeat-btn[aria-pressed="true"] {
+        svg{
+        fill: var(--clr3);}
+    }
 }
 
 /* Mobile Music Player Styles - iPhone 6/7/8 Plus Optimized */

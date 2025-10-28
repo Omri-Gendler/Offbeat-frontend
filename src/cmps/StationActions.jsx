@@ -110,7 +110,7 @@ export function StationActions({ station }) {
           data-added={added ? 'true' : 'false'}
           disabled={!station?._id}
         >
-          {!added ? <IconCheckCircle24 /> : <IconAddCircle24 />}
+          {isAdded ? <IconCheckCircle24 /> : <IconAddCircle24 />}
         </button>
 
         <button type="button" className="tertiary-btn" aria-label="More options">

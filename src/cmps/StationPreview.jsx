@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { playContext, togglePlay } from '../store/actions/player.actions'
-import { IconPlay24 } from './Icon'
+import { IconPause24, IconPlay24 } from './Icon'
 
 export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
     const navigate = useNavigate()
@@ -56,7 +56,7 @@ export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
                 onClick={handlePlayClick}
                 aria-label={isThisStationPlaying ? 'Pause' : 'Play'}
             >
-                <IconPlay24 />
+                {isPlaying ? <IconPause24/> : <IconPlay24 /> }
             </button>
         </article>
     )

@@ -134,9 +134,6 @@ main {
     border-radius: 0;
   }
 
-  .left-side-bar.mobile-menu-open {
-    left: 0;
-  }
 
   .main-content {
     border-radius: 0;

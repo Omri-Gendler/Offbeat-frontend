@@ -169,15 +169,7 @@ export function RootCmp() {
 
       <div className="content-layout">
         <LeftSideBar />
-        <div className="mobile-overlay" onClick={() => {
-          const sidebar = document.querySelector('.left-side-bar')
-          const overlay = document.querySelector('.mobile-overlay')
-          const body = document.body
-          
-          if (sidebar) sidebar.classList.remove('mobile-menu-open')
-          if (overlay) overlay.classList.remove('active')
-          body.style.overflow = 'auto'
-        }}></div>
+
         <UserMsg />
 
         <main
