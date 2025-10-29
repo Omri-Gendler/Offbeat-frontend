@@ -77,7 +77,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation, varian
     return () => window.removeEventListener('click', handleCloseMenu)
   }, [contextMenu.isOpen, handleCloseMenu])
 
-  // UI snippets
+
   const PlayButton = ({ active, onClick }) => (
     <button
       type="button"
@@ -139,36 +139,25 @@ export function StationList({ stations, onRemoveStation, onUpdateStation, varian
       </>
     )
   }
-
   return (
-    <section className="station-list-container" style={{ background: dynamicBgColor }}>
-      <div className='main-station-list-header'>
-        <div className='main-station-list-filters'>
-          <button>All</button>
-        </div>
-{index && 
-       <Recents
-  stations={stations}
-  take={6}
-  isActive={(st) => isActiveStation(st) && isPlaying}
-  onOpen={(id) => navigate(`/station/${id}`)}
-  onPlay={(st) => makeHandlePlayClick(st)()}
-/>}
+    <div className="station-list-container">
+      <ul className="station-list">
+        {stations.map(renderStationItem)}
+      </ul>
 
-        <h2 className='station-list-title'>All Stations</h2>
-      </div>
-
-      <div className="station-list-content">
-        <ul className="station-list">
-          {stations.map(renderStationItem)}
-        </ul>
-
-        <h2>Made For You</h2>
-        <ul className="station-list-scroll">
-          {stations.slice(10, 28).map(renderStationItem)}
-        </ul>
-        </div>
-
-    </section>
+      <ContextMenu
+        open={contextMenu.isOpen}
+        x={contextMenu.position.x}
+        y={contextMenu.position.y}
+        items={[
+          {
+            id: 'delete',
+            label: 'Delete Station',
+            onSelect: handleDelete,
+          },
+        ]}
+        onClose={handleCloseMenu}
+      />
+    </div>
   )
 }
