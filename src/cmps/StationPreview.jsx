@@ -28,31 +28,32 @@ export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
     navigate(`/station/${station._id}`)
   }
 
+
   const getDescription = () => {
     if (station.createdBy?.fullname) return `By ${station.createdBy.fullname}`
     if (station.tags?.length) return station.tags.slice(0, 3).join(', ')
     return `${station.songs?.length || 0} songs`
   }
 
-    return (
-        <article className="station-preview" onClick={handleStationClick}>
-            <img 
-                className="station-preview-image" 
-                src={station.imgUrl} 
-                alt={station.name} 
-            />
-            
-            <h3 className="station-preview-title">{station.name}</h3>
-            
-            <p className="station-preview-description">{getDescription()}</p>
-            
-            <button 
-                className="station-preview-play-btn"
-                onClick={handlePlayClick}
-                aria-label={isThisStationPlaying ? 'Pause' : 'Play'}
-            >
-                {isPlaying ? <IconPause24/> : <IconPlay24 /> }
-            </button>
-        </article>
-    )
+  return (
+    <article className="station-preview" onClick={handleStationClick}>
+      <img
+        className="station-preview-image"
+        src={station.imgUrl}
+        alt={station.name}
+      />
+
+      <h3 className="station-preview-title">{station.name}</h3>
+      <p className="station-preview-description">{getDescription()}</p>
+
+      <button
+        type="button"
+        className="station-preview-play-btn"
+        onClick={handlePlayClick}
+        aria-label={isThisStationPlaying ? 'Pause' : 'Play'}
+      >
+        {isThisStationPlaying ? <IconPause24 /> : <IconPlay24 />}
+      </button>
+    </article>
+  )
 }
