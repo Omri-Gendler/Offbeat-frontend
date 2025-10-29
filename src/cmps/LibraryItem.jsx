@@ -22,7 +22,7 @@ export default function LibraryItem({
   onClick={() => onOpen(station)}
   onContextMenu={(e) => {
     e.preventDefault()
-    e.stopPropagation()            // <-- IMPORTANT
+    e.stopPropagation()      
     onItemContextMenu?.(e, station)
   }}
   onKeyDown={(e) => {

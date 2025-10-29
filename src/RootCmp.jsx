@@ -37,28 +37,22 @@ export function RootCmp() {
   const [albums, setAlbums] = useState([])
   const [artists, setArtists] = useState([])
 
-  // Temporary: Clear old data and regenerate only Spotify stations
-  useEffect(() => {
-    clearAndRegenerateDemoData()
+  // useEffect(() => {
+  //   clearAndRegenerateDemoData()
     
-    // Always clear the flag for testing - remove this line in production
-    localStorage.removeItem('defaultStationsAdded')
+  //   localStorage.removeItem('defaultStationsAdded')
     
-    // Check if default stations have been added (for any user/guest)
-    const hasDefaultStations = localStorage.getItem('defaultStationsAdded')
+  //   const hasDefaultStations = localStorage.getItem('defaultStationsAdded')
     
-    if (!hasDefaultStations) {
-      console.log('Adding 15 default stations to library...')
-      const guestUser = { _id: 'guest', fullname: 'Guest', username: 'guest' }
-      const addedStations = addDefaultStationsToUserLibrary(guestUser)
-      console.log('Added default stations:', addedStations.length)
-      localStorage.setItem('defaultStationsAdded', 'true')
-      // Reload stations to reflect changes
-      setTimeout(() => loadStations(), 500)
-    } else {
-      console.log('Default stations already added')
-    }
-  }, [])
+  //   if (!hasDefaultStations) {
+  //     const guestUser = { _id: 'guest', fullname: 'Guest', username: 'guest' }
+  //     const addedStations = addDefaultStationsToUserLibrary(guestUser)
+  //     localStorage.setItem('defaultStationsAdded', 'true')
+  //     // Reload stations to reflect changes
+  //     setTimeout(() => loadStations(), 500)
+  //   } else {
+  //   }
+  // }, [])
 
   useEffect(() => {
     var authParameters = {
@@ -77,27 +71,6 @@ export function RootCmp() {
       .catch((err) => console.error(err))
   }, [])
 
-  async function search() {
-    var artistParameters = {
-      method: 'GET',
-      headers: {
-        'content-type': 'application/json',
-        'Authorization': `Bearer ` + accessToken,
-      },
-    }
-    var artistId = await fetch('https://api.spotify.com/v1/search?q=' + searchInput + '&type=artist', artistParameters)
-      .then((response) => response.json())
-      .then((data) => {
-        return data.artists.items[0].id
-      })
-      .catch((err) => console.error(err))
-
-    var albums = await fetch('https://api.spotify.com/v1/artists/' + artistId + '/albums' + '?include_groups=album&market=US&limit=50', artistParameters)
-      .then((response) => response.json())
-      .then((data) => {
-        return data.items
-      })
-  }
 
   useEffect(() => {
     let alive = true

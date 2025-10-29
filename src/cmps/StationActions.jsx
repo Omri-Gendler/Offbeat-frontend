@@ -2,29 +2,32 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { PlayPauseButton } from '../cmps/PlayPauseButton.jsx'
 import { IconMoreHorizontal24, IconAddCircle24, IconCheckCircle24 } from '../cmps/Icon.jsx'
 import { useNavigate } from 'react-router'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react' 
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
-import { removeStation } from '../store/actions/station.actions.js'
+import { removeStation, addStationToLibrary, removeStationFromLibrary } from '../store/actions/station.actions.js' 
 import { libraryService } from '../services/library/library.service.local.js'
-import { playContext, togglePlay, setPlay } from '../store/actions/player.actions' // ← import player actions
-import { addStationToLibrary, removeStationFromLibrary } from '../store/actions/station.actions.js'
+import { playContext, togglePlay, setPlay } from '../store/actions/player.actions'
+
 export function StationActions({ station }) {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  // Player slice (to detect current context & queue)
   const { queue = [], isPlaying = false, contextId = null, contextType = null } = useSelector(
     s => s.playerModule || {},
     shallowEqual
   )
+  
+  const loggedinUser = useSelector(s => s.userModule.user)
 
-  const isAdded = station?.createdBy?.fullname === 'You'
+  const isAdded = useMemo(() => {
+      if (!station?.likedByUsers || !loggedinUser?._id) {
+          return false
+      }
+      return station.likedByUsers.some(userId => userId.toString() === loggedinUser._id.toString())
+  }, [station?.likedByUsers, loggedinUser?._id])
 
   const handleToggleLibrary = () => {
     if (!station?._id) return
-
-    const { added: nowAdded } = libraryService.toggle(station._id)
-    setAdded(nowAdded)
 
     if (isAdded) {
       removeStationFromLibrary(station)
@@ -33,24 +36,23 @@ export function StationActions({ station }) {
     }
   }
 
-  // Local “added to library” UI state
-  const [added, setAdded] = useState(false)
-  useEffect(() => {
-    if (station?._id) setAdded(libraryService.has(station._id))
-    else setAdded(false)
-  }, [station?._id])
-
   async function handleDelete(ev) {
     ev.stopPropagation()
     try {
-      removeStation(station._id)
-      navigate('/stations')
+      const isOwner = station.owner?._id?.toString() === loggedinUser?._id?.toString()
+      if (!isOwner) {
+        console.warn('User attempted to delete a station they do not own.')
+        return
+      }
+      if (window.confirm(`Are you sure you want to delete "${station.name}"?`)) {
+        await removeStation(station._id) 
+        navigate('/') 
+      }
     } catch (err) {
       console.error('Failed to remove station:', err)
     }
   }
 
-  // Helper: compare two track arrays by id
   const idsEqual = (a = [], b = []) => {
     if (a.length !== b.length) return false
     for (let i = 0; i < a.length; i++) {
@@ -68,14 +70,10 @@ export function StationActions({ station }) {
     contextType === 'station' &&
     idsEqual(queue, stationSongs)
 
-  const isPressed = isThisStationActive && isPlaying
-  // Play/Pause like Spotify:
-  // - If this station is the active context → toggle play.
-  // - Else → replace queue with this station, start at index 0, autoplay.
   const handlePlay = () => {
     if (!station?._id || !stationSongs.length) return
     if (isThisStationActive) {
-      if (!isPlaying) togglePlay() // resume if currently paused
+      if (!isPlaying) togglePlay() 
     } else {
       playContext({
         contextId: station._id,
@@ -91,11 +89,13 @@ export function StationActions({ station }) {
     if (isPlaying) setPlay(false)
   }
 
+  const isOwner = station.owner?._id?.toString() === loggedinUser?._id?.toString();
+
   return (
     <div className="station-actions-space content-spacing">
       <div className="station-actions flex">
         <PlayPauseButton
-          isPlaying={isThisStationActive && isPlaying}  
+          isPlaying={isThisStationActive && isPlaying}
           onPlay={handlePlay}
           onPause={handlePause}
           disabled={!stationSongs.length}
@@ -105,28 +105,30 @@ export function StationActions({ station }) {
           type="button"
           className="tertiary-btn"
           onClick={handleToggleLibrary}
-          aria-pressed={added}
-          aria-label={added ? 'Added to your library' : 'Add to your library'}
-          data-added={added ? 'true' : 'false'}
+          aria-pressed={isAdded} 
+          aria-label={isAdded ? 'Remove from your library' : 'Add to your library'}
+          data-added={isAdded ? 'true' : 'false'}
           disabled={!station?._id}
         >
-          {isAdded ? <IconCheckCircle24 /> : <IconAddCircle24 />}
+          {isAdded ? <IconCheckCircle24 style={{ color: 'var(--clr3)' }} /> : <IconAddCircle24 />}
         </button>
 
         <button type="button" className="tertiary-btn" aria-label="More options">
           <IconMoreHorizontal24 className="icon" />
         </button>
 
-        <button
-          type="button"
-          onClick={handleDelete}
-          className="delete"
-          aria-label={`Delete ${station?.name ?? 'station'}`}
-          style={{ backgroundColor: 'transparent' }}
-          disabled={!station?._id}
-        >
-          <DeleteIcon className="icon" />
-        </button>
+        {isOwner && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="delete tertiary-btn"
+            aria-label={`Delete ${station?.name ?? 'station'}`}
+            style={{ backgroundColor: 'transparent' }}
+            disabled={!station?._id}
+          >
+            <DeleteIcon className="icon" />
+          </button>
+        )}
       </div>
     </div>
   )

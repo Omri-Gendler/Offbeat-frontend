@@ -1,18 +1,15 @@
 import { stationService } from '../../services/station'
-// import { stationService } from '../../services/station/station.service.local'
+import { userService } from '../../services/user'
 import { store } from '../store'
-import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, LIKE_SONG, UNLIKE_SONG, ADD_SONG_TO_STATION, REMOVE_SONG_FROM_STATION } from '../reducers/station.reducer'
+import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION, ADD_STATION_MSG, LIKED_ID } from '../reducers/station.reducer'
 import { PLAY_CONTEXT, SET_PLAY } from '../reducers/player.reducer'
-import { showSuccessMsg } from '../../services/event-bus.service'
-import { Modal } from '@mui/material'
-
-
-
+import { showSuccessMsg, showErrorMsg } from '../../services/event-bus.service'
+import { ADD_LIKED_SONG, REMOVE_LIKED_SONG } from '../reducers/user.reducer'
 
 export async function loadStations(filterBy) {
   try {
-    const stations = await stationService.query(filterBy)
-    store.dispatch(getCmdSetStations(stations))
+    const stationsFromBackend = await stationService.query(filterBy)
+    store.dispatch(getCmdSetStations(stationsFromBackend || []))
   } catch (err) {
     console.log('Cannot load stations', err)
     throw err
@@ -21,8 +18,21 @@ export async function loadStations(filterBy) {
 
 export async function loadStation(stationId) {
   try {
-    const station = await stationService.getById(stationId)
-    store.dispatch(getCmdSetStation(station))
+    if (stationId === LIKED_ID) {
+      const likedSongs = store.getState().userModule.likedSongs || []
+      const likedStation = {
+        _id: LIKED_ID,
+        name: 'Liked Songs',
+        songs: likedSongs,
+        imgUrl: '/img/liked-songs.jpeg',
+        isLikedSongs: true,
+        createdBy: { fullname: 'You' }
+      }
+      store.dispatch(getCmdSetStation(likedStation))
+    } else {
+      const station = await stationService.getById(stationId)
+      store.dispatch(getCmdSetStation(station))
+    }
   } catch (err) {
     console.log('Cannot load station', err)
     throw err
@@ -37,21 +47,40 @@ export async function removeStation(stationId) {
     showSuccessMsg('Station removed')
   } catch (err) {
     console.log('Cannot remove station', err)
-    showSuccessMsg('Cannot remove station')
+    showErrorMsg('Cannot remove station')
     throw err
   }
 }
 
 export async function likeSong(song) {
-  const likedStation = await stationService.addLikedSong(song)   // must return station
-  store.dispatch({ type: UPDATE_STATION, station: likedStation })
-  return likedStation
+  if (!song?.id) return;
+  try {
+    store.dispatch({ type: ADD_LIKED_SONG, song })
+    await userService.addLikedSong(song)
+    showSuccessMsg(`Added "${song.title}" to Liked Songs`)
+  } catch (err) {
+    console.error('Failed to like song via backend', err)
+    showErrorMsg(`Could not like song: ${err.response?.data?.err || err.message || 'Server error'}`)
+    store.dispatch({ type: REMOVE_LIKED_SONG, songId: song.id })
+    throw err
+  }
 }
 
 export async function unlikeSong(songId) {
-  const likedStation = await stationService.removeLikedSong(songId) // must return station
-  store.dispatch({ type: UPDATE_STATION, station: likedStation })
-  return likedStation
+  if (!songId) return
+  const songToUnlike = store.getState().userModule.likedSongs.find(s => s.id === songId)
+  try {
+    store.dispatch({ type: REMOVE_LIKED_SONG, songId })
+    await userService.removeLikedSong(songId)
+    showSuccessMsg('Removed from Liked Songs')
+  } catch (err) {
+    console.error('Failed to unlike song via backend', err)
+    showErrorMsg(`Could not unlike song: ${err.response?.data?.err || err.message || 'Server error'}`)
+    if (songToUnlike) {
+      store.dispatch({ type: ADD_LIKED_SONG, song: songToUnlike })
+    }
+    throw err
+  }
 }
 
 export function playSong(song) {
@@ -75,37 +104,14 @@ export async function addStation(station) {
 
 export async function addStationToLibrary(station) {
   try {
-    const stationToAdd = {
-      ...station,
-      createdBy: { fullname: 'You' }
-    }
-
-    const savedStation = await stationService.save(stationToAdd)
-
-    store.dispatch({
-      type: UPDATE_STATION,
-      station: savedStation
-    })
-
-  } catch (err) {
-    console.error('Failed to add station to library:', err)
-  }
-}
-
-
-
-
-export async function addSongToStation(stationId, song) {
-  try {
-    const updatedStation = await stationService.addSong(stationId, song)
-
+    console.log(`Attempting to like station ${station._id}`)
+    const updatedStation = await stationService.likeStation(station._id)
     store.dispatch(getCmdUpdateStation(updatedStation))
-    showSuccessMsg('Song added to playlist')
+    showSuccessMsg(`Added "${station.name}" to your library`)
     return updatedStation
-
   } catch (err) {
-    console.error('Failed to add song to station via backend', err)
-    showErrorMsg(`Could not add song: ${err.response?.data?.err || err.message || 'Server error'}`)
+    console.error('Failed to add station to library (likeStation):', err)
+    showErrorMsg(`Could not add to library: ${err.response?.data?.err || err.message || 'Server error'}`)
     throw err
   }
 }
@@ -113,22 +119,31 @@ export async function addSongToStation(stationId, song) {
 
 export async function removeStationFromLibrary(station) {
   try {
-    const stationToRemove = {
-      ...station,
-      createdBy: { fullname: 'General' }
-    }
-
-    const savedStation = await stationService.save(stationToRemove)
-
-    store.dispatch({
-      type: UPDATE_STATION,
-      station: savedStation
-    })
-
+    console.log(`Attempting to unlike station ${station._id}`)
+    const updatedStation = await stationService.unlikeStation(station._id)
+    store.dispatch(getCmdUpdateStation(updatedStation))
+    showSuccessMsg(`Removed "${station.name}" from your library`)
+    return updatedStation
   } catch (err) {
-    console.error('Failed to remove station from library:', err)
+    console.error('Failed to remove station from library (unlikeStation):', err)
+    showErrorMsg(`Could not remove from library: ${err.response?.data?.err || err.message || 'Server error'}`)
+    throw err
   }
 }
+
+export async function addSongToStation(stationId, song) {
+  try {
+    const updatedStation = await stationService.addSong(stationId, song)
+    store.dispatch(getCmdUpdateStation(updatedStation))
+    showSuccessMsg('Song added to playlist')
+    return updatedStation
+  } catch (err) {
+    console.error('Failed to add song to station via backend', err)
+    showErrorMsg(`Could not add song: ${err.response?.data?.err || err.message || 'Server error'}`)
+    throw err
+  }
+}
+
 
 export async function updateStation(station) {
   try {
@@ -141,9 +156,7 @@ export async function updateStation(station) {
   }
 }
 
-
 export const setUpdatedStation = station => ({ type: UPDATE_STATION, station })
-
 
 export async function addStationMsg(stationId, txt) {
   try {
@@ -160,11 +173,9 @@ export async function addStationMsg(stationId, txt) {
 export async function removeSongFromStation(stationId, songId) {
   try {
     const updatedStation = await stationService.removeSong(stationId, songId)
-
     store.dispatch(getCmdUpdateStation(updatedStation))
     showSuccessMsg('Song removed from playlist')
     return updatedStation
-
   } catch (err) {
     console.error('Failed to remove song from station via backend', err)
     showErrorMsg(`Could not remove song: ${err.response?.data?.err || err.message || 'Server error'}`)
@@ -195,24 +206,4 @@ function getCmdRemoveStation(stationId) {
 
 function getCmdAddStationMsg(stationId, msg) {
   return { type: ADD_STATION_MSG, stationId, msg }
-}
-
-function getCmdAddSongToStation(stationId, song) {
-  return { type: ADD_SONG_TO_STATION, stationId, song }
-}
-
-function getCmdRemoveSongFromStation(stationId, songId) {
-  return { type: REMOVE_SONG_FROM_STATION, stationId, songId }
-}
-
-// unitTestActions()
-async function unitTestActions() {
-  await loadStations()
-  await addStation(stationService.getEmptyStation())
-  await updateStation({
-    _id: 'm1oC7',
-    name: 'Station-Good',
-  })
-  await removeStation('m1oC7')
-  // TODO unit test addStationMsg
 }

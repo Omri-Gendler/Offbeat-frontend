@@ -13,6 +13,7 @@ import { IconListCompact, IconListDefault, IconGridDefault, IconPinned, IconSear
 
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import { loadLikedSongs } from "../store/actions/user.actions";
 
 
 const VIEW_KEY = 'libraryViewMode';
@@ -33,6 +34,10 @@ export function LeftSideBar() {
   const { queue = [], isPlaying = false, contextId = null, contextType = null } =
     useSelector(s => s.playerModule || {});
 
+  const loggedinUser = useSelector(s => s.userModule.user);
+  const likedSongs = useSelector(s => s.userModule.likedSongs);
+  // -------------------------------------------------
+
   const navigate = useNavigate();
 
   const [filterBy, setFilterBy] = useState({ txt: '' });
@@ -48,7 +53,13 @@ export function LeftSideBar() {
   const inputRef = useRef(null);
   const recentBtnRef = useRef(null);
 
-  useEffect(() => { loadStations(); }, []);
+  useEffect(() => {
+    loadStations();
+    if (loggedinUser) {
+      loadLikedSongs();
+    }
+  }, [loggedinUser])
+
   useEffect(() => { if (isSearchOpen) inputRef.current?.focus(); }, [isSearchOpen]);
   useEffect(() => { localStorage.setItem(VIEW_KEY, viewMode); }, [viewMode]);
 
@@ -101,7 +112,6 @@ export function LeftSideBar() {
     }
   };
 
-  // ---- menus helpers ----
   const openItemMenuAt = (x, y, itemId) => setMenu({ open: true, x, y, kind: 'item', itemId });
   const closeMenu = () => setMenu(m => ({ ...m, open: false, kind: null, itemId: null }));
   const openViewMenuAt = (x, y) => setMenu({ open: true, x, y, kind: 'view' });
@@ -131,14 +141,11 @@ export function LeftSideBar() {
       return;
     }
     if (!onItem) {
-      // empty space → show create playlist
       openGlobalMenuAt(e.clientX, e.clientY);
       return;
     }
-    // right-click on an item: no-op (or add item menu later)
   };
 
-  // ---- create playlist ----
   const handleCreateStation = async () => {
     try {
       const nextNumber =
@@ -166,59 +173,64 @@ export function LeftSideBar() {
   };
 
   const library = useMemo(() => {
+    const userId = loggedinUser?._id;
+
+    const likedSongsStation = {
+      _id: LIKED_ID,
+      name: 'Liked Songs',
+      songs: likedSongs || [],
+      imgUrl: '/img/liked-songs.jpeg',
+      isLikedSongs: true,
+      createdBy: { fullname: 'You' }
+    };
+
     let list = allStations.filter(s =>
-      s._id === LIKED_ID ||
-      s.owner?._id ||
-      s.createdBy?.fullname === 'You'
+      s.owner?._id?.toString() === userId?.toString() ||
+      (userId && s.likedByUsers?.some(likedUserId => likedUserId.toString() === userId.toString()))
     );
 
-    console.log('Stations matching library filter:', list.map(s => s.name))
-
     if (filterBy.txt) {
-      const rx = new RegExp(filterBy.txt, 'i')
-      list = list.filter(s => rx.test(s.name || ''))
+      const rx = new RegExp(filterBy.txt, 'i');
+      list = list.filter(s => rx.test(s.name || ''));
     }
 
-    const decorated = list.map(s => ({ ...s, isPinned: pinnedIds.has(s._id) }))
-    const liked = decorated.find(s => s._id === LIKED_ID)
-    const rest = decorated.filter(s => s._id !== LIKED_ID)
+    const decorated = list.map(s => ({ ...s, isPinned: pinnedIds.has(s._id) }));
 
-    const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true })
-
+    const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
     const makeSorter = (sortBy) => {
       switch (sortBy) {
         case 'recent':
-          return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0)
+          return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
         case 'recentlyAdded':
-          return (a, b) => (b.createdAt || 0) - (a.createdAt || 0)
+          return (a, b) => (b.createdAt || 0) - (a.createdAt || 0);
         case 'alphabetical':
           return (a, b) => {
-            const byName = collator.compare(a.name || '', b.name || '')
-            if (byName !== 0) return byName
-            return (a._id || '').localeCompare(b._id || '')
+            const byName = collator.compare(a.name || '', b.name || '');
+            if (byName !== 0) return byName;
+            return (a._id || '').localeCompare(b._id || '');
           };
         case 'creator':
           return (a, b) => {
-            const creatorA = a.owner?.fullname || a.createdBy?.fullname || ''
-            const creatorB = b.owner?.fullname || b.createdBy?.fullname || ''
-            const byCreator = collator.compare(creatorA, creatorB)
-            if (byCreator !== 0) return byCreator
-            const byName = collator.compare(a.name || '', b.name || '')
-            if (byName !== 0) return byName
-            return (a._id || '').localeCompare(b._id || '')
-          }
+            const creatorA = a.owner?.fullname || a.createdBy?.fullname || '';
+            const creatorB = b.owner?.fullname || b.createdBy?.fullname || '';
+            const byCreator = collator.compare(creatorA, creatorB);
+            if (byCreator !== 0) return byCreator;
+            const byName = collator.compare(a.name || '', b.name || '');
+            if (byName !== 0) return byName;
+            return (a._id || '').localeCompare(b._id || '');
+          };
         default:
-          return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0)
+          return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
       }
-    }
+    };
 
     const sorter = makeSorter(sortBy);
-    const pinned = rest.filter(s => s.isPinned).sort(sorter);
-    const unpinned = rest.filter(s => !s.isPinned).sort(sorter);
+    const pinned = decorated.filter(s => s.isPinned).sort(sorter);
+    const unpinned = decorated.filter(s => !s.isPinned).sort(sorter);
 
-    return liked ? [liked, ...pinned, ...unpinned] : [...pinned, ...unpinned];
+    return [likedSongsStation, ...pinned, ...unpinned];
 
-  }, [allStations, filterBy.txt, sortBy, pinnedIds]);
+  }, [allStations, filterBy.txt, sortBy, pinnedIds, loggedinUser, likedSongs]); // <-- הוסף likedSongs לתלויות
 
 
   function searchBar() {
@@ -235,8 +247,6 @@ export function LeftSideBar() {
       const onEsc = (e) => {
         if (e.key === 'Escape') {
           if (filterBy.txt) {
-            // keep it open but clear? (Spotify keeps the text; choose your flavor)
-            // setFilterBy({ ...filterBy, txt: '' })
             inputRef.current?.blur()
           } else {
             setIsSearchOpen(false)
@@ -275,7 +285,6 @@ export function LeftSideBar() {
           onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })}
           placeholder="Search in Your Library"
           onFocus={() => setIsSearchOpen(true)}
-
         />
       </div>
     )
@@ -328,7 +337,7 @@ export function LeftSideBar() {
           onPlay={onPlay}
           isPlaying={isPlaying}
           isThisContext={isThisContext}
-          onItemContextMenu={handleItemContextMenu}   // <-- new
+          onItemContextMenu={handleItemContextMenu}
         />
 
         <ViewContextMenu
@@ -379,27 +388,27 @@ export function LeftSideBar() {
           x={menu.x}
           y={menu.y}
           items={
-            pinnedIds.has(menu.itemId)
-              ? [
-                {
-                  id: 'unpin',
-                  label: 'Unpin playlist',
-                  icon: <IconPinned />,
-                  onSelect: () => { togglePin(menu.itemId); closeMenu(); },
-                },
-              ]
-              : [
-                {
-                  id: 'pin',
-                  label: 'Pin playlist',
-                  onSelect: () => { togglePin(menu.itemId); closeMenu(); },
-                },
-              ]
-          }
+            menu.itemId !== LIKED_ID && (
+              pinnedIds.has(menu.itemId)
+                ? [
+                  {
+                    id: 'unpin',
+                    label: 'Unpin playlist',
+                    icon: <IconPinned />,
+                    onSelect: () => { togglePin(menu.itemId); closeMenu(); },
+                  },
+                ]
+                : [
+                  {
+                    id: 'pin',
+                    label: 'Pin playlist',
+                    onSelect: () => { togglePin(menu.itemId); closeMenu(); },
+                  },
+                ]
+            )}
           closeOnSelect
         />
       </aside>
     </section>
   )
 }
-

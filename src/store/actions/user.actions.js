@@ -4,7 +4,21 @@ import { addDefaultStationsToUserLibrary } from '../../services/demo-data.servic
 
 import { showErrorMsg } from '../../services/event-bus.service'
 import { LOADING_DONE, LOADING_START } from '../reducers/system.reducer'
-import { REMOVE_USER, SET_USER, SET_USERS, SET_WATCHED_USER } from '../reducers/user.reducer'
+import { REMOVE_USER, SET_USER, SET_USERS, SET_WATCHED_USER, SET_LIKED_SONGS } from '../reducers/user.reducer' 
+
+export async function loadLikedSongs() {
+    const loggedinUser = store.getState().userModule.user
+    if (!loggedinUser) return; 
+
+    try {
+        console.log('Loading liked songs from backend...');
+        const likedSongs = await userService.getLikedSongs()
+        console.log('Liked songs received:', likedSongs); 
+        store.dispatch({ type: SET_LIKED_SONGS, likedSongs: likedSongs || [] })
+    } catch (err) {
+        console.error('Failed to load liked songs', err)
+    }
+}
 
 export async function loadUsers() {
     try {
@@ -31,25 +45,24 @@ export async function login(credentials) {
     try {
         const user = await userService.login(credentials)
         
-        // Check if user already has default stations (avoid adding duplicates)
-        const userLibraryKey = `userLibrary_${user._id}`
-        const hasDefaultStations = localStorage.getItem(userLibraryKey)
-        
-        if (!hasDefaultStations) {
-            // Add 15 default stations to user's library
-            addDefaultStationsToUserLibrary(user)
-            // Mark that user has received default stations
-            localStorage.setItem(userLibraryKey, 'true')
-            
-            // Reload stations to show the new ones in the library
-            const { loadStations } = await import('./station.actions')
-            loadStations()
-        }
-        
         store.dispatch({
             type: SET_USER,
             user
         })
+        
+        await loadLikedSongs();
+
+        const userLibraryKey = `userLibrary_${user._id}`
+        const hasDefaultStations = localStorage.getItem(userLibraryKey)
+        
+        if (!hasDefaultStations) {
+            addDefaultStationsToUserLibrary(user)
+            localStorage.setItem(userLibraryKey, 'true')
+            
+            const { loadStations } = await import('./station.actions')
+            loadStations()
+        }
+        
         return user
     } catch (err) {
         console.log('Cannot login', err)
@@ -61,14 +74,11 @@ export async function signup(credentials) {
     try {
         const user = await userService.signup(credentials)
         
-        // Add 15 default stations to new user's library
         addDefaultStationsToUserLibrary(user)
         
-        // Mark that user has received default stations
         const userLibraryKey = `userLibrary_${user._id}`
         localStorage.setItem(userLibraryKey, 'true')
         
-        // Reload stations to show the new ones in the library
         const { loadStations } = await import('./station.actions')
         loadStations()
         
@@ -76,6 +86,7 @@ export async function signup(credentials) {
             type: SET_USER,
             user
         })
+        store.dispatch({ type: SET_LIKED_SONGS, likedSongs: [] });
         return user
     } catch (err) {
         console.log('Cannot signup', err)
@@ -90,6 +101,7 @@ export async function logout() {
             type: SET_USER,
             user: null
         })
+        store.dispatch({ type: SET_LIKED_SONGS, likedSongs: [] });
     } catch (err) {
         console.log('Cannot logout', err)
         throw err
