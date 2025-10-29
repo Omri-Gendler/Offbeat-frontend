@@ -389,3 +389,280 @@
     font-size: 20px;
   }
 }
+
+/* Mobile-specific styles to match Spotify exactly */
+@media (max-width: 414px) {
+  .station-index {
+    padding: 0;
+    background: #121212;
+  }
+
+  .content-section {
+    padding: 16px;
+  }
+
+  .content-section:first-child {
+    padding-top: 24px;
+  }
+
+  /* Quick access section - matches Spotify's "Recently played" */
+  .quick-access-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+
+  .quick-access-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .quick-access-item:active {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(0.98);
+  }
+
+  .quick-access-item img {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 4px 0 0 4px;
+  }
+
+  .quick-access-content {
+    padding: 0 12px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .quick-access-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Section headers */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    margin-inline-start: 0;
+  }
+
+  .section-title h2 {
+    margin: 0;
+    margin-inline-start: 0;
+  }
+
+  .show-all-btn {
+    font-size: 12px;
+    font-weight: 700;
+    color: #b3b3b3;
+    text-decoration: none;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px 0;
+  }
+
+  /* Station grid - main content area */
+  .station-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    overflow: visible;
+    margin-bottom: 32px;
+  }
+
+  .station-grid .station-preview {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    min-width: auto;
+    width: auto;
+  }
+
+  .station-grid .station-preview:active {
+    opacity: 0.7;
+  }
+
+  .station-grid .station-preview img {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    object-fit: cover;
+  }
+
+  .station-grid .station-preview .name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .station-grid .station-preview .sub {
+    font-size: 11px;
+    color: #b3b3b3;
+    margin: 0;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Artists section - circular images */
+  .artist-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    overflow: visible;
+    margin-bottom: 32px;
+  }
+
+  .artist-grid .artist-preview {
+    text-align: center;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .artist-grid .artist-preview:active {
+    opacity: 0.7;
+  }
+
+  .artist-grid .artist-preview img {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    margin-bottom: 8px;
+    object-fit: cover;
+  }
+
+  .artist-grid .artist-preview .name {
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Hide all play buttons on mobile for cleaner look */
+  .quick-access-play-btn,
+  .station-grid .play-button,
+  .artist-grid .play-button {
+    display: none !important;
+  }
+
+  /* Made for you section styling */
+  .made-for-section .section-title {
+    margin-bottom: 4px;
+  }
+
+  .made-for-subtitle {
+    font-size: 12px;
+    color: #b3b3b3;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+  }
+
+  /* Jump back in section */
+  .jump-back-section {
+    margin-bottom: 32px;
+  }
+
+  /* Recently played styling */
+  .recently-played-section {
+    margin-bottom: 32px;
+  }
+
+  /* Filter buttons - if any */
+  .filter-by-kind {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .filter-by-kind::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-by-kind button {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+  }
+
+  .filter-by-kind button:active {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .filter-by-kind button.active {
+    background: #fff;
+    color: #000;
+    font-weight: 600;
+  }
+
+  /* Scrollbar styles */
+  .station-index::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* iPhone 12 Pro Max and similar large screens */
+@media (min-width: 415px) and (max-width: 480px) {
+  .station-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  
+  .artist-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}

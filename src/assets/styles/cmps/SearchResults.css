@@ -15,6 +15,7 @@
   flex-wrap: wrap;
   /* gap: 8px; */
   margin-bottom: 24px;
+  /* margin-top: 28px; */
   padding: 0;
   margin-inline-start: 2em;
 }
@@ -44,7 +45,7 @@
 /* Search Results Container */
 .search-results {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: 24px;
   margin-top: 24px;
   margin-inline-start: 2em;
@@ -126,14 +127,15 @@
 
 /* --- Songs Section --- */
 .songs-section {
-  margin-top: 16px;
+  /* margin-top: 16px; */
 }
 
 .songs-section h2 {
   font-size: 24px;
   font-weight: 700;
   color: white;
-  margin: 0 0 16px 0;
+  margin-inline-start: 30px;
+  /* margin: 0 0 16px 0; */
 }
 
 /* Songs Table Layout */
@@ -172,12 +174,12 @@
   gap: 16px;
   align-items: center;
   height: 56px;
-  padding: 0 16px;
+  /* padding: 0 16px; */
+  padding-inline-end: 18px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
   position: relative;
-
 
 }
 
@@ -904,4 +906,3 @@
   font-weight: 600;
   cursor: pointer;
 }
-

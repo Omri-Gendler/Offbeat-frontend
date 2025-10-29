@@ -56,6 +56,25 @@ body,
   margin-bottom: 80px; /* Space for the music player */
 }
 
+/* Mobile-first responsive adjustments */
+@media (max-width: 768px) {
+  .content-layout {
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 0;
+  }
+  
+  .left-side-bar {
+    display: none; /* Hidden by default on mobile, shown via JS toggle */
+  }
+}
+
+@media (max-width: 414px) {
+  .content-layout {
+    margin-bottom: 60px; /* Smaller music player on mobile */
+  }
+}
+
 .left-side-bar {
   background: #121212;
   border-radius: 8px;

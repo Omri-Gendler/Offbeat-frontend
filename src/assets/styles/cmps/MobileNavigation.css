@@ -1,0 +1,272 @@
+/* Mobile Navigation Styles for Spotify-like interface */
+
+@media (max-width: 414px) {
+  /* Mobile sidebar overlay */
+  .mobile-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .mobile-sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Mobile sidebar container */
+  .mobile-sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 280px;
+    height: 100vh;
+    background: #121212;
+    z-index: 999;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+    padding-top: 44px; /* Account for status bar */
+  }
+
+  .mobile-sidebar.open {
+    left: 0;
+  }
+
+  @supports (padding-top: env(safe-area-inset-top)) {
+    .mobile-sidebar {
+      padding-top: calc(44px + env(safe-area-inset-top));
+    }
+  }
+
+  /* Mobile sidebar header */
+  .mobile-sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-sidebar-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+  }
+
+  .mobile-sidebar-close {
+    background: none;
+    border: none;
+    color: #b3b3b3;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .mobile-sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  .mobile-sidebar-close svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Mobile bottom navigation */
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 60px; /* Above music player */
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: rgba(18, 18, 18, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 900;
+    padding: 0 16px;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: #b3b3b3;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 4px 8px;
+    border-radius: 8px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .mobile-nav-item.active {
+    color: #fff;
+  }
+
+  .mobile-nav-item:hover {
+    color: #fff;
+  }
+
+  .mobile-nav-item svg {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 2px;
+  }
+
+  .mobile-nav-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* Hide desktop navigation on mobile */
+  .app-header {
+    display: none;
+  }
+
+  /* Adjust main content for mobile navigation */
+  .content-layout {
+    margin-top: 44px;
+    margin-bottom: 110px; /* Space for bottom nav + music player */
+  }
+
+  @supports (padding-top: env(safe-area-inset-top)) {
+    .content-layout {
+      margin-top: calc(44px + env(safe-area-inset-top));
+    }
+  }
+
+  @supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .mobile-bottom-nav {
+      bottom: calc(60px + env(safe-area-inset-bottom));
+    }
+    
+    .content-layout {
+      margin-bottom: calc(110px + env(safe-area-inset-bottom));
+    }
+  }
+
+  /* Mobile search overlay */
+  .mobile-search-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #121212;
+    z-index: 1001;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  .mobile-search-overlay.open {
+    transform: translateY(0);
+  }
+
+  .mobile-search-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #121212;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .mobile-search-back {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-search-input {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 20px;
+    padding: 10px 16px;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+  }
+
+  .mobile-search-input::placeholder {
+    color: #b3b3b3;
+  }
+
+  /* Gestures and interactions */
+  .mobile-sidebar {
+    touch-action: pan-y;
+  }
+
+  .mobile-search-overlay {
+    touch-action: pan-y;
+  }
+
+  /* Prevent body scroll when overlays are open */
+  body.mobile-overlay-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+}
+
+/* Tablet adjustments - show simplified navigation */
+@media (min-width: 415px) and (max-width: 768px) {
+  .mobile-bottom-nav,
+  .mobile-sidebar,
+  .mobile-sidebar-overlay {
+    display: none;
+  }
+}
+
+/* Landscape mobile adjustments */
+@media (max-width: 914px) and (orientation: landscape) {
+  .mobile-bottom-nav {
+    height: 44px;
+    bottom: 50px; /* Smaller music player in landscape */
+  }
+
+  .mobile-nav-item {
+    font-size: 10px;
+  }
+
+  .mobile-nav-item svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .content-layout {
+    margin-bottom: 94px; /* Adjust for smaller components */
+  }
+}
