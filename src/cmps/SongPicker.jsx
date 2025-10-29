@@ -1,26 +1,10 @@
-// SongPicker.jsx
-import { useState, useMemo, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { StationSearch } from './StationSearch'
-import { SongsList } from './SongsList'
-import { addSongToStation } from '../store/actions/station.actions'
-import { youtubeService } from '../services/youtube.service'
-
-function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value)
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
-
-    return () => {
-      clearTimeout(handler)
-    }
-  }, [value, delay])
-
-  return debouncedValue
-}
+import { SongsList } from './SongsList.jsx'
+import { StationSearch } from './StationSearch.jsx'
+import { youtubeService } from '../services/youtube.service.js'
+import { addSongToStation } from '../store/actions/station.actions.js'
+import { useDebounce } from '../hooks/useDebounce.js'
 
 export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
   const [query, setQuery] = useState('')
@@ -84,60 +68,27 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
   return (
     <div className="picker-backdrop" role="dialog" aria-modal="true">
       <div className="picker-panel">
-        <div className="picker-header">
-          <h2>Let's find something for your playlist</h2>
-        </div>
+        <div className="picker-header" />
 
-        <div className="station-search">
-          <StationSearch
-            value={query}
-            onChange={setQuery}
-            onClose={onClose}
-            showTitle={false}
-          />
-        </div>
+        <StationSearch
+          value={query}
+          onChange={setQuery}
+          onClose={onClose}
+        />
+        
 
-        <div className="songs-list-container">
-          {isLoading && (
-            <div className="picker-loading">
-              <svg width="24" height="24" viewBox="0 0 24 24">
-                <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z" fill="currentColor">
-                  <animateTransform 
-                    attributeName="transform"
-                    attributeType="XML"
-                    type="rotate"
-                    from="0 12 12"
-                    to="360 12 12"
-                    dur="1s"
-                    repeatCount="indefinite"
-                  />
-                </path>
-              </svg>
-              Searching...
-            </div>
-          )}
-          
-          {error && (
-            <div className="empty-msg" style={{color: '#ff6b6b'}}>
-              {error}
-            </div>
-          )}
-
-          {!isLoading && !error && (
-            <SongsList
-              station={station}
-              rowVariant="picker"
-              songs={youtubeResults}
-              searchQuery={query}
-              maxResults={maxResults}
-              existingIds={existingIdsSet}
-              onAdd={handleAddToCurrent}
-              showHeader={false}
-              isExternalResults={true}
-            />
-          )}
-        </div>
       </div>
+        <SongsList
+          station={station}
+          rowVariant="picker"
+          songs={youtubeResults}
+          searchQuery={query}
+          maxResults={maxResults}
+          existingIds={existingIdsSet}
+          onAdd={handleAddToCurrent}
+          showHeader={true}
+          isExternalResults={true}
+        />
     </div>
   )
 }
