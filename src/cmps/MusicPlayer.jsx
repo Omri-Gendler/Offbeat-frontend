@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
-
-
+import { socketService } from '../services/socket.service.js'
 
 import {
   setIndex,
@@ -11,17 +10,12 @@ import {
   togglePlay,
   cycleRepeatMode,
   toggleShuffle,
-
-  // setProgress, // optional if you track progress in Redux
 } from '../store/actions/player.actions'
-
 import { selectCurrentSong } from '../store/selectors/player.selectors'
-
 import { likeSong, unlikeSong } from '../store/actions/station.actions'
 import { QueueSidebar } from './QueueSidebar'
 import { VolumeControl } from './VolumeControl'
-import { IconAddCircle24, IconCheckCircle24, IconView16, IconShuffle16, IconPrev16, IconPlay16, IconNext16, IconRepeat16, IconPause16  } from './Icon'
-
+import { IconAddCircle24, IconCheckCircle24, IconView16, IconShuffle16, IconPrev16, IconPlay16, IconNext16, IconRepeat16, IconPause16 } from './Icon'
 import YouTubePlayer from './YouTubePlayer'
 
 const FALLBACK = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
@@ -31,26 +25,27 @@ export function MusicPlayer({ station }) {
   const likedStation = stations.find(s => s._id === 'liked-songs-station') || null
 
 
+  const {
+    queue = [],
+    index = 0,
+    isPlaying = false,
+    shuffle = false,
+    repeat = 'off',
+    playOrder = [],
+    contextId,
+    contextType
+  } = useSelector(s => s.playerModule || {}, shallowEqual)
 
- const {
-   queue = [],
-   index = 0,
-   isPlaying = false,
-   shuffle = false,
-   repeat = 'off',
-  
-   playOrder = []} = useSelector(s => s.playerModule || {}, shallowEqual)
-   
 
- const currentSong = useMemo(() => {
-   if (!queue?.length || !playOrder?.length) return null
-   const safeIdx = Math.min(Math.max(index, 0), playOrder.length - 1)
-   const realIdx = playOrder[safeIdx] ?? safeIdx
-   return queue[realIdx] || null
- }, [queue, playOrder, index])
+  const currentSong = useMemo(() => {
+    if (!queue?.length || !playOrder?.length) return null
+    const safeIdx = Math.min(Math.max(index, 0), playOrder.length - 1)
+    const realIdx = playOrder[safeIdx] ?? safeIdx
+    return queue[realIdx] || null
+  }, [queue, playOrder, index])
 
- const likedSongs = likedStation?.songs || []
- const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
+  const likedSongs = likedStation?.songs || []
+  const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
 
   const audioRef = useRef(null)
   const ytRef = useRef(null)
@@ -71,6 +66,23 @@ export function MusicPlayer({ station }) {
       console.log('- Song object:', currentSong)
     }
   }, [currentSong])
+
+  const emitPlay = useCallback(() => {
+    if (contextType === 'station' && contextId && currentSong) {
+      console.log(`Socket: Emitting station-send-play for ${contextId}, songId: ${currentSong.id}`)
+      socketService.emit('station-send-play', {
+        stationId: contextId,
+        songId: currentSong.id, 
+      })
+    }
+  }, [contextId, contextType, currentSong])
+
+  const emitPause = useCallback(() => {
+    if (contextType === 'station' && contextId) {
+      console.log(`Socket: Emitting station-send-pause for ${contextId}`)
+      socketService.emit('station-send-pause', contextId)
+    }
+  }, [contextId, contextType])
 
   // Reflect store -> audio or YouTube player
   // On track change: reset and load into the appropriate player
@@ -190,13 +202,19 @@ export function MusicPlayer({ station }) {
   }, [currentSong?.id, station?.name, duration])
 
   const handleTogglePlay = useCallback(() => {
+    const nextIsPlaying = !isPlaying
     if (!currentSong && queue.length > 0) {
-      setIndex(0)        // first track
-      setPlay(true)      // start playback
-      return
+      setIndex(0)
+      setPlay(true)
+    } else {
+      togglePlay()
+      if (nextIsPlaying && currentSong) {
+        emitPlay()
+      } else {
+        emitPause()
+      }
     }
-    togglePlay()
-  }, [currentSong, queue.length, isPlaying])
+  }, [currentSong, queue.length, isPlaying, emitPlay, emitPause])
 
   const onNext = useCallback(() => nextTrack(), [])
   const onPrev = useCallback(() => prevTrack(), [])
@@ -267,8 +285,8 @@ export function MusicPlayer({ station }) {
   }
 
   const canControl = !!currentSong
- const canGoPrev = canControl && index > 0
- const canGoNext = canControl && index < (playOrder?.length || 0) - 1
+  const canGoPrev = canControl && index > 0
+  const canGoNext = canControl && index < (playOrder?.length || 0) - 1
 
   return (
     <div className="music-player" role="region" aria-label="Player controls">
@@ -303,20 +321,20 @@ export function MusicPlayer({ station }) {
         <div className="player-controls" role="group" aria-label="Playback">
           <div className='player-controls-left'>
             <button
-                className={`shuffle-btn ${shuffle ? 'is-active' : ''}`}
-                onClick={() => toggleShuffle()}
-                aria-pressed={shuffle}
-                aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
-              >
-                <IconShuffle16 />
-              </button>
+              className={`shuffle-btn ${shuffle ? 'is-active' : ''}`}
+              onClick={() => toggleShuffle()}
+              aria-pressed={shuffle}
+              aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
+            >
+              <IconShuffle16 />
+            </button>
             <button
               type="button"
               className="control-btn"
-              onClick={onPrev} 
-              disabled={!canGoPrev} 
+              onClick={onPrev}
+              disabled={!canGoPrev}
               aria-label="Previous">
-                <IconPrev16 />
+              <IconPrev16 />
             </button>
           </div>
           <button
@@ -334,12 +352,12 @@ export function MusicPlayer({ station }) {
             )}
           </button>
           <div className='player-conrols-right'>
-            <button 
-            type="button" 
-            className="control-btn" 
-            onClick={onNext} 
-            disabled={!canGoNext}
-            aria-label="Next">
+            <button
+              type="button"
+              className="control-btn"
+              onClick={onNext}
+              disabled={!canGoNext}
+              aria-label="Next">
               <IconNext16 />
             </button>
             <button
@@ -416,14 +434,14 @@ export function MusicPlayer({ station }) {
             const t = audioRef.current?.currentTime || 0
             setCurrentTime(t)
           }}
-           onEnded={() => {
-              if (repeat === 'one') {
-                const el = audioRef.current
-                if (el) { el.currentTime = 0; el.play?.().catch(() => setPlay(false)) }
-              } else {
-                onNext()
-              }
-            }}
+          onEnded={() => {
+            if (repeat === 'one') {
+              const el = audioRef.current
+              if (el) { el.currentTime = 0; el.play?.().catch(() => setPlay(false)) }
+            } else {
+              onNext()
+            }
+          }}
           onError={(e) => {
             console.error('❌ Audio error:', e.target.error)
             console.error('❌ Failed URL:', currentSong?.url)
@@ -452,14 +470,14 @@ export function MusicPlayer({ station }) {
             setDuration(Number.isFinite(d) ? d : 0)
           }}
           onTimeUpdate={(t) => setCurrentTime(Number.isFinite(t) ? t : 0)}
-         
-            onEnded={() => {
-              if (repeat === 'one') {
-                try { ytRef.current?.seekTo(0); ytRef.current?.play() } catch {}
-              } else {
-                onNext()
-              }
-            }}
+
+          onEnded={() => {
+            if (repeat === 'one') {
+              try { ytRef.current?.seekTo(0); ytRef.current?.play() } catch { }
+            } else {
+              onNext()
+            }
+          }}
 
           onPlayingChange={(playing) => {
             if (playing !== isPlaying) {

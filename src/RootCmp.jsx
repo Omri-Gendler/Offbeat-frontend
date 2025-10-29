@@ -17,12 +17,9 @@ import { UserMsg } from './cmps/UserMsg.jsx'
 import { LeftSideBar } from './cmps/LeftSideBar.jsx'
 import { LoginSignup, Login, Signup } from './pages/LoginSignup.jsx'
 import { AddStationModal } from './cmps/AddStationModal.jsx'
-import { SpatialTracking } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import { setCoverHex } from './store/actions/app.actions'
-import { clearAndRegenerateDemoData, addDefaultStationsToUserLibrary } from './services/demo-data.service'
-import { userService } from './services/user'
-import { loadStations } from './store/actions/station.actions'
+import { socketService } from './services/socket.service.js'
 
 
 
@@ -39,11 +36,11 @@ export function RootCmp() {
 
   // useEffect(() => {
   //   clearAndRegenerateDemoData()
-    
+
   //   localStorage.removeItem('defaultStationsAdded')
-    
+
   //   const hasDefaultStations = localStorage.getItem('defaultStationsAdded')
-    
+
   //   if (!hasDefaultStations) {
   //     const guestUser = { _id: 'guest', fullname: 'Guest', username: 'guest' }
   //     const addedStations = addDefaultStationsToUserLibrary(guestUser)
@@ -53,6 +50,13 @@ export function RootCmp() {
   //   } else {
   //   }
   // }, [])
+
+  useEffect(() => {
+    const user = userService.getLoggedinUser()
+    if (user) {
+      socketService.login(user._id)
+    }
+  }, [])
 
   useEffect(() => {
     var authParameters = {

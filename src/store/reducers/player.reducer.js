@@ -1,16 +1,16 @@
 
-export const PLAY_CONTEXT  = 'PLAYER/PLAY_CONTEXT'
-export const TOGGLE_PLAY   = 'PLAYER/TOGGLE_PLAY'
-export const SET_PROGRESS  = 'PLAYER/SET_PROGRESS'
-export const NEXT          = 'PLAYER/NEXT'
-export const PREV          = 'PLAYER/PREV'
-export const SET_CONTEXT   = 'PLAYER/SET_CONTEXT'
-export const SET_PLAY      = 'PLAYER/SET_PLAY'
-export const SET_INDEX     = 'PLAYER/SET_INDEX'
-export const RESET         = 'PLAYER/RESET'
-export const SET_QUEUE     = 'PLAYER/SET_QUEUE' 
+export const PLAY_CONTEXT = 'PLAYER/PLAY_CONTEXT'
+export const TOGGLE_PLAY = 'PLAYER/TOGGLE_PLAY'
+export const SET_PROGRESS = 'PLAYER/SET_PROGRESS'
+export const NEXT = 'PLAYER/NEXT'
+export const PREV = 'PLAYER/PREV'
+export const SET_CONTEXT = 'PLAYER/SET_CONTEXT'
+export const SET_PLAY = 'PLAYER/SET_PLAY'
+export const SET_INDEX = 'PLAYER/SET_INDEX'
+export const RESET = 'PLAYER/RESET'
+export const SET_QUEUE = 'PLAYER/SET_QUEUE'
 export const TOGGLE_SHUFFLE = 'PLAYER/TOGGLE_SHUFFLE'
-export const CYCLE_REPEAT   = 'PLAYER/CYCLE_REPEAT'  
+export const CYCLE_REPEAT = 'PLAYER/CYCLE_REPEAT'
 
 
 // Optional: if you still want a raw queue setter (not recommended since PLAY_CONTEXT exists)
@@ -38,56 +38,58 @@ function shuffleExceptFirst(order, keepAt) {
   const rest = order.filter(i => i !== keepAt)
   for (let i = rest.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[rest[i], rest[j]] = [rest[j], rest[i]]
+      ;[rest[i], rest[j]] = [rest[j], rest[i]]
   }
   return [keepAt, ...rest]
 }
 
 export function playerReducer(state = initialState, action) {
   switch (action.type) {
-case PLAY_CONTEXT: {
-  const {
-    contextId,
-    contextType = 'station',
-    tracks = [],
-    trackId,
-    autoplay = true,
-  } = action.payload || {}
+    case PLAY_CONTEXT: {
+      const {
+        contextId,
+        contextType = 'station',
+        tracks = [],
+        trackId,
+        index: requestedIndex,
+        autoplay = true,
+        preserveCurrent = false
+      } = action.payload || {}
 
-  const queue = Array.isArray(tracks) ? tracks : []
-  const linear = linearOrder(queue.length)
+      const queue = Array.isArray(tracks) ? tracks : []
+      const linear = linearOrder(queue.length)
 
-  // find clicked track in the new queue
-  const realIdx = Math.max(0, queue.findIndex(t => (t?.id ?? t) === trackId))
+      // find clicked track in the new queue
+      const realIdx = Math.max(0, queue.findIndex(t => (t?.id ?? t) === trackId))
 
-  // Respect current shuffle setting:
-  // - if shuffle is ON: keep the clicked song first, shuffle the rest, index -> 0
-  // - if shuffle is OFF: linear order, index -> realIdx
-  let playOrder
-  let index
-  if (state.shuffle && queue.length > 1) {
-    playOrder = shuffleExceptFirst(linear, realIdx)
-    index = 0
-  } else {
-    playOrder = linear
-    index = realIdx
-  }
+      // Respect current shuffle setting:
+      // - if shuffle is ON: keep the clicked song first, shuffle the rest, index -> 0
+      // - if shuffle is OFF: linear order, index -> realIdx
+      let playOrder
+      let index
+      if (state.shuffle && queue.length > 1) {
+        playOrder = shuffleExceptFirst(linear, realIdx)
+        index = 0
+      } else {
+        playOrder = linear
+        index = realIdx
+      }
 
-  const nowPlayingId = queue[realIdx]?.id ?? queue[realIdx]?._id ?? null
+      const nowPlayingId = queue[realIdx]?.id ?? queue[realIdx]?._id ?? null
 
-  return {
-    ...state,
-    contextId,
-    contextType,
-    queue,
-    playOrder,
-    index,
-    nowPlayingId,
-    isPlaying: !!autoplay,
-  }
-}
-case TOGGLE_PLAY:
-  return { ...state, isPlaying: !state.isPlaying }
+      return {
+        ...state,
+        contextId,
+        contextType,
+        queue,
+        playOrder,
+        index,
+        nowPlayingId,
+        isPlaying: !!autoplay,
+      }
+    }
+    case TOGGLE_PLAY:
+      return { ...state, isPlaying: !state.isPlaying }
 
     case SET_QUEUE: {
       const { queue = [], index = 0, contextId = null, contextType = 'station' } =
@@ -146,30 +148,30 @@ case TOGGLE_PLAY:
       return { ...state, repeat: map[state.repeat] ?? 'off' }
     }
 
-case NEXT: {
-  const { playOrder, index, repeat, queue, history } = state
-  if (!playOrder.length) return state
+    case NEXT: {
+      const { playOrder, index, repeat, queue, history } = state
+      if (!playOrder.length) return state
 
-  if (repeat === 'one') return state  
+      if (repeat === 'one') return state
 
-  const atEnd = index >= playOrder.length - 1
-  if (atEnd) {
-    if (repeat === 'all') {
-      const newIndex = 0
-      const realIdx = playOrder[newIndex]
-      const nowPlayingId = queue[realIdx]?.id ?? queue[realIdx]?._id ?? null
-      return { ...state, index: newIndex, nowPlayingId }
+      const atEnd = index >= playOrder.length - 1
+      if (atEnd) {
+        if (repeat === 'all') {
+          const newIndex = 0
+          const realIdx = playOrder[newIndex]
+          const nowPlayingId = queue[realIdx]?.id ?? queue[realIdx]?._id ?? null
+          return { ...state, index: newIndex, nowPlayingId }
+        }
+
+        return { ...state, isPlaying: false }
+      }
+
+      const curReal = playOrder[index]
+      const nextIndex = index + 1
+      const nextReal = playOrder[nextIndex]
+      const nowPlayingId = queue[nextReal]?.id ?? queue[nextReal]?._id ?? null
+      return { ...state, index: nextIndex, nowPlayingId, history: curReal != null ? [...history, curReal] : history }
     }
-
-    return { ...state, isPlaying: false }
-  }
-
-  const curReal = playOrder[index]
-  const nextIndex = index + 1
-  const nextReal = playOrder[nextIndex]
-  const nowPlayingId = queue[nextReal]?.id ?? queue[nextReal]?._id ?? null
-  return { ...state, index: nextIndex, nowPlayingId, history: curReal != null ? [...history, curReal] : history }
-}
 
     case PREV: {
       const { playOrder, index, repeat, queue, history } = state
