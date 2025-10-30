@@ -59,7 +59,7 @@ export function SongRowBase({
   const firstMenuBtnRef = useRef(null)
 
   const isPicker = variant === 'picker'
-
+  const showStationActions = !isPicker && !isLikedSongs
   const pressed = isActive && isPlaying
 
   // liked state (guard song?.id)
@@ -200,26 +200,31 @@ export function SongRowBase({
         {/* actions & duration */}
         <div className="cell actions" role="gridcell" aria-colindex={colIdx.actions} aria-label="Actions">
           {isPicker ? (
-            <button
-              className="btn btn-add-text"
-              aria-label="Add to playlist"
-              onClick={(e) => { e.stopPropagation(); onAdd?.(song) }}
-              tabIndex={-1}
-            >
-              <span>Add</span>
-            </button>
+            isInStation ? (
+              <span className="in-station">
+                <IconCheckCircle24 />
+              </span>
+            ) : (
+              <button
+                className="btn btn-add-text"
+                aria-label="Add to playlist"
+                onClick={(e) => { e.stopPropagation(); onAdd?.(song) }}
+                tabIndex={-1}
+              >
+                <span>Add</span>
+              </button>
+            )
           ) : (
             <>
-               
-                <button
-                  className="tertiary-btn add-btn"
-                  aria-label={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
-                  onClick={handleToggleLike}
-                  tabIndex={-1}
-                >
-                  {isLiked ? <IconCheckCircle24 /> : <IconAddCircle24 />}
-                </button>
-              
+              <button
+                className="tertiary-btn add-btn"
+                aria-label={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
+                aria-pressed={isLiked}
+                onClick={handleToggleLike}
+                tabIndex={-1}
+              >
+                {isLiked ? <IconCheckCircle24 /> : <IconAddCircle24 />}
+              </button>
 
               {/* Duration BEFORE kebab */}
               {durationEl}
@@ -275,7 +280,7 @@ export function SongRowBase({
 
 export const SongRow = React.memo(SongRowBase, (prev, next) =>
   prev.idx === next.idx &&
-  prev.song.id === next.song.id &&
+  prev.song?.id === next.song?.id &&
   prev.isActive === next.isActive &&
   prev.isPlaying === next.isPlaying &&
   prev.variant === next.variant &&

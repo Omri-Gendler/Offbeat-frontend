@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { playContext, togglePlay } from '../store/actions/player.actions'
+
 import { addSongToStation, likeSong, unlikeSong } from '../store/actions/station.actions'
 import { SongRow } from './SongRow.jsx'
 import { selectCurrentSong, selectIsPlaying } from '../store/selectors/player.selectors'
@@ -45,37 +46,42 @@ export function SongsList({
   rowVariant = 'station',
   existingIds = new Set(),
   onAdd,
+
   onToggleLike,            // optional: pass through to SongRow
   searchQuery = '',
   maxResults = 5,
-  isLiked = false,         // (kept for future logic)
+  isLiked = false,
   isExternalResults = false
 }) {
   const dispatch = useDispatch()
+
+  // These selectors are already playOrder-aware if you implemented them as discussed
   const nowPlaying = useSelector(selectCurrentSong)
   const isPlaying = useSelector(selectIsPlaying)
   const playingId = nowPlaying?.id ?? null
   const isPicker = rowVariant === 'picker'
 
-  // Normalize incoming list source
-  const allSongs = useMemo(() => {
-    if (Array.isArray(songsOverride)) return songsOverride
-    if (Array.isArray(station?.songs)) return station.songs
+  // Normalize incoming list source (support { songs } for external results)
+  const baseSongs = useMemo(() => {
+    if (songsOverride) return songsOverride
+    if (station?.songs) return station.songs
     if (isExternalResults && Array.isArray((songsOverride || station)?.songs)) {
       return (songsOverride || station).songs
     }
     return []
   }, [songsOverride, station, isExternalResults])
 
-  const existingIdsSet = useMemo(
-    () => (existingIds instanceof Set ? existingIds : new Set(existingIds || [])),
-    [existingIds]
-  )
+  const allSongs = useMemo(() => {
+    if (isExternalResults && baseSongs && !Array.isArray(baseSongs) && Array.isArray(baseSongs.songs)) {
+      return baseSongs.songs
+    }
+    return Array.isArray(baseSongs) ? baseSongs : []
+  }, [baseSongs, isExternalResults])
 
   const [selectedId, setSelectedId] = useState(null)
   const handleSelectRow = (song) => setSelectedId(song?.id ?? null)
 
-  // Build the list to render (picker vs station)
+  // Build the list to render (picker vs. station)
   const { songs, showNothingYet, noMatches } = useMemo(() => {
     let list = allSongs
     let _showNothingYet = false
@@ -106,7 +112,7 @@ export function SongsList({
     }
 
     return { songs: list, showNothingYet: _showNothingYet, noMatches: _noMatches }
-  }, [allSongs, isPicker, isExternalResults, existingIdsSet, searchQuery, maxResults])
+  }, [allSongs, isPicker, isExternalResults, existingIds, searchQuery, maxResults])
 
   if (isPicker && showNothingYet) {
     return (
@@ -129,28 +135,22 @@ export function SongsList({
     )
   }
 
-  const handleRowPlay = (song) => {
-    if (!song) return
-    if (song.id === playingId) {
-      togglePlay()
-    } else {
-      const tracksToUse =
-        isPicker && isExternalResults
-          ? songs
-          : Array.isArray(station?.songs)
-          ? station.songs
-          : allSongs
-
-      playContext({
-        contextId: isPicker ? `search-${normalize(searchQuery)}` : station?._id,
-        contextType: isPicker ? 'search' : 'station',
-        tracks: tracksToUse,
-        trackId: song.id,
-        index: tracksToUse.findIndex(track => track.id === song.id),
-        autoplay: true
-      })
-    }
+  // ————— Actions —————
+const handleRowPlay = (song) => {
+  if (!song) return
+  if (song.id === playingId) {
+    togglePlay()
+  } else {
+    playContext({
+      contextId: station?._id,
+      contextType: 'station',
+      tracks: isPicker ? songs : (station?.songs ?? songs), // visible subset or full station
+      trackId: song.id,
+      autoplay: true,
+    })
   }
+}
+
 
   const handleAddToCurrent = async (song) => {
     if (onAdd) return onAdd(song)
@@ -185,7 +185,7 @@ export function SongsList({
         aria-rowcount={songs.length + (showHeader && !isPicker ? 1 : 0)}
       >
         {showHeader && !isPicker && (
-          <div className="songs-list-header-spacing" role="presentation">
+          <div className="songs-list-header-spaceing" role="presentation">
             <div role="presentation">
               <div className="songs-list-header" role="row" aria-rowindex={1}>
                 {/* Index / Play */}
@@ -255,6 +255,7 @@ export function SongsList({
                 onToggleLike={handleToggleLike}
                 onSelectRow={handleSelectRow}
                 selectedId={selectedId}
+
               />
             ) : (
               <SongRow
@@ -268,6 +269,7 @@ export function SongsList({
                 onToggleLike={handleToggleLike}
                 onSelectRow={handleSelectRow}
                 selectedId={selectedId}
+
               />
             )
           )}

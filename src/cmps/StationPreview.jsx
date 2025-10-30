@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux'
 import { playContext, togglePlay } from '../store/actions/player.actions'
 import { IconPause24, IconPlay24 } from './Icon'
 
+
 export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
   const navigate = useNavigate()
   const { isPlaying, contextId, contextType } = useSelector(s => s.playerModule || {})
@@ -26,6 +27,7 @@ export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
   const handleStationClick = () => {
     navigate(`/station/${station._id}`)
   }
+
 
   const getDescription = () => {
     if (station.createdBy?.fullname) return `By ${station.createdBy.fullname}`

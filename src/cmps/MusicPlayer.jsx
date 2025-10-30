@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
 
+
+
 import {
   setIndex,
   setPlay,
@@ -9,8 +11,12 @@ import {
   togglePlay,
   cycleRepeatMode,
   toggleShuffle,
+
+  // setProgress, // optional if you track progress in Redux
 } from '../store/actions/player.actions'
+
 import { selectCurrentSong } from '../store/selectors/player.selectors'
+
 import { likeSong, unlikeSong } from '../store/actions/station.actions'
 import { 
   joinStationRoom, 
@@ -18,7 +24,7 @@ import {
   broadcastPlay, 
   broadcastPause 
 } from '../store/actions/socket.actions'
-import { store } from '../store/store'
+
 import { QueueSidebar } from './QueueSidebar'
 import { VolumeControl } from './VolumeControl'
 import { IconAddCircle24, IconCheckCircle24, IconView16, IconShuffle16, IconPrev16, IconPlay16, IconNext16, IconRepeat16, IconPause16 } from './Icon'
@@ -31,24 +37,26 @@ export function MusicPlayer({ station }) {
   const likedStation = stations.find(s => s._id === 'liked-songs-station') || null
 
 
-  const {
-    queue = [],
-    index = 0,
-    isPlaying = false,
-    shuffle = false,
-    repeat = 'off',
-    playOrder = [],
-    contextId,
-    contextType
-  } = useSelector(s => s.playerModule || {}, shallowEqual)
 
 
-  const currentSong = useMemo(() => {
-    if (!queue?.length || !playOrder?.length) return null
-    const safeIdx = Math.min(Math.max(index, 0), playOrder.length - 1)
-    const realIdx = playOrder[safeIdx] ?? safeIdx
-    return queue[realIdx] || null
-  }, [queue, playOrder, index])
+ const {
+   queue = [],
+   index = 0,
+   isPlaying = false,
+   shuffle = false,
+   repeat = 'off',
+   playOrder = [],
+   contextId = null,
+   contextType = null,
+ } = useSelector(s => s.playerModule || {}, shallowEqual)
+
+ const currentSong = useMemo(() => {
+   if (!queue?.length || !playOrder?.length) return null
+   const safeIdx = Math.min(Math.max(index, 0), playOrder.length - 1)
+   const realIdx = playOrder[safeIdx] ?? safeIdx
+   return queue[realIdx] || null
+ }, [queue, playOrder, index])
+
 
  const likedSongs = likedStation?.songs || []
  const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
@@ -74,16 +82,7 @@ export function MusicPlayer({ station }) {
   }, [currentSong])
 
   // Join/leave station rooms when context changes
-  useEffect(() => {
-    let previousStationId = null
-    
-    return () => {
-      if (previousStationId) {
-        leaveStationRoom(previousStationId)
-      }
-    }
-  }, [])
-
+const lastRoomRef = useRef(null);
   useEffect(() => {
     // Join station room if we're in a station context or if we have station prop
     const isInStationContext = contextType === 'station' || (station && station._id)
@@ -93,13 +92,21 @@ export function MusicPlayer({ station }) {
       // Add small delay to avoid conflicts with StationDetails room joining
       const timeoutId = setTimeout(() => {
         console.log(`🎵 MusicPlayer: Joining station room: ${stationIdToUse} (contextType: ${contextType})`)
+                if (lastRoomRef.current && lastRoomRef.current !== stationIdToUse) {
+          console.log(`🎵 MusicPlayer: Leaving previous room: ${lastRoomRef.current}`)
+          leaveStationRoom(lastRoomRef.current)}
         joinStationRoom(stationIdToUse)
+        lastRoomRef.current = stationIdToUse
       }, 100)
       
       return () => {
         clearTimeout(timeoutId)
-        console.log(`🎵 MusicPlayer: Leaving station room: ${stationIdToUse}`)
-        leaveStationRoom(stationIdToUse)
+        if (lastRoomRef.current === stationIdToUse) {
+         console.log(`🎵 MusicPlayer: Leaving station room: ${stationIdToUse}`)
+          leaveStationRoom(stationIdToUse)
+          lastRoomRef.current = null
+        }
+        
       }
     }
   }, [contextId, contextType, station?._id])
@@ -481,8 +488,8 @@ export function MusicPlayer({ station }) {
   }
 
   const canControl = !!currentSong
-  const canGoPrev = canControl && index > 0
-  const canGoNext = canControl && index < (playOrder?.length || 0) - 1
+ const canGoPrev = canControl && index > 0
+ const canGoNext = canControl && index < (playOrder?.length || 0) - 1
 
   return (
     <div className="music-player" role="region" aria-label="Player controls">
@@ -517,13 +524,13 @@ export function MusicPlayer({ station }) {
         <div className="player-controls" role="group" aria-label="Playback">
           <div className='player-controls-left'>
             <button
-              className={`shuffle-btn ${shuffle ? 'is-active' : ''}`}
-              onClick={() => toggleShuffle()}
-              aria-pressed={shuffle}
-              aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
-            >
-              <IconShuffle16 />
-            </button>
+                className={`shuffle-btn ${shuffle ? 'is-active' : ''}`}
+                onClick={() => toggleShuffle()}
+                aria-pressed={shuffle}
+                aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
+              >
+                <IconShuffle16 />
+              </button>
             <button
               type="button"
               className="control-btn"
@@ -547,7 +554,7 @@ export function MusicPlayer({ station }) {
               <IconPlay16 style={{ fontSize: '16px' }} />
             )}
           </button>
-          <div className='player-conrols-right'>
+          <div className='player-controls-right'>
             <button
               type="button"
               className="control-btn"
@@ -564,6 +571,7 @@ export function MusicPlayer({ station }) {
             >
               <IconRepeat16 />
             </button>
+
           </div>
         </div>
 
@@ -642,14 +650,14 @@ export function MusicPlayer({ station }) {
             const t = audioRef.current?.currentTime || 0
             setCurrentTime(t)
           }}
-          onEnded={() => {
-            if (repeat === 'one') {
-              const el = audioRef.current
-              if (el) { el.currentTime = 0; el.play?.().catch(() => setPlay(false)) }
-            } else {
-              onNext()
-            }
-          }}
+           onEnded={() => {
+              if (repeat === 'one') {
+                const el = audioRef.current
+                if (el) { el.currentTime = 0; el.play?.().catch(() => setPlay(false)) }
+              } else {
+                onNext()
+              }
+            }}
           onError={(e) => {
             console.error('❌ Audio error:', e.target.error)
             console.error('❌ Failed URL:', currentSong?.url)
@@ -675,14 +683,14 @@ export function MusicPlayer({ station }) {
             setDuration(Number.isFinite(d) ? d : 0)
           }}
           onTimeUpdate={(t) => setCurrentTime(Number.isFinite(t) ? t : 0)}
-
-          onEnded={() => {
-            if (repeat === 'one') {
-              try { ytRef.current?.seekTo(0); ytRef.current?.play() } catch { }
-            } else {
-              onNext()
-            }
-          }}
+         
+            onEnded={() => {
+              if (repeat === 'one') {
+                try { ytRef.current?.seekTo(0); ytRef.current?.play() } catch {}
+              } else {
+                onNext()
+              }
+            }}
 
           onPlayingChange={(playing) => {
             console.log(`🎬 YouTube playing state changed: ${playing}, current isPlaying: ${isPlaying}`)
