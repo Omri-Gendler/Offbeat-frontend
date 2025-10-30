@@ -47,7 +47,7 @@
 .content-spacing-container {
   border-top: 0px solid #3d3c3c15;
   padding-top: 0px;
-  background-color: rgba(0, 0, 0, 0.683);
+  /* background-color: rgba(0, 0, 0, 0.683); */
   /* background:
     linear-gradient(to bottom,
       rgba(74, 74, 74, 0.425) 0%,
