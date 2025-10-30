@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { playContext, togglePlay } from '../store/actions/player.actions'
 import { IconPause24, IconPlay24 } from './Icon'
-import { IconPause24, IconPlay24 } from './Icon'
+
 
 export function StationPreview({ station, onRemoveStation, onUpdateStation }) {
   const navigate = useNavigate()

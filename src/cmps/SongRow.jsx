@@ -1,15 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { likeSong, unlikeSong } from '../store/actions/station.actions'
-import {
-  IconPlay24,
-  IconPause24,
-  IconKebab16,
-  IconAddCircle24,
-  IconCheckCircle24,
-  Equalizer,
-} from './Icon.jsx'
 import {
   IconPlay24,
   IconPause24,
@@ -21,7 +12,6 @@ import {
 import { selectIsSongLiked } from '../store/selectors/player.selectors'
 
 function formatDuration(ms) {
-  if (typeof ms !== 'number' || !Number.isFinite(ms)) return ''
   if (typeof ms !== 'number' || !Number.isFinite(ms)) return ''
   const m = Math.floor(ms / 60000)
   const s = Math.floor((ms % 60000) / 1000)
@@ -55,15 +45,9 @@ export function SongRowBase({
   variant = 'station',
   isInStation = false,
   onAdd,
-  isInStation = false,
-  onAdd,
   isLikedSongs = false,
   onAddToAnother,
   onRemoveFromStation,
-  onToggleLike,
-  showGenre = false,
-  onSelectRow,         // optional
-  selectedId,          // optional
   onToggleLike,
   showGenre = false,
   onSelectRow,         // optional
@@ -74,8 +58,6 @@ export function SongRowBase({
   const kebabRef = useRef(null)
   const firstMenuBtnRef = useRef(null)
 
-
-
   const isPicker = variant === 'picker'
   const showStationActions = !isPicker && !isLikedSongs
   const pressed = isActive && isPlaying
@@ -84,7 +66,6 @@ export function SongRowBase({
   const isLiked = useSelector(
     state => (song?.id ? selectIsSongLiked(state, song.id) : false)
   )
-
 
   // keep ARIA col indexes accurate (4 for picker, 5 for station)
   const colIdx = useMemo(() => ({
@@ -106,7 +87,6 @@ export function SongRowBase({
     if (isMenuOpen) firstMenuBtnRef.current?.focus()
   }, [isMenuOpen])
 
-
   const openMenuNearKebab = useCallback(() => {
     const btn = kebabRef.current
     if (!btn) return
@@ -125,7 +105,6 @@ export function SongRowBase({
     setMenuOpen(true)
   }, [])
 
-
   const handleToggleLike = useCallback(async (e) => {
     e.stopPropagation()
     if (!song?.id) return
@@ -138,7 +117,6 @@ export function SongRowBase({
     }
   }, [song, isLiked, onToggleLike])
 
-
   const durationEl = (
     <div className="duration-text">
       {song?.durationMs != null ? formatDuration(song.durationMs) : '-'}
@@ -147,7 +125,6 @@ export function SongRowBase({
 
   return (
     <li
-
       className={[
         'row',
         isPicker ? 'row--picker' : '',
@@ -158,11 +135,10 @@ export function SongRowBase({
       role="row"
       aria-rowindex={idx + 2}
       onClick={() => onSelectRow?.(song)}
-
     >
       <div className="song-list-row">
+        {/* index / play */}
         <div className="cell index flex" role="gridcell" aria-colindex={colIdx.index}>
-
           <div className="index-inner">
             <button
               type="button"
@@ -172,7 +148,6 @@ export function SongRowBase({
               onClick={(e) => { e.stopPropagation(); onPlayToggle?.(song) }}
               tabIndex={-1}
             >
-              {pressed ? <IconPause24 className="song-pause-icon" /> : <IconPlay24 />}
               {pressed ? <IconPause24 className="song-pause-icon" /> : <IconPlay24 />}
             </button>
 
@@ -194,21 +169,17 @@ export function SongRowBase({
           <div className="song-meta">
             <a className="track-link standalone-ellipsis-one-line" tabIndex={-1}>
               <div className={`title ${isActive ? 'title--playing' : ''}`}>{song?.title || '—'}</div>
-              <div className={`title ${isActive ? 'title--playing' : ''}`}>{song?.title || '—'}</div>
             </a>
             {!!song?.artists && (
-
               <div className="artists standalone-ellipsis-one-line">
                 <a draggable="true" tabIndex={-1}>{song.artists}</a>
                 {showGenre && song?.genre && <span className="genre-tag">• {song.genre}</span>}
-
               </div>
             )}
           </div>
         </div>
 
         {/* album */}
-
         <div className="cell album" role="gridcell" aria-colindex={colIdx.album}>
           {song?.album ? (
             <a className="standalone-ellipsis-one-line" tabIndex={-1}>{song.album}</a>
@@ -219,40 +190,41 @@ export function SongRowBase({
 
         {/* date added */}
         <div className="cell added" role="gridcell" aria-colindex={colIdx.added} aria-hidden={isPicker}>
-
           {!isPicker && (
             <span className="subdued standalone-ellipsis-one-line">
               {formatAdded(song?.addedAt)}
-
             </span>
           )}
         </div>
 
-
         {/* actions & duration */}
         <div className="cell actions" role="gridcell" aria-colindex={colIdx.actions} aria-label="Actions">
           {isPicker ? (
-            <button
-              className="btn btn-add-text"
-              aria-label="Add to playlist"
-              onClick={(e) => { e.stopPropagation(); onAdd?.(song) }}
-              tabIndex={-1}
-            >
-
-              <span>Add</span>
-            </button>
+            isInStation ? (
+              <span className="in-station">
+                <IconCheckCircle24 />
+              </span>
+            ) : (
+              <button
+                className="btn btn-add-text"
+                aria-label="Add to playlist"
+                onClick={(e) => { e.stopPropagation(); onAdd?.(song) }}
+                tabIndex={-1}
+              >
+                <span>Add</span>
+              </button>
+            )
           ) : (
             <>
-               
-                <button
-                  className="tertiary-btn add-btn"
-                  aria-label={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
-                  onClick={handleToggleLike}
-                  tabIndex={-1}
-                >
-                  {isLiked ? <IconCheckCircle24 /> : <IconAddCircle24 />}
-                </button>
-              
+              <button
+                className="tertiary-btn add-btn"
+                aria-label={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
+                aria-pressed={isLiked}
+                onClick={handleToggleLike}
+                tabIndex={-1}
+              >
+                {isLiked ? <IconCheckCircle24 /> : <IconAddCircle24 />}
+              </button>
 
               {/* Duration BEFORE kebab */}
               {durationEl}
@@ -308,7 +280,7 @@ export function SongRowBase({
 
 export const SongRow = React.memo(SongRowBase, (prev, next) =>
   prev.idx === next.idx &&
-  prev.song.id === next.song.id &&
+  prev.song?.id === next.song?.id &&
   prev.isActive === next.isActive &&
   prev.isPlaying === next.isPlaying &&
   prev.variant === next.variant &&

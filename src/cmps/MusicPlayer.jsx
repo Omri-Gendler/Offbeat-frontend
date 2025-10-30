@@ -24,7 +24,7 @@ import {
   broadcastPlay, 
   broadcastPause 
 } from '../store/actions/socket.actions'
-import { store } from '../store/store'
+
 import { QueueSidebar } from './QueueSidebar'
 import { VolumeControl } from './VolumeControl'
 import { IconAddCircle24, IconCheckCircle24, IconView16, IconShuffle16, IconPrev16, IconPlay16, IconNext16, IconRepeat16, IconPause16 } from './Icon'
@@ -38,15 +38,17 @@ export function MusicPlayer({ station }) {
 
 
 
+
  const {
    queue = [],
    index = 0,
    isPlaying = false,
    shuffle = false,
    repeat = 'off',
-  
-   playOrder = []} = useSelector(s => s.playerModule || {}, shallowEqual)
-   
+   playOrder = [],
+   contextId = null,
+   contextType = null,
+ } = useSelector(s => s.playerModule || {}, shallowEqual)
 
  const currentSong = useMemo(() => {
    if (!queue?.length || !playOrder?.length) return null
@@ -55,8 +57,7 @@ export function MusicPlayer({ station }) {
    return queue[realIdx] || null
  }, [queue, playOrder, index])
 
- const likedSongs = likedStation?.songs || []
- const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
+
  const likedSongs = likedStation?.songs || []
  const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
 
@@ -81,16 +82,7 @@ export function MusicPlayer({ station }) {
   }, [currentSong])
 
   // Join/leave station rooms when context changes
-  useEffect(() => {
-    let previousStationId = null
-    
-    return () => {
-      if (previousStationId) {
-        leaveStationRoom(previousStationId)
-      }
-    }
-  }, [])
-
+const lastRoomRef = useRef(null);
   useEffect(() => {
     // Join station room if we're in a station context or if we have station prop
     const isInStationContext = contextType === 'station' || (station && station._id)
@@ -100,13 +92,21 @@ export function MusicPlayer({ station }) {
       // Add small delay to avoid conflicts with StationDetails room joining
       const timeoutId = setTimeout(() => {
         console.log(`🎵 MusicPlayer: Joining station room: ${stationIdToUse} (contextType: ${contextType})`)
+                if (lastRoomRef.current && lastRoomRef.current !== stationIdToUse) {
+          console.log(`🎵 MusicPlayer: Leaving previous room: ${lastRoomRef.current}`)
+          leaveStationRoom(lastRoomRef.current)}
         joinStationRoom(stationIdToUse)
+        lastRoomRef.current = stationIdToUse
       }, 100)
       
       return () => {
         clearTimeout(timeoutId)
-        console.log(`🎵 MusicPlayer: Leaving station room: ${stationIdToUse}`)
-        leaveStationRoom(stationIdToUse)
+        if (lastRoomRef.current === stationIdToUse) {
+         console.log(`🎵 MusicPlayer: Leaving station room: ${stationIdToUse}`)
+          leaveStationRoom(stationIdToUse)
+          lastRoomRef.current = null
+        }
+        
       }
     }
   }, [contextId, contextType, station?._id])
@@ -554,7 +554,7 @@ export function MusicPlayer({ station }) {
               <IconPlay16 style={{ fontSize: '16px' }} />
             )}
           </button>
-          <div className='player-conrols-right'>
+          <div className='player-controls-right'>
             <button
               type="button"
               className="control-btn"
@@ -571,14 +571,7 @@ export function MusicPlayer({ station }) {
             >
               <IconRepeat16 />
             </button>
-            <button
-              className={`repeat-btn repeat-${repeat} ${repeat ? 'is-active' : ''}`}
-              onClick={() => cycleRepeatMode()}
-              aria-pressed={repeat !== 'off'}
-              aria-label={`Repeat: ${repeat}`}
-            >
-              <IconRepeat16 />
-            </button>
+
           </div>
         </div>
 
