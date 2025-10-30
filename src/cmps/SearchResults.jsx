@@ -9,6 +9,8 @@ import { SearchResultSongRow } from './SearchResultSongRow.jsx'
 import { playContext, togglePlay } from '../store/actions/player.actions'
 import { PlayPauseButton } from './PlayPauseButton'
 import PauseIcon from '@mui/icons-material/Pause'
+import { useCallback } from 'react'
+import { selectCurrentSong } from '../store/actions/player.actions'
 
 export function SearchResults({ searchTerm }) {
     const navigate = useNavigate()
@@ -22,10 +24,12 @@ export function SearchResults({ searchTerm }) {
     const [isLoadingMore, setIsLoadingMore] = useState(false)
     const [accessToken, setAccessToken] = useState('')
     const [spotifyResults, setSpotifyResults] = useState({ tracks: [], artists: [] })
-    const { queue = [], index = 0, isPlaying = false } = useSelector(
-        s => s.playerModule || {},
-        shallowEqual
-    )
+const currentPlayingSong = useSelector(selectCurrentSong)
+const { isPlaying = false } = useSelector(s => s.playerModule || {}, shallowEqual)
+    const getAllSongsIndex = useCallback(
+  (song) => allSongs.findIndex(s => s.id === song.id),
+  [allSongs]
+)
 
     const dispatch = useDispatch()
 
@@ -79,11 +83,7 @@ export function SearchResults({ searchTerm }) {
         return []
     }, [allSongs, activeFilter, searchTerm])
 
-    const currentPlayingSong = useMemo(() => {
-        if (!queue.length) return null
-        const i = Math.min(Math.max(index, 0), queue.length - 1)
-        return queue[i] || null
-    }, [queue, index])
+
 
     async function searchSongs() {
         if (!accessToken) {
@@ -247,55 +247,40 @@ export function SearchResults({ searchTerm }) {
         }
     }
 
-    // Helper function to find best YouTube match for Spotify track
-    function findBestYouTubeMatch(spotifyTrack, youtubeTracks) {
-        const spotifyTitle = spotifyTrack.name.toLowerCase()
-        const spotifyArtist = spotifyTrack.artists?.[0]?.name?.toLowerCase() || ''
+function findBestYouTubeMatch(spotifyTrack, youtubeTracks) {
+  const spotifyTitle = (spotifyTrack?.name || '').toLowerCase()
+  const spotifyArtist = (spotifyTrack?.artists?.[0]?.name || '').toLowerCase()
 
-        let bestMatch = null
-        let bestScore = 0
+  let bestMatch = null
+  let bestScore = 0
 
-        for (const youtubeTrack of youtubeTracks) {
-            const youtubeTitle = youtubeTrack.title.toLowerCase()
-            const youtubeArtist = (youtubeTrack.artist || youtubeTrack.artists || '').toLowerCase()
+  for (const yt of youtubeTracks || []) {
+    const ytTitle = (yt.title || '').toLowerCase()
+    // normalize artists to string
+    const ytArtistRaw = yt.artist ?? yt.artists ?? ''
+    const ytArtist = Array.isArray(ytArtistRaw) ? ytArtistRaw.join(', ') : ytArtistRaw
+    const ytArtistLc = (ytArtist || '').toLowerCase()
 
-            let score = 0
+    let score = 0
+    if (ytTitle.includes(spotifyTitle) || spotifyTitle.includes(ytTitle)) score += 50
+    if (ytArtistLc.includes(spotifyArtist) || spotifyArtist.includes(ytArtistLc)) score += 30
 
-            // Title similarity
-            if (youtubeTitle.includes(spotifyTitle) || spotifyTitle.includes(youtubeTitle)) {
-                score += 50
-            }
+    const spotifyWords = `${spotifyTitle} ${spotifyArtist}`.split(/\s+/)
+    const youtubeWords = `${ytTitle} ${ytArtistLc}`.split(/\s+/)
+    const common = spotifyWords.filter(w => w.length > 2 && youtubeWords.some(yw => yw.includes(w) || w.includes(yw)))
+    score += common.length * 5
 
-            // Artist similarity
-            if (youtubeArtist.includes(spotifyArtist) || spotifyArtist.includes(youtubeArtist)) {
-                score += 30
-            }
+    if (ytTitle.length < 100) score += 10
+    const avoid = ['cover','remix','live','acoustic','karaoke']
+    if (avoid.some(k => ytTitle.includes(k))) score -= 20
 
-            // Word overlap
-            const spotifyWords = `${spotifyTitle} ${spotifyArtist}`.split(/\s+/)
-            const youtubeWords = `${youtubeTitle} ${youtubeArtist}`.split(/\s+/)
-            const commonWords = spotifyWords.filter(word =>
-                word.length > 2 && youtubeWords.some(yw => yw.includes(word) || word.includes(yw))
-            )
-            score += commonWords.length * 5
-
-            // Prefer shorter titles (less likely to have extra info)
-            if (youtubeTitle.length < 100) score += 10
-
-            // Avoid covers, remixes, etc.
-            const avoidKeywords = ['cover', 'remix', 'live', 'acoustic', 'karaoke']
-            if (avoidKeywords.some(keyword => youtubeTitle.includes(keyword))) {
-                score -= 20
-            }
-
-            if (score > bestScore && score > 30) {
-                bestScore = score
-                bestMatch = youtubeTrack
-            }
-        }
-
-        return bestMatch
+    if (score > bestScore && score > 30) {
+      bestScore = score
+      bestMatch = yt
     }
+  }
+  return bestMatch
+}
 
     async function loadMoreArtists() {
         if (isLoadingMore || !accessToken) return
@@ -349,29 +334,28 @@ export function SearchResults({ searchTerm }) {
         }
     }
 
-    function handlePlaySong(song, songIndex = 0) {
-        if (!song) return
+function handlePlaySong(song) {
+  if (!song) return
+  const indexToPlay = Math.max(0, getAllSongsIndex(song))
 
-        const context = {
-            contextId: `search-${searchTerm}`,
-            contextType: 'search',
-            tracks: allSongs, // Full search results as queue
-            index: songIndex, // Which song in the queue to play
-            autoplay: true
-        }
+  const context = {
+    contextId: `search-${searchTerm}`,
+    contextType: 'search',
+    tracks: allSongs,     // full queue
+    index: indexToPlay,   // exact song position in that queue
+    autoplay: true
+  }
 
-        playContext(context)
-    }
+  playContext(context)
+}
 
-    const handlePlayPauseClick = (songInList, songIndexInList) => {
-        const isThisSongPlaying = currentPlayingSong?.id === songInList.id
 
-        if (isThisSongPlaying) {
-            togglePlay()
-        } else {
-            handlePlaySong(songInList, songIndexInList);
-        }
-    }
+const handlePlayPauseClick = (song) => {
+  const isThisSongPlaying = !!(currentPlayingSong && currentPlayingSong.id === song.id)
+  if (isThisSongPlaying) togglePlay()
+  else handlePlaySong(song)
+}
+
 
     function formatDuration(ms) {
         if (!ms) return '0:00'

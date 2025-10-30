@@ -59,7 +59,7 @@ export function SongRowBase({
   const firstMenuBtnRef = useRef(null)
 
   const isPicker = variant === 'picker'
-  const showStationActions = !isPicker && !isLikedSongs
+
   const pressed = isActive && isPlaying
 
   // liked state (guard song?.id)
@@ -210,7 +210,7 @@ export function SongRowBase({
             </button>
           ) : (
             <>
-              {showStationActions && (
+               
                 <button
                   className="tertiary-btn add-btn"
                   aria-label={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
@@ -219,7 +219,7 @@ export function SongRowBase({
                 >
                   {isLiked ? <IconCheckCircle24 /> : <IconAddCircle24 />}
                 </button>
-              )}
+              
 
               {/* Duration BEFORE kebab */}
               {durationEl}

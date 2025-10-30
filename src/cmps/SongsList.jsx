@@ -3,7 +3,7 @@ import { playContext, togglePlay } from '../store/actions/player.actions'
 import { addSongToStation, likeSong, unlikeSong } from '../store/actions/station.actions'
 import { SongRow } from './SongRow.jsx'
 import { selectCurrentSong, selectIsPlaying } from '../store/selectors/player.selectors'
-import { DurationIcon } from './Icon.jsx'
+import { DurationIcon, IconCheckmark16, IconChevronDown16 } from './Icon.jsx'
 import { useMemo, useState } from 'react'
 
 function normalize(str = '') {
@@ -32,7 +32,7 @@ function scoreSong(song, q) {
 function getTopMatches(songs, q, maxResults = 5) {
   const query = normalize(q)
   if (!query) return []
-  const withScores = songs.map(s => ({ s, sc: scoreSong(s, query) }))
+  const withScores = (songs || []).map(s => ({ s, sc: scoreSong(s, query) }))
   const filtered = withScores.filter(x => x.sc > 0)
   filtered.sort((a, b) => b.sc - a.sc || normalize(a.s.title).localeCompare(normalize(b.s.title)))
   return filtered.slice(0, maxResults).map(x => x.s)
@@ -48,39 +48,34 @@ export function SongsList({
   onToggleLike,            // optional: pass through to SongRow
   searchQuery = '',
   maxResults = 5,
-  isLiked = false,
+  isLiked = false,         // (kept for future logic)
   isExternalResults = false
 }) {
   const dispatch = useDispatch()
-
-  // These selectors are already playOrder-aware if you implemented them as discussed
   const nowPlaying = useSelector(selectCurrentSong)
   const isPlaying = useSelector(selectIsPlaying)
   const playingId = nowPlaying?.id ?? null
-
   const isPicker = rowVariant === 'picker'
 
-  // Normalize incoming list source (support { songs } for external results)
-  const baseSongs = useMemo(() => {
-    if (songsOverride) return songsOverride
-    if (station?.songs) return station.songs
+  // Normalize incoming list source
+  const allSongs = useMemo(() => {
+    if (Array.isArray(songsOverride)) return songsOverride
+    if (Array.isArray(station?.songs)) return station.songs
     if (isExternalResults && Array.isArray((songsOverride || station)?.songs)) {
       return (songsOverride || station).songs
     }
     return []
   }, [songsOverride, station, isExternalResults])
 
-  const allSongs = useMemo(() => {
-    if (isExternalResults && baseSongs && !Array.isArray(baseSongs) && Array.isArray(baseSongs.songs)) {
-      return baseSongs.songs
-    }
-    return Array.isArray(baseSongs) ? baseSongs : []
-  }, [baseSongs, isExternalResults])
+  const existingIdsSet = useMemo(
+    () => (existingIds instanceof Set ? existingIds : new Set(existingIds || [])),
+    [existingIds]
+  )
 
   const [selectedId, setSelectedId] = useState(null)
   const handleSelectRow = (song) => setSelectedId(song?.id ?? null)
 
-  // Build the list to render (picker vs. station)
+  // Build the list to render (picker vs station)
   const { songs, showNothingYet, noMatches } = useMemo(() => {
     let list = allSongs
     let _showNothingYet = false
@@ -88,22 +83,20 @@ export function SongsList({
 
     if (isPicker) {
       const q = normalize(searchQuery)
-
       if (isExternalResults) {
-        list = (allSongs || []).filter(s => !existingIds.has(s.id))
-        _showNothingYet = false
+        list = (allSongs || []).filter(s => !existingIdsSet.has(s.id))
         _noMatches = list.length === 0 && !!q
       } else if (!q) {
         _showNothingYet = true
         list = []
       } else {
-        list = getTopMatches(allSongs, searchQuery, maxResults).filter(s => !existingIds.has(s.id))
+        list = getTopMatches(allSongs, searchQuery, maxResults).filter(s => !existingIdsSet.has(s.id))
         _noMatches = list.length === 0
       }
     }
 
     return { songs: list, showNothingYet: _showNothingYet, noMatches: _noMatches }
-  }, [allSongs, isPicker, isExternalResults, existingIds, searchQuery, maxResults])
+  }, [allSongs, isPicker, isExternalResults, existingIdsSet, searchQuery, maxResults])
 
   if (isPicker && showNothingYet) {
     return (
@@ -131,10 +124,15 @@ export function SongsList({
     if (song.id === playingId) {
       togglePlay()
     } else {
-      const tracksToUse = isPicker && isExternalResults ? songs : (station?.songs ?? songs)
-      
+      const tracksToUse =
+        isPicker && isExternalResults
+          ? songs
+          : Array.isArray(station?.songs)
+          ? station.songs
+          : allSongs
+
       playContext({
-        contextId: isPicker ? `search-${searchQuery}` : station?._id,
+        contextId: isPicker ? `search-${normalize(searchQuery)}` : station?._id,
         contextType: isPicker ? 'search' : 'station',
         tracks: tracksToUse,
         trackId: song.id,
@@ -174,10 +172,10 @@ export function SongsList({
         tabIndex={0}
         data-testid="songs-list"
         aria-colcount={colCount}
-        aria-rowcount={songs.length + (showHeader ? 1 : 0)}
+        aria-rowcount={songs.length + (showHeader && !isPicker ? 1 : 0)}
       >
         {showHeader && !isPicker && (
-          <div className="songs-list-header-spaceing" role="presentation">
+          <div className="songs-list-header-spacing" role="presentation">
             <div role="presentation">
               <div className="songs-list-header" role="row" aria-rowindex={1}>
                 {/* Index / Play */}
@@ -220,7 +218,8 @@ export function SongsList({
                   <div className="duration-container title-container flex" role="columnheader" aria-colindex={5} tabIndex={-1}>
                     <div data-testid="column-header-context-menu">
                       <div className="column-header-item duration flex" aria-label="Duration">
-                        <DurationIcon />
+                        <span><DurationIcon className='clock-svg'/></span>
+                        <span className="header-item "><IconChevronDown16 className="chevron-svg"/></span>
                       </div>
                     </div>
                   </div>
@@ -241,7 +240,7 @@ export function SongsList({
                 onPlayToggle={handleRowPlay}
                 isActive={playingId === song.id}
                 isPlaying={isPlaying}
-                isInStation={existingIds.has(song.id)}
+                isInStation={existingIdsSet.has(song.id)}
                 onAdd={handleAddToCurrent}
                 onToggleLike={handleToggleLike}
                 onSelectRow={handleSelectRow}

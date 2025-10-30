@@ -24,6 +24,6 @@
 .cell.actions { overflow: visible; }
 
 /* Optional: spacing & alignment on the right */
-.cell.actions { display:flex; justify-content:flex-end; align-items:center; gap:8px; }
+.cell.actions { display:flex; justify-content:space-between; align-items:center; gap:20px; }
 .duration-text { min-width:40px; text-align:right; }
 

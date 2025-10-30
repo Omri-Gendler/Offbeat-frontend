@@ -389,3 +389,27 @@ export function Equalizer({ playing = true, size = 14, color = '#1ed760', title 
   )
 }
 
+export function IconChevronDown16(props) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      role="img"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="m14 6-6 6-6-6z" />
+    </svg>
+  )
+}
+export function IconChevronUp16(props) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      role="img"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M2 10l6-6 6 6z" />
+    </svg>
+  )
+}

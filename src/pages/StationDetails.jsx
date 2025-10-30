@@ -101,7 +101,7 @@ export function StationDetails() {
   if (!station) {
     return (
       <section className="station-details">
-        <div className="content-spacing">Loading station…</div>
+        <div className="content-spacing">Loading playlist</div>
       </section>
     )
   }

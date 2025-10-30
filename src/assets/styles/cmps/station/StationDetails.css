@@ -207,7 +207,7 @@
 
 .station-details .station-type {
   display: flex;
-  font-weight: 400;
+  font-weight: 300;
   color: var(--clr4);
   font-family: var(--encore-body-font-stack);
   font-size: var(--encore-text-size-smaller);
@@ -229,6 +229,7 @@
     overflow: hidden;
 
     word-break: normal;
+    text-overflow: ellipsis;
     margin: 0;
     padding: 0;
   }
@@ -529,15 +530,17 @@
 }
 
 .duration {
-  & svg {
+  .clock-svg {
     fill: #b3b3b3;
   }
+  justify-items: space-between;
+  gap: 20px;
 }
 
 .duration-container {
 
   justify-content: flex-end;
-  margin-inline-end: 22px;
+  
 }
 
 .index {
@@ -557,13 +560,13 @@
 .index-inner {
   display: flex;
   align-items: center;
-  gap: 8px;
+ 
 }
 
 .index-number {
   width: 16px;
   display: flex;
-  text-align: right;
+  text-align: left;
   transition: opacity 120ms ease;
 
 }
@@ -630,6 +633,10 @@
   fill: var(--clr4);
 }
 
+.column-header-item.duration{
+
+}
+
 .cell.button {
   background-color: transparent;
 }
@@ -645,8 +652,10 @@
 
 }
 
-.cell.duration {
-  justify-content: flex-end;
+.cell.actions {
+  justify-content: space-between;
+  gap: 20px;
+
 }
 
 .song-row:hover {
@@ -655,7 +664,7 @@
 
 .cell.album {
   display: flex;
-  font-size: 20px;
+  font-size: 18px;
   align-items: center;
 
 }
