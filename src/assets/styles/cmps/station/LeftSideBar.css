@@ -811,3 +811,94 @@ width: max-content;
   }
 }
 
+/* Drag and Drop Styles */
+.library-list.drag-mode {
+  /* Add visual indicator when in drag mode */
+  user-select: none;
+}
+
+.library-item[draggable="true"] {
+  cursor: grab;
+  transition: all 0.2s ease;
+}
+
+.library-item[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.library-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed #1ed760;
+  box-shadow: 0 4px 12px rgba(30, 215, 96, 0.3);
+}
+
+.library-item.drag-over {
+  border-top: 3px solid #1ed760;
+  margin-top: 3px;
+  transform: translateY(3px);
+}
+
+.library-item.drag-over::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #1ed760;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(30, 215, 96, 0.6);
+  animation: dragPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes dragPulse {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
+
+/* Drag feedback for different view modes */
+.library-list.grid.drag-mode .library-item[draggable="true"]:hover {
+  background: rgba(30, 215, 96, 0.1);
+  border: 1px solid rgba(30, 215, 96, 0.3);
+}
+
+.library-list.list.drag-mode .library-item[draggable="true"]:hover {
+  background: rgba(30, 215, 96, 0.05);
+  border-left: 3px solid rgba(30, 215, 96, 0.5);
+  padding-left: 9px;
+}
+
+.library-list.grid-compact.drag-mode .library-item[draggable="true"]:hover {
+  background: rgba(30, 215, 96, 0.1);
+  outline: 1px solid rgba(30, 215, 96, 0.4);
+}
+
+/* Prevent liked songs from being draggable */
+.library-item[data-id="liked-songs-station"] {
+  cursor: default !important;
+}
+
+.library-item[data-id="liked-songs-station"]:hover {
+  background: #202020 !important;
+}
+
+/* Mobile drag and drop adjustments */
+@media (max-width: 414px) {
+  .library-item.dragging {
+    transform: scale(0.98);
+  }
+  
+  .library-item.drag-over {
+    border-top-width: 2px;
+    margin-top: 2px;
+    transform: translateY(2px);
+  }
+  
+  .library-item.drag-over::before {
+    height: 2px;
+    top: -4px;
+  }
+}
+

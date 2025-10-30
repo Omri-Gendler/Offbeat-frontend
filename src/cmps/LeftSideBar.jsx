@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { loadStations, addStation } from "../store/actions/station.actions";
 import { useNavigate } from "react-router-dom";
 import { maxLength } from "../services/util.service";
@@ -17,6 +17,7 @@ import { loadLikedSongs } from "../store/actions/user.actions";
 
 
 const VIEW_KEY = 'libraryViewMode';
+const DRAG_ORDER_KEY = 'libraryDragOrder';
 const VIEW_META = {
   grid: { label: 'Default grid', Icon: IconGridDefault },
   'grid-compact': { label: 'Compact grid', Icon: IconListCompact },
@@ -27,6 +28,7 @@ const SORT_LABELS = {
   recentlyAdded: 'Recently Added',
   alphabetical: 'Alphabetical',
   creator: 'Creator',
+  custom: 'Custom order',
 }
 
 export function LeftSideBar() {
@@ -49,6 +51,15 @@ export function LeftSideBar() {
 
   const [menu, setMenu] = useState({ open: false, x: 0, y: 0, kind: null, itemId: null })
 
+  // Drag and Drop state
+  const [dragOrder, setDragOrder] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(DRAG_ORDER_KEY) || '[]') }
+    catch { return [] }
+  })
+  const [draggedItem, setDraggedItem] = useState(null)
+  const [dragOverIndex, setDragOverIndex] = useState(null)
+  const [previousSortBy, setPreviousSortBy] = useState('recent')
+  const [isTransitioningBack, setIsTransitioningBack] = useState(false)
 
   const inputRef = useRef(null);
   const recentBtnRef = useRef(null);
@@ -62,9 +73,24 @@ export function LeftSideBar() {
 
   useEffect(() => { if (isSearchOpen) inputRef.current?.focus(); }, [isSearchOpen]);
   useEffect(() => { localStorage.setItem(VIEW_KEY, viewMode); }, [viewMode]);
+  useEffect(() => { localStorage.setItem(DRAG_ORDER_KEY, JSON.stringify(dragOrder)); }, [dragOrder]);
 
   const { label: viewLabel, Icon: ViewIcon } = VIEW_META[viewMode] || VIEW_META.grid;
   const sortLabel = SORT_LABELS[sortBy] || 'Recents'
+  
+  // Show appropriate label based on drag state
+  const displayLabel = (() => {
+    // While actively dragging: show transition message
+    if (draggedItem && sortBy === 'custom' && previousSortBy) {
+      return `${sortLabel} (will return to ${SORT_LABELS[previousSortBy]})`
+    }
+    // If we're transitioning back (after drag ended, before timeout): show target label
+    if (isTransitioningBack && previousSortBy) {
+      return SORT_LABELS[previousSortBy]
+    }
+    // Default: show current sort
+    return sortLabel
+  })()
 
   const [pinnedIds, setPinnedIds] = useState(() => {
     try { return new Set(JSON.parse(localStorage.getItem(PINNED_KEY) || '[]')) }
@@ -82,6 +108,78 @@ export function LeftSideBar() {
       return next
     })
   }
+
+  // Drag and Drop handlers
+  const handleDragStart = useCallback((e, item) => {
+    setDraggedItem(item)
+    e.dataTransfer.effectAllowed = 'move'
+    e.dataTransfer.setData('text/plain', item._id)
+    // Auto-switch to custom sort when dragging starts and save previous sort
+    if (sortBy !== 'custom') {
+      setPreviousSortBy(sortBy)
+      setSortBy('custom')
+    }
+  }, [sortBy])
+
+  const handleDragOver = useCallback((e, index) => {
+    e.preventDefault()
+    e.dataTransfer.dropEffect = 'move'
+    setDragOverIndex(index)
+  }, [])
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverIndex(null)
+  }, [])
+
+  const handleDrop = useCallback((e, dropIndex) => {
+    e.preventDefault()
+    if (!draggedItem) return
+
+    const draggedId = draggedItem._id
+    setDragOrder(prevOrder => {
+      const newOrder = [...prevOrder]
+      
+      // Remove dragged item from its current position
+      const currentIndex = newOrder.indexOf(draggedId)
+      if (currentIndex !== -1) {
+        newOrder.splice(currentIndex, 1)
+      } else {
+        // If item wasn't in custom order, we need to add it
+        newOrder.push(draggedId)
+      }
+      
+      // Insert at new position
+      const finalDropIndex = dropIndex >= newOrder.length ? newOrder.length : dropIndex
+      newOrder.splice(finalDropIndex, 0, draggedId)
+      
+      return newOrder
+    })
+
+    setDraggedItem(null)
+    setDragOverIndex(null)
+    
+    // Keep the custom sort temporarily to show the result, 
+    // handleDragEnd will switch back after the delay
+  }, [draggedItem])
+
+  const handleDragEnd = useCallback(() => {
+    const wasDragging = draggedItem !== null
+    setDraggedItem(null)
+    setDragOverIndex(null)
+    
+    // Auto-exit drag mode and return to previous sort after a short delay
+    // Only if we were actually dragging (not just hovering)
+    if (wasDragging) {
+      setIsTransitioningBack(true)
+      setTimeout(() => {
+        if (previousSortBy && previousSortBy !== 'custom') {
+          setSortBy(previousSortBy)
+          setPreviousSortBy('recent')
+          setIsTransitioningBack(false)
+        }
+      }, 300) // Small delay to allow drop animation to complete
+    }
+  }, [previousSortBy, draggedItem])
 
 
   // ---- playback helpers ----
@@ -219,6 +317,18 @@ export function LeftSideBar() {
             if (byName !== 0) return byName;
             return (a._id || '').localeCompare(b._id || '');
           };
+        case 'custom':
+          return (a, b) => {
+            const aIndex = dragOrder.indexOf(a._id);
+            const bIndex = dragOrder.indexOf(b._id);
+            // Items not in dragOrder go to the end, sorted by recent
+            if (aIndex === -1 && bIndex === -1) {
+              return (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
+            }
+            if (aIndex === -1) return 1;
+            if (bIndex === -1) return -1;
+            return aIndex - bIndex;
+          };
         default:
           return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
       }
@@ -230,7 +340,7 @@ export function LeftSideBar() {
 
     return [likedSongsStation, ...pinned, ...unpinned];
 
-  }, [allStations, filterBy.txt, sortBy, pinnedIds, loggedinUser, likedSongs]); // <-- הוסף likedSongs לתלויות
+  }, [allStations, filterBy.txt, sortBy, pinnedIds, loggedinUser, likedSongs, dragOrder]);
 
 
   function searchBar() {
@@ -323,7 +433,7 @@ export function LeftSideBar() {
                 onClick={() => openMenuAtAnchor(recentBtnRef.current)}
                 style={{ background: 'transparent', display: 'flex', alignItems: 'center' }}
               >
-                <span className="label">{sortLabel}</span>
+                <span className="label">{displayLabel}</span>
                 <ViewIcon style={{ width: 16, height: 16, color: 'var(--clr4)' }} />
               </button>
             </div>
@@ -338,6 +448,16 @@ export function LeftSideBar() {
           isPlaying={isPlaying}
           isThisContext={isThisContext}
           onItemContextMenu={handleItemContextMenu}
+          dragHandlers={{
+            onDragStart: handleDragStart,
+            onDragOver: handleDragOver,
+            onDragLeave: handleDragLeave,
+            onDrop: handleDrop,
+            onDragEnd: handleDragEnd,
+          }}
+          draggedItem={draggedItem}
+          dragOverIndex={dragOverIndex}
+          isDragMode={sortBy === 'custom'}
         />
 
         <ViewContextMenu
@@ -354,6 +474,7 @@ export function LeftSideBar() {
                 { id: 'recentlyAdded', label: 'Recently Added' },
                 { id: 'alphabetical', label: 'Alphabetical' },
                 { id: 'creator', label: 'Creator' },
+                { id: 'custom', label: 'Custom order' },
               ],
             },
             {

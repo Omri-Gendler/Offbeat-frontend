@@ -40,6 +40,10 @@ export function Library({
   isPlaying,
   isThisContext,
   onItemContextMenu,
+  dragHandlers,
+  draggedItem,
+  dragOverIndex,
+  isDragMode = false,
 }) {
   if (!items?.length) return <div className="library-empty">No playlists yet</div>
 
@@ -55,17 +59,22 @@ export function Library({
     : 'library-list grid'
 
   return (
-    <div className={`${containerClass} ctx-anchor-library-list`}>
-      {items.map(st => (
+    <div className={`${containerClass} ctx-anchor-library-list ${isDragMode ? 'drag-mode' : ''}`}>
+      {items.map((st, index) => (
         <LibraryItem
           key={st._id}
           station={st}
+          index={index}
           isActive={isThisContext(st) && isPlaying}
           onOpen={onOpen}
           onPlay={onPlay}
           onItemContextMenu={onItemContextMenu}
           compact={mode === 'grid-compact'}
           list={mode === 'list'}
+          dragHandlers={dragHandlers}
+          isDragged={draggedItem?._id === st._id}
+          isDragOver={dragOverIndex === index}
+          isDragMode={isDragMode}
         />
       ))}
     </div>
@@ -74,12 +83,17 @@ export function Library({
 
 const LibraryItem = memo(function LibraryItem({
   station,
+  index,
   isActive,
   onOpen,
   onPlay,
   onItemContextMenu,
   compact,
-  list
+  list,
+  dragHandlers,
+  isDragged,
+  isDragOver,
+  isDragMode
 }) {
   
 
@@ -90,15 +104,46 @@ const parts = getMetaParts(station,LIKED_ID)
 
 
 
+  const handleDragStart = (e) => {
+    if (!isDragMode || station._id === 'liked-songs-station') return
+    dragHandlers?.onDragStart(e, station)
+  }
+
+  const handleDragOver = (e) => {
+    if (!isDragMode) return
+    dragHandlers?.onDragOver(e, index)
+  }
+
+  const handleDragLeave = () => {
+    if (!isDragMode) return
+    dragHandlers?.onDragLeave()
+  }
+
+  const handleDrop = (e) => {
+    if (!isDragMode) return
+    dragHandlers?.onDrop(e, index)
+  }
+
+  const handleDragEnd = () => {
+    if (!isDragMode) return
+    dragHandlers?.onDragEnd()
+  }
+
   return (
     <div
-      className={`library-item ${compact ? 'compact' : ''} ${list ? 'list' : ''}`}
+      className={`library-item ${compact ? 'compact' : ''} ${list ? 'list' : ''} ${isDragged ? 'dragging' : ''} ${isDragOver ? 'drag-over' : ''}`}
       data-active={isActive ? 'true' : 'false'}
       title={station.name}
       onClick={() => onOpen(station)}
       onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); onItemContextMenu?.(e, station) }}
       tabIndex={0}
       data-id={station._id}
+      draggable={isDragMode && station._id !== 'liked-songs-station'}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+      onDragEnd={handleDragEnd}
     >
       <div className="thumb-wrap">
         <img  loading="lazy" src={station.imgUrl || '/img/unnamed-song.png'} alt={station.name} />
