@@ -5,7 +5,7 @@ import { Recents } from './Recents'
 
 
 import { maxLength } from '../services/util.service'
-import { ContextMenu } from './ContextMenu'
+import { SimpleContextMenu } from './SimpleContextMenu'
 import { StationPreview } from './StationPreview'
 import { playContext, togglePlay, setPlay } from '../store/actions/player.actions'
 
@@ -145,7 +145,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation, varian
         {stations.map(renderStationItem)}
       </ul>
 
-      <ContextMenu
+      <SimpleContextMenu
         open={contextMenu.isOpen}
         x={contextMenu.position.x}
         y={contextMenu.position.y}

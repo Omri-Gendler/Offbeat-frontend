@@ -27,6 +27,8 @@ export const stationService = {
     getById,
     save,
     remove,
+    addSong,                // Add this function
+    removeSong,             // Add this function  
     getLikedSongsStation,
     addLikedSong,           // expose
     removeLikedSong         // expose
@@ -112,6 +114,95 @@ export async function removeLikedSong(songId) {
         saveLikedSongsStation(station)
     }
     return { ...station }
+}
+
+async function addSong(stationId, song) {
+    console.log(`🎵 LOCAL SERVICE: Adding song to station ${stationId}`, song)
+    
+    if (!song?.id) {
+        throw new Error('Song must have an id')
+    }
+    
+    // Handle liked songs station separately
+    if (stationId === 'liked-songs-station') {
+        return await addLikedSong(song)
+    }
+    
+    try {
+        const station = await getById(stationId)
+        if (!station) {
+            throw new Error(`Station with id ${stationId} not found`)
+        }
+        
+        // Check if song already exists
+        const exists = station.songs?.some(s => s.id === song.id)
+        if (exists) {
+            console.log(`Song ${song.title} already exists in station ${station.name}`)
+            return station // Return station as-is if song already exists
+        }
+        
+        // Add song to station
+        const updatedStation = {
+            ...station,
+            songs: [
+                ...(station.songs || []),
+                {
+                    ...song,
+                    addedAt: song.addedAt || Date.now()
+                }
+            ]
+        }
+        
+        // Save updated station
+        const savedStation = await save(updatedStation)
+        console.log(`✅ Song "${song.title}" added to station "${station.name}"`)
+        return savedStation
+        
+    } catch (err) {
+        console.error(`Failed to add song to station ${stationId}:`, err)
+        throw err
+    }
+}
+
+async function removeSong(stationId, songId) {
+    console.log(`🎵 LOCAL SERVICE: Removing song ${songId} from station ${stationId}`)
+    
+    // Handle liked songs station separately
+    if (stationId === 'liked-songs-station') {
+        return await removeLikedSong(songId)
+    }
+    
+    try {
+        const station = await getById(stationId)
+        if (!station) {
+            throw new Error(`Station with id ${stationId} not found`)
+        }
+        
+        // Find and remove song
+        const songIndex = station.songs?.findIndex(s => s.id === songId)
+        if (songIndex === -1) {
+            console.log(`Song ${songId} not found in station ${station.name}`)
+            return station // Return station as-is if song doesn't exist
+        }
+        
+        // Remove song from station
+        const updatedStation = {
+            ...station,
+            songs: [
+                ...station.songs.slice(0, songIndex),
+                ...station.songs.slice(songIndex + 1)
+            ]
+        }
+        
+        // Save updated station
+        const savedStation = await save(updatedStation)
+        console.log(`✅ Song removed from station "${station.name}"`)
+        return savedStation
+        
+    } catch (err) {
+        console.error(`Failed to remove song from station ${stationId}:`, err)
+        throw err
+    }
 }
 
 async function save(station) {

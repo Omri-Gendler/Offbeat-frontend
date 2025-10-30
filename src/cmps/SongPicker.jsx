@@ -22,9 +22,14 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
     stations.find(st => st?._id === stationId)
 
   const existingIdsSet = useMemo(() => {
-    if (existingIds && existingIds.size) return existingIds
+    if (existingIds && existingIds.size) {
+      console.log(`🎵 SONG PICKER: Using provided existingIds: ${existingIds.size} songs`)
+      return existingIds
+    }
     const ids = new Set()
     for (const s of station?.songs || []) ids.add(s.id)
+    console.log(`🎵 SONG PICKER: Built existingIds from station: ${ids.size} songs from station "${station?.name}"`)
+    console.log(`🎵 SONG PICKER: Existing song IDs:`, Array.from(ids))
     return ids
   }, [existingIds, station])
 
@@ -41,6 +46,8 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
         console.log('Searching for:', debouncedQuery)
         const results = await youtubeService.searchSongs(debouncedQuery)
         console.log('Search results:', results)
+        console.log('🎵 SONG PICKER: Raw results - songs:', results?.songs?.length || 0, 'artists:', results?.artists?.length || 0)
+        console.log('🎵 SONG PICKER: First 3 song IDs from search:', (results?.songs || []).slice(0, 3).map(s => s.id))
         setYoutubeResults(results)
       } catch (err) {
         console.error('Search failed:', err)
@@ -57,9 +64,18 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
   const handleAddToCurrent = async (song) => {
     if (!song?.id || !stationId) return
     try {
-      await addSongToStation(stationId, song)
+      console.log(`🎵 SONG PICKER: Adding song "${song.title}" to station ${stationId}`)
+      const updatedStation = await addSongToStation(stationId, song)
+      console.log(`✅ SONG PICKER: Song added successfully, station now has ${updatedStation?.songs?.length || 0} songs`)
+      
+      // Force a small delay to ensure state updates have propagated
+      setTimeout(() => {
+        console.log(`🔄 SONG PICKER: Refreshing search results to hide added song`)
+        // The song should now be filtered out from results since it exists in the station
+      }, 100)
+      
     } catch (err) {
-      console.error('addSongToStation failed', err)
+      console.error('❌ SONG PICKER: addSongToStation failed', err)
     }
   }
 
@@ -81,7 +97,7 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
         <SongsList
           station={station}
           rowVariant="picker"
-          songs={youtubeResults}
+          songs={youtubeResults?.songs || []}
           searchQuery={query}
           maxResults={maxResults}
           existingIds={existingIdsSet}

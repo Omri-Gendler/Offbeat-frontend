@@ -83,14 +83,24 @@ export function SongsList({
 
     if (isPicker) {
       const q = normalize(searchQuery)
+      console.log(`🎵 SONGS LIST: Building picker list - query: "${q}", allSongs: ${allSongs?.length || 0}, existingIds: ${existingIdsSet.size}`)
+      
       if (isExternalResults) {
+        const beforeFilter = allSongs?.length || 0
         list = (allSongs || []).filter(s => !existingIdsSet.has(s.id))
+        console.log(`🎵 SONGS LIST: External results filtered from ${beforeFilter} to ${list.length} songs`)
+        console.log(`🎵 SONGS LIST: First 5 song IDs:`, (allSongs || []).slice(0, 5).map(s => s.id))
+        console.log(`🎵 SONGS LIST: Existing IDs (first 10):`, Array.from(existingIdsSet).slice(0, 10))
+        console.log(`🎵 SONGS LIST: Sample song that was filtered:`, (allSongs || []).find(s => existingIdsSet.has(s.id)))
         _noMatches = list.length === 0 && !!q
       } else if (!q) {
         _showNothingYet = true
         list = []
+        console.log(`🎵 SONGS LIST: No query, showing "start typing" message`)
       } else {
-        list = getTopMatches(allSongs, searchQuery, maxResults).filter(s => !existingIdsSet.has(s.id))
+        const matches = getTopMatches(allSongs, searchQuery, maxResults)
+        list = matches.filter(s => !existingIdsSet.has(s.id))
+        console.log(`🎵 SONGS LIST: Found ${matches.length} matches, filtered to ${list.length} (removing existing)`)
         _noMatches = list.length === 0
       }
     }

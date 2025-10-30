@@ -87,10 +87,12 @@ export function StationDetails() {
     if (station) updateStation({ ...station, imgUrl: newUrl })
   }, [station])
 
-  const existingIds = useMemo(
-    () => new Set(songs.map(t => t.id)),
-    [songs]
-  )
+  const existingIds = useMemo(() => {
+    const ids = new Set(songs.map(t => t.id))
+    console.log(`🎵 STATION DETAILS: Created existingIds set with ${ids.size} songs`)
+    console.log(`🎵 STATION DETAILS: Existing IDs:`, Array.from(ids))
+    return ids
+  }, [songs])
 
   const handleSaveDetails = async (updatedDetails) => {
     if (!station) return

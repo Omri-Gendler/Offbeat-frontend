@@ -18,8 +18,8 @@ function createSocketService() {
             socket = io(SOCKET_URL, { transports: ['websocket'] })
             console.log('Socket Connection initiated with:', SOCKET_URL)
 
-            const user = userService.getLoggedinUser()
-            if (user) this.login(user._id)
+            // const user = userService.getLoggedinUser()
+            // if (user) this.login(user._id)
 
             socket.on('connect_error', (err) => {
                 console.error('Socket connection error:', err)
