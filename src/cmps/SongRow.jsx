@@ -62,6 +62,17 @@ export function SongRowBase({
   const showStationActions = !isPicker && !isLikedSongs
   const pressed = isActive && isPlaying
 
+  // Debug logging for this specific song row
+  if (song?.title?.includes('No Words Left') || isActive) {
+    console.log(`🎵 SongRow Debug [${song?.title}]:`, {
+      songId: song?.id,
+      isActive,
+      isPlaying,
+      pressed,
+      playingIcon: pressed ? 'PAUSE' : 'PLAY'
+    })
+  }
+
   // liked state (guard song?.id)
   const isLiked = useSelector(
     state => (song?.id ? selectIsSongLiked(state, song.id) : false)

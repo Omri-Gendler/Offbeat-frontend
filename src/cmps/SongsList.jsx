@@ -83,6 +83,15 @@ export function SongsList({
     return Array.isArray(baseSongs) ? baseSongs : []
   }, [baseSongs, isExternalResults])
 
+  // Debug logging for play state - moved after allSongs is defined
+  console.log('🎵 SongsList Debug:', {
+    nowPlaying: nowPlaying ? { id: nowPlaying.id, title: nowPlaying.title } : null,
+    playingId,
+    isPlaying,
+    songsCount: allSongs.length,
+    firstFewSongIds: allSongs.slice(0, 3).map(s => ({ id: s.id, title: s.title }))
+  })
+
   const [selectedId, setSelectedId] = useState(null)
   const handleSelectRow = (song) => setSelectedId(song?.id ?? null)
 
