@@ -30,7 +30,7 @@ export function AppHeader() {
 	return (
 		<header className="app-header full">
 
-			<nav>
+			<nav className='nav'>
 
 				<div className='logo-container'>
 					<img className='app-header-logo' src="/img/spotify-white-icon.webp" alt="Offbeat Logo" onClick={() => navigate('')} />

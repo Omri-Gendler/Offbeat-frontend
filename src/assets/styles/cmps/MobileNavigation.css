@@ -144,6 +144,11 @@
   /* Hide desktop navigation on mobile */
   .app-header {
     /* display: none; */
+    height: 20px;
+
+    .nav {
+      margin-top: 42px;
+    }
   }
 
   /* Adjust main content for mobile navigation */
