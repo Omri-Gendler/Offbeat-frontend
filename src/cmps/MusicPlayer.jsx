@@ -15,51 +15,57 @@ import {
   // setProgress, // optional if you track progress in Redux
 } from '../store/actions/player.actions'
 
-import { selectCurrentSong } from '../store/selectors/player.selectors'
+import { selectCurrentSong, selectIsSongLiked } from '../store/selectors/player.selectors'
 
 import { likeSong, unlikeSong } from '../store/actions/station.actions'
-import { 
-  joinStationRoom, 
-  leaveStationRoom, 
-  broadcastPlay, 
-  broadcastPause 
+import {
+  joinStationRoom,
+  leaveStationRoom,
+  broadcastPlay,
+  broadcastPause
 } from '../store/actions/socket.actions'
 
 import { QueueSidebar } from './QueueSidebar'
 import { VolumeControl } from './VolumeControl'
 import { IconAddCircle24, IconCheckCircle24, IconView16, IconShuffle16, IconPrev16, IconPlay16, IconNext16, IconRepeat16, IconPause16 } from './Icon'
 import YouTubePlayer from './YouTubePlayer'
+import { showUserMsg } from '../services/event-bus.service'
+import { Icon } from '@mui/material'
 
 const FALLBACK = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
 
 export function MusicPlayer({ station }) {
-  const stations = useSelector(s => s.stationModule.stations, shallowEqual)
-  const likedStation = stations.find(s => s._id === 'liked-songs-station') || null
+  const {
+    queue = [],
+    index = 0,
+    isPlaying = false,
+    shuffle = false,
+    repeat = 'off',
+    playOrder = [],
+    contextId = null,
+    contextType = null,
+  } = useSelector(s => s.playerModule || {}, shallowEqual)
 
+  const currentSong = useMemo(() => {
+    if (!queue?.length || !playOrder?.length) return null
+    const safeIdx = Math.min(Math.max(index, 0), playOrder.length - 1)
+    const realIdx = playOrder[safeIdx] ?? safeIdx
+    return queue[realIdx] || null
+  }, [queue, playOrder, index])
 
+  // Use the same selector as SongRow for consistency
+  const isLiked = useSelector(
+    state => (currentSong?.id ? selectIsSongLiked(state, currentSong.id) : false)
+  )
 
-
- const {
-   queue = [],
-   index = 0,
-   isPlaying = false,
-   shuffle = false,
-   repeat = 'off',
-   playOrder = [],
-   contextId = null,
-   contextType = null,
- } = useSelector(s => s.playerModule || {}, shallowEqual)
-
- const currentSong = useMemo(() => {
-   if (!queue?.length || !playOrder?.length) return null
-   const safeIdx = Math.min(Math.max(index, 0), playOrder.length - 1)
-   const realIdx = playOrder[safeIdx] ?? safeIdx
-   return queue[realIdx] || null
- }, [queue, playOrder, index])
-
-
- const likedSongs = likedStation?.songs || []
- const isLiked = !!(currentSong && likedSongs.some(s => s.id === currentSong.id))
+  // Debug logging for liked state in MusicPlayer
+  if (currentSong?.title?.includes('Blinding Lights')) {
+    console.log(`🎵 MusicPlayer Liked State Debug [${currentSong?.title}]:`, {
+      songId: currentSong?.id,
+      isLiked,
+      likedSongsCount: useSelector(state => state.userModule?.likedSongs?.length || 0)
+    })
+  }
 
   const audioRef = useRef(null)
   const ytRef = useRef(null)
@@ -82,42 +88,43 @@ export function MusicPlayer({ station }) {
   }, [currentSong])
 
   // Join/leave station rooms when context changes
-const lastRoomRef = useRef(null);
+  const lastRoomRef = useRef(null);
   useEffect(() => {
     // Join station room if we're in a station context or if we have station prop
     const isInStationContext = contextType === 'station' || (station && station._id)
     const stationIdToUse = contextType === 'station' ? contextId : station?._id
-    
+
     if (isInStationContext && stationIdToUse) {
       // Add small delay to avoid conflicts with StationDetails room joining
       const timeoutId = setTimeout(() => {
         console.log(`🎵 MusicPlayer: Joining station room: ${stationIdToUse} (contextType: ${contextType})`)
-                if (lastRoomRef.current && lastRoomRef.current !== stationIdToUse) {
+        if (lastRoomRef.current && lastRoomRef.current !== stationIdToUse) {
           console.log(`🎵 MusicPlayer: Leaving previous room: ${lastRoomRef.current}`)
-          leaveStationRoom(lastRoomRef.current)}
+          leaveStationRoom(lastRoomRef.current)
+        }
         joinStationRoom(stationIdToUse)
         lastRoomRef.current = stationIdToUse
       }, 100)
-      
+
       return () => {
         clearTimeout(timeoutId)
         if (lastRoomRef.current === stationIdToUse) {
-         console.log(`🎵 MusicPlayer: Leaving station room: ${stationIdToUse}`)
+          console.log(`🎵 MusicPlayer: Leaving station room: ${stationIdToUse}`)
           leaveStationRoom(stationIdToUse)
           lastRoomRef.current = null
         }
-        
+
       }
     }
   }, [contextId, contextType, station?._id])
 
   const emitPlay = useCallback(() => {
     console.log(`🎵 EMIT PLAY CHECK: contextType=${contextType}, contextId=${contextId}, currentSong=${currentSong?.title}, isYouTube=${currentSong?.isYouTube}`)
-    
+
     // Check if we're in a station context (either directly or through a station song)
     const isInStationContext = contextType === 'station' || (station && station._id)
     const stationIdToUse = contextType === 'station' ? contextId : station?._id
-    
+
     if (isInStationContext && stationIdToUse && currentSong) {
       // Get current playback position for sync
       let currentPlayTime = 0
@@ -126,7 +133,7 @@ const lastRoomRef = useRef(null);
       } else {
         currentPlayTime = audioRef.current?.currentTime || 0
       }
-      
+
       console.log(`Broadcasting play for station ${stationIdToUse}, index: ${index}, song: ${currentSong.title} ${currentSong.isYouTube ? '(YouTube)' : '(Audio)'}, time: ${currentPlayTime}s`)
       broadcastPlay(stationIdToUse, index, currentSong, currentPlayTime)
     } else {
@@ -136,11 +143,11 @@ const lastRoomRef = useRef(null);
 
   const emitPause = useCallback(() => {
     console.log(`🎵 EMIT PAUSE CHECK: contextType=${contextType}, contextId=${contextId}`)
-    
+
     // Check if we're in a station context (either directly or through a station song)
     const isInStationContext = contextType === 'station' || (station && station._id)
     const stationIdToUse = contextType === 'station' ? contextId : station?._id
-    
+
     if (isInStationContext && stationIdToUse) {
       console.log(`Broadcasting pause for station ${stationIdToUse}`)
       broadcastPause(stationIdToUse)
@@ -163,7 +170,7 @@ const lastRoomRef = useRef(null);
         const id = currentSong.youtubeVideoId || currentSong.id
         console.log('🔄 Loading YouTube video:', id)
         ytRef.current?.load(id)
-        
+
         // For YouTube, start playing immediately if isPlaying is true
         if (isPlaying) {
           console.log('▶️ Auto-playing YouTube video after load')
@@ -186,7 +193,7 @@ const lastRoomRef = useRef(null);
       el.currentTime = 0
       el.src = currentSong.url // Explicitly set the source
       el.load()
-      
+
       // Wait for metadata to load before potentially playing
       const onLoadedMetadata = () => {
         const duration = el.duration
@@ -194,7 +201,7 @@ const lastRoomRef = useRef(null);
         if (Number.isFinite(duration) && duration > 0) {
           setDuration(duration)
         }
-        
+
         if (isPlaying) {
           console.log('▶️ Auto-playing loaded audio')
           el.play().catch((error) => {
@@ -204,7 +211,7 @@ const lastRoomRef = useRef(null);
         }
         el.removeEventListener('loadedmetadata', onLoadedMetadata)
       }
-      
+
       const onCanPlay = () => {
         const duration = el.duration
         console.log('✅ Audio can play, duration:', duration)
@@ -213,7 +220,7 @@ const lastRoomRef = useRef(null);
         }
         el.removeEventListener('canplay', onCanPlay)
       }
-      
+
       const onDurationChange = () => {
         const duration = el.duration
         console.log('✅ Audio duration changed:', duration)
@@ -221,11 +228,11 @@ const lastRoomRef = useRef(null);
           setDuration(duration)
         }
       }
-      
+
       el.addEventListener('loadedmetadata', onLoadedMetadata)
       el.addEventListener('canplay', onCanPlay)
       el.addEventListener('durationchange', onDurationChange)
-      
+
       // Fallback: if metadata doesn't load within 2 seconds, try to play anyway
       const timeoutId = setTimeout(() => {
         if (isPlaying && el.paused) {
@@ -236,7 +243,7 @@ const lastRoomRef = useRef(null);
           })
         }
       }, 2000)
-      
+
       // Cleanup function for this song
       return () => {
         clearTimeout(timeoutId)
@@ -250,9 +257,9 @@ const lastRoomRef = useRef(null);
   // Sync play/pause to active player
   useEffect(() => {
     if (!currentSong) return
-    
+
     console.log(`🎵 SYNC PLAYER: isPlaying=${isPlaying}, song=${currentSong.title}, isYouTube=${currentSong.isYouTube}`)
-    
+
     if (currentSong.isYouTube) {
       try {
         if (isPlaying) {
@@ -262,8 +269,8 @@ const lastRoomRef = useRef(null);
           console.log(`⏸️ Pausing YouTube video: ${currentSong.youtubeVideoId || currentSong.id}`)
           ytRef.current?.pause()
         }
-      } catch (e) { 
-        console.warn('YT play/pause error', e) 
+      } catch (e) {
+        console.warn('YT play/pause error', e)
       }
     } else {
       const el = audioRef.current
@@ -284,9 +291,9 @@ const lastRoomRef = useRef(null);
       console.log(`🎵 BROADCAST: No current song, skipping broadcast`)
       return
     }
-    
+
     console.log(`🎵 BROADCAST: Song changed or play state changed - isPlaying: ${isPlaying}, song: ${currentSong.title}`)
-    
+
     // Add a small delay to debounce rapid state changes
     const timeoutId = setTimeout(() => {
       if (isPlaying) {
@@ -297,7 +304,7 @@ const lastRoomRef = useRef(null);
         emitPause()
       }
     }, 50) // 50ms debounce
-    
+
     return () => clearTimeout(timeoutId)
   }, [isPlaying, currentSong?.id, emitPlay, emitPause])
 
@@ -363,7 +370,7 @@ const lastRoomRef = useRef(null);
 
     window.addEventListener('seekYouTube', handleSeekYouTube)
     window.addEventListener('seekAudio', handleSeekAudio)
-    
+
     return () => {
       window.removeEventListener('seekYouTube', handleSeekYouTube)
       window.removeEventListener('seekAudio', handleSeekAudio)
@@ -416,7 +423,7 @@ const lastRoomRef = useRef(null);
     nextTrack()
     // Note: Socket broadcasting is now handled by useEffect watching isPlaying/currentSong changes
   }, [])
-  
+
   const onPrev = useCallback(() => {
     prevTrack()
     // Note: Socket broadcasting is now handled by useEffect watching isPlaying/currentSong changes  
@@ -457,16 +464,6 @@ const lastRoomRef = useRef(null);
     }
   }
 
-  const addSongToLikedSongs = useCallback(async () => {
-    if (!currentSong) return
-    await likeSong(currentSong)
-  }, [currentSong])
-
-  const removeSongFromLikedSongs = useCallback(async () => {
-    if (!currentSong) return
-    await unlikeSong(currentSong.id)
-  }, [currentSong])
-
   const fmt = (s) => {
     if (!Number.isFinite(s)) return '0:00'
     const m = Math.floor(s / 60)
@@ -474,22 +471,22 @@ const lastRoomRef = useRef(null);
     return `${m}:${sec < 10 ? '0' : ''}${sec}`
   }
 
-  const handleAddClick = async () => {
-    if (!currentSong) return
-    if (isLiked) await unlikeSong(currentSong.id)
-    else await likeSong(currentSong)
-  }
-
-  const onAddToLibrary = () => {
-    // if (!station) return
-    isLiked
-      ? removeSongFromLikedSongs()
-      : addSongToLikedSongs()
-  }
+  const onAddToLibrary = useCallback(async () => {
+    if (!currentSong?.id) return
+    try {
+      if (isLiked) {
+        await unlikeSong(currentSong.id)
+      } else {
+        await likeSong(currentSong)
+      }
+    } catch (err) {
+      console.error('toggle like failed in MusicPlayer', err)
+    }
+  }, [currentSong, isLiked])
 
   const canControl = !!currentSong
- const canGoPrev = canControl && index > 0
- const canGoNext = canControl && index < (playOrder?.length || 0) - 1
+  const canGoPrev = canControl && index > 0
+  const canGoNext = canControl && index < (playOrder?.length || 0) - 1
 
   return (
     <div className="music-player" role="region" aria-label="Player controls">
@@ -524,13 +521,13 @@ const lastRoomRef = useRef(null);
         <div className="player-controls" role="group" aria-label="Playback">
           <div className='player-controls-left'>
             <button
-                className={`shuffle-btn ${shuffle ? 'is-active' : ''}`}
-                onClick={() => toggleShuffle()}
-                aria-pressed={shuffle}
-                aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
-              >
-                <IconShuffle16 />
-              </button>
+              className={`shuffle-btn ${shuffle ? 'is-active' : ''}`}
+              onClick={() => toggleShuffle()}
+              aria-pressed={shuffle}
+              aria-label={shuffle ? 'Disable shuffle' : 'Enable shuffle'}
+            >
+              <IconShuffle16 />
+            </button>
             <button
               type="button"
               className="control-btn"
@@ -597,10 +594,8 @@ const lastRoomRef = useRef(null);
 
       <div className="player-right">
         <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Picture in Picture">
-          {/* <SlideshowIcon /> */}
         </button>
         <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Cast">
-          {/* <TapAndPlayIcon /> */}
         </button>
         <button
           type="button"
@@ -615,11 +610,9 @@ const lastRoomRef = useRef(null);
 
         <VolumeControl audioRef={audioRef} ytRef={ytRef} currentSong={currentSong} />
         <button type="button" style={{ backgroundColor: 'transparent' }} aria-label="Fullscreen">
-          {/* <FullscreenIcon /> */}
         </button>
       </div>
 
-      {/* Render audio only for non-YouTube tracks */}
       {!currentSong?.isYouTube && (
         <audio
           ref={audioRef}
@@ -627,21 +620,18 @@ const lastRoomRef = useRef(null);
           preload="metadata"
           onLoadedMetadata={(e) => {
             const d = e.target.duration || 0
-            console.log('✅ Audio element loaded metadata, duration:', d, 'seconds')
             if (Number.isFinite(d) && d > 0) {
               setDuration(d)
             }
           }}
           onCanPlay={(e) => {
             const d = e.target.duration || 0
-            console.log('✅ Audio can play, duration:', d, 'seconds')
             if (Number.isFinite(d) && d > 0) {
               setDuration(d)
             }
           }}
           onDurationChange={(e) => {
             const d = e.target.duration || 0
-            console.log('✅ Audio element duration changed:', d, 'seconds')
             if (Number.isFinite(d) && d > 0) {
               setDuration(d)
             }
@@ -650,18 +640,15 @@ const lastRoomRef = useRef(null);
             const t = audioRef.current?.currentTime || 0
             setCurrentTime(t)
           }}
-           onEnded={() => {
-              if (repeat === 'one') {
-                const el = audioRef.current
-                if (el) { el.currentTime = 0; el.play?.().catch(() => setPlay(false)) }
-              } else {
-                onNext()
-              }
-            }}
+          onEnded={() => {
+            if (repeat === 'one') {
+              const el = audioRef.current
+              if (el) { el.currentTime = 0; el.play?.().catch(() => setPlay(false)) }
+            } else {
+              onNext()
+            }
+          }}
           onError={(e) => {
-            console.error('❌ Audio error:', e.target.error)
-            console.error('❌ Failed URL:', currentSong?.url)
-            console.log('🔄 Trying fallback URL:', FALLBACK)
             if (currentSong?.url !== FALLBACK) {
               // Try fallback URL
               e.target.src = FALLBACK
@@ -683,14 +670,14 @@ const lastRoomRef = useRef(null);
             setDuration(Number.isFinite(d) ? d : 0)
           }}
           onTimeUpdate={(t) => setCurrentTime(Number.isFinite(t) ? t : 0)}
-         
-            onEnded={() => {
-              if (repeat === 'one') {
-                try { ytRef.current?.seekTo(0); ytRef.current?.play() } catch {}
-              } else {
-                onNext()
-              }
-            }}
+
+          onEnded={() => {
+            if (repeat === 'one') {
+              try { ytRef.current?.seekTo(0); ytRef.current?.play() } catch { }
+            } else {
+              onNext()
+            }
+          }}
 
           onPlayingChange={(playing) => {
             console.log(`🎬 YouTube playing state changed: ${playing}, current isPlaying: ${isPlaying}`)
