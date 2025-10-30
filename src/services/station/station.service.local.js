@@ -218,10 +218,15 @@ async function save(station) {
         const stationToSave = { ...station }
         savedStation = await storageService.put(STORAGE_KEY, stationToSave)
     } else {
+        const loggedinUser = userService.getLoggedinUser()
         const stationToSave = {
             ...station,
             name: station.name,
-            owner: userService.getLoggedinUser(),
+            owner: loggedinUser,
+            createdBy: {
+                _id: loggedinUser?._id || 'guest',
+                fullname: loggedinUser?.fullname || 'You'
+            },
             msgs: [],
             imgUrl: station.imgUrl || '/img/infected.jpg'
         }

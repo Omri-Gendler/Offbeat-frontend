@@ -18,15 +18,13 @@ export function StationActions({ station }) {
     shallowEqual
   )
 
-  const isAdded = station?.createdBy?.fullname === 'You'
-
   const handleToggleLibrary = () => {
     if (!station?._id) return
 
     const { added: nowAdded } = libraryService.toggle(station._id)
     setAdded(nowAdded)
 
-    if (isAdded) {
+    if (added) {
       removeStationFromLibrary(station)
     } else {
       addStationToLibrary(station)
@@ -110,7 +108,7 @@ export function StationActions({ station }) {
           data-added={added ? 'true' : 'false'}
           disabled={!station?._id}
         >
-          {isAdded ? <IconCheckCircle24 /> : <IconAddCircle24 />}
+          {added ? <IconCheckCircle24 /> : <IconAddCircle24 />}
         </button>
 
         <button type="button" className="tertiary-btn" aria-label="More options">

@@ -7,6 +7,16 @@ export function PlaylistHeader({ station, onSaveStation }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const coverHex = useSelector(s => s.appModule?.coverHex) || '#1f1f1f'
+  const loggedinUser = useSelector(s => s.userModule?.user)
+  
+  // Check if this playlist was created by the logged-in user
+  // Check both createdBy and owner fields for backwards compatibility
+  const isUserPlaylist = loggedinUser && (
+    station?.createdBy?._id === loggedinUser._id ||
+    station?.owner?._id === loggedinUser._id ||
+    station?.createdBy?.fullname === 'You'
+  )
+
   const coverUrl =
     station?.imgUrl ||
     station?.coverUrl ||
@@ -32,7 +42,7 @@ export function PlaylistHeader({ station, onSaveStation }) {
                 aria-hidden="false"
                 draggable="false"
                 loading="eager"
-                src={coverUrl || '/img/unnamed-song.png'}
+                src={coverUrl || (isUserPlaylist ? '/img/unnamed-song.png' : '/img/AppLogo.png')}
                 alt={station?.name || 'Playlist cover'}
                 className="station-cover-img"
                 sizes="(min-width: 1280px) 232px, 192px"
@@ -49,11 +59,16 @@ export function PlaylistHeader({ station, onSaveStation }) {
             </button>
             <div className="station-byline">
               <img 
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face" 
+                src={isUserPlaylist ? (loggedinUser?.imgUrl || '/img/user-avatar.png') : '/img/AppLogo.png'} 
                 alt="user avatar" 
                 style={{ width: 25, height: 25, borderRadius: '50%', objectFit: 'cover' }} 
               />
-              <a className="station-owner">{station?.createdBy?.fullname ?? 'Unknown'}</a>
+              <a className="station-owner">
+                {isUserPlaylist 
+                  ? loggedinUser?.fullname 
+                  : (station?.createdBy?.fullname || station?.owner?.fullname || 'Unknown')
+                }
+              </a>
               <span className="dot">•</span>
               <span className="station-stats">{station?.songs?.length ?? 0} songs</span>
             </div>
