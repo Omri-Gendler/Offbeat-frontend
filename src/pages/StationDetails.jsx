@@ -1,13 +1,5 @@
 // src/pages/StationDetails.jsx
 
-// --- ייבוא נוסף עבור סוקטים ו-Redux ---
-import { socketService } from '../services/socket.service.js'
-import { store } from '../store/store' // ייבוא ישיר של ה-store
-import { setPlay } from '../store/actions/player.actions' // ייבוא הפעולה setPlay
-import { PLAY_CONTEXT } from '../store/reducers/player.reducer' // ייבוא קבוע הפעולה
-import { SET_STATION } from '../store/reducers/station.reducer' // ייבוא קבוע הפעולה (ודא שהוא מיוצא מה-reducer)
-// --- סוף ייבוא נוסף ---
-
 import { computeAndSetCoverFromHex } from '../store/actions/app.actions.js'
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -21,6 +13,7 @@ import { PlaylistHeader } from '../cmps/PlaylistHeader.jsx'
 import { setCoverHex, setCoverHue } from '../store/actions/app.actions.js'
 import { addStation, loadStation, updateStation, addSongToStation } from '../store/actions/station.actions'
 import { addStationToLibrary } from '../store/actions/station.actions'
+import { joinStationRoom, leaveStationRoom } from '../store/actions/socket.actions'
 
 export function StationDetails() {
   const dispatch = useDispatch()
@@ -36,106 +29,18 @@ export function StationDetails() {
     if (stationId) loadStation(stationId)
   }, [stationId])
 
-  // --- useEffect לטיפול בסוקטים ---
+  // Join station room when viewing station details
   useEffect(() => {
-    if (!stationId) return
-
-    // הודעה לשרת שאנחנו צופים ב-station הזה
-    socketService.emit('station-join', stationId)
-    console.log(`Socket: Joining station ${stationId}`)
-
-    // הגדרת מאזין לעדכונים של פרטי ה-Station
-    const handleStationUpdate = (updatedStation) => {
-      console.log('Socket: Received station-updated event', updatedStation)
-      if (updatedStation._id === stationId) {
-        // עדכון ישיר של ה-store
-        store.dispatch({ type: SET_STATION, station: updatedStation })
+    if (stationId) {
+      console.log(`📡 StationDetails: Joining station room ${stationId}`)
+      joinStationRoom(stationId)
+      
+      return () => {
+        console.log(`📡 StationDetails: Leaving station room ${stationId}`)
+        leaveStationRoom(stationId)
       }
     }
-    socketService.on('station-updated', handleStationUpdate)
-
-
-    // --- מאזינים ל-Play/Pause ממשתמשים אחרים ---
-    const handleReceivePlay = ({ stationId: receivedStationId, songId }) => {
-      console.log('--- handleReceivePlay START ---')
-      console.log('Socket: Received station-receive-play', { receivedStationId, songId })
-      if (receivedStationId === stationId && songId) {
-        const playerState = store.getState().playerModule
-        const currentQueue = playerState.queue || []
-        const currentContextId = playerState.contextId
-        const currentContextType = playerState.contextType
-
-        console.log(`Socket: Current player context: ${currentContextType} - ${currentContextId}`)
-        console.log('Current Play Order (real indices):', currentPlayOrder)
-        if (currentContextId === stationId && currentContextType === 'station') {
-          const currentPlayOrder = playerState.playOrder || []
-          const targetIndexInPlayOrder = currentPlayOrder.findIndex(realIndex => {
-            const songInQueue = currentQueue[realIndex]
-            return songInQueue && (songInQueue.id === songId || songInQueue._id === songId)
-          })
-
-          if (targetIndexInPlayOrder !== -1) {
-            console.log(`Socket: Song ${songId} found locally at index ${targetIndexInPlayOrder}. Setting index and playing.`)
-            store.dispatch({ type: 'SET_INDEX', index: targetIndexInPlayOrder }) // Use action type constant if available
-            store.dispatch(setPlay(true))
-          } else {
-            console.warn(`Socket: Song ${songId} not found in current local playOrder. Using PLAY_CONTEXT with songId.`)
-            store.dispatch({
-              type: PLAY_CONTEXT,
-              payload: {
-                contextId: stationId,
-                contextType: 'station',
-                tracks: currentQueue,
-                trackId: songId, // Use songId
-                autoplay: true,
-                preserveCurrent: true // Try to preserve shuffle/repeat state
-              }
-            })
-          }
-        } else {
-          console.log(`Socket: Context is different or null. Using PLAY_CONTEXT with songId to set context.`)
-          const currentStationState = store.getState().stationModule.station
-          const currentSongs = currentStationState?.songs || []
-          store.dispatch({
-            type: PLAY_CONTEXT,
-            payload: {
-              contextId: stationId,
-              contextType: 'station',
-              tracks: currentSongs,
-              trackId: songId, // Use songId
-              autoplay: true
-            }
-          })
-        }
-      }
-    }
-
-    const handleReceivePause = ({ stationId: receivedStationId }) => {
-      console.log('Socket: Received station-receive-pause', { receivedStationId })
-      if (receivedStationId === stationId) {
-        store.dispatch(setPlay(false))
-      }
-    }
-
-    // הרשמה למאזינים
-    socketService.on('station-receive-play', handleReceivePlay)
-    socketService.on('station-receive-pause', handleReceivePause)
-    // --- סוף הוספת מאזינים ---
-
-
-    // Cleanup: הפסקת האזנה ועזיבת החדר
-    return () => {
-      socketService.emit('station-leave', stationId)
-      console.log(`Socket: Leaving station ${stationId}`)
-      socketService.off('station-updated', handleStationUpdate)
-      // --- הסרת מאזינים ---
-      socketService.off('station-receive-play', handleReceivePlay)
-      socketService.off('station-receive-pause', handleReceivePause)
-      // --- סוף הסרה ---
-    }
-    // התלות stationId מבטיחה שה-useEffect ירוץ מחדש רק אם ה-ID משתנה
   }, [stationId])
-  // --- סוף הוספת useEffect לסוקטים ---
 
   const songs = station?.songs ?? []
 

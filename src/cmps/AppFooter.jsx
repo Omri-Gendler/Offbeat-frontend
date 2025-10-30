@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux'
-import { MusicPlayer } from './MusicPlayer'
+import { MusicPlayer } from './MusicPlayer.jsx'
 
 export function AppFooter() {
 	const station = useSelector(storeState => storeState.stationModule.station)

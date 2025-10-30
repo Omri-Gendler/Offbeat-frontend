@@ -20,6 +20,8 @@ import { AddStationModal } from './cmps/AddStationModal.jsx'
 import { useSelector } from 'react-redux'
 import { setCoverHex } from './store/actions/app.actions'
 import { socketService } from './services/socket.service.js'
+import { userService } from './services/user'
+import { setupSocketListeners, removeSocketListeners } from './store/actions/socket.actions'
 
 
 
@@ -55,6 +57,14 @@ export function RootCmp() {
     const user = userService.getLoggedinUser()
     if (user) {
       socketService.login(user._id)
+    }
+    
+    // Setup socket listeners for station synchronization
+    setupSocketListeners()
+    
+    // Cleanup listeners on unmount
+    return () => {
+      removeSocketListeners()
     }
   }, [])
 

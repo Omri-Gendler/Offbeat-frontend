@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
-import { socketService } from '../services/socket.service.js'
 
 import {
   setIndex,
@@ -13,6 +12,13 @@ import {
 } from '../store/actions/player.actions'
 import { selectCurrentSong } from '../store/selectors/player.selectors'
 import { likeSong, unlikeSong } from '../store/actions/station.actions'
+import { 
+  joinStationRoom, 
+  leaveStationRoom, 
+  broadcastPlay, 
+  broadcastPause 
+} from '../store/actions/socket.actions'
+import { store } from '../store/store'
 import { QueueSidebar } from './QueueSidebar'
 import { VolumeControl } from './VolumeControl'
 import { IconAddCircle24, IconCheckCircle24, IconView16, IconShuffle16, IconPrev16, IconPlay16, IconNext16, IconRepeat16, IconPause16 } from './Icon'
@@ -67,22 +73,74 @@ export function MusicPlayer({ station }) {
     }
   }, [currentSong])
 
-  const emitPlay = useCallback(() => {
-    if (contextType === 'station' && contextId && currentSong) {
-      console.log(`Socket: Emitting station-send-play for ${contextId}, songId: ${currentSong.id}`)
-      socketService.emit('station-send-play', {
-        stationId: contextId,
-        songId: currentSong.id, 
-      })
+  // Join/leave station rooms when context changes
+  useEffect(() => {
+    let previousStationId = null
+    
+    return () => {
+      if (previousStationId) {
+        leaveStationRoom(previousStationId)
+      }
     }
-  }, [contextId, contextType, currentSong])
+  }, [])
+
+  useEffect(() => {
+    // Join station room if we're in a station context or if we have station prop
+    const isInStationContext = contextType === 'station' || (station && station._id)
+    const stationIdToUse = contextType === 'station' ? contextId : station?._id
+    
+    if (isInStationContext && stationIdToUse) {
+      // Add small delay to avoid conflicts with StationDetails room joining
+      const timeoutId = setTimeout(() => {
+        console.log(`🎵 MusicPlayer: Joining station room: ${stationIdToUse} (contextType: ${contextType})`)
+        joinStationRoom(stationIdToUse)
+      }, 100)
+      
+      return () => {
+        clearTimeout(timeoutId)
+        console.log(`🎵 MusicPlayer: Leaving station room: ${stationIdToUse}`)
+        leaveStationRoom(stationIdToUse)
+      }
+    }
+  }, [contextId, contextType, station?._id])
+
+  const emitPlay = useCallback(() => {
+    console.log(`🎵 EMIT PLAY CHECK: contextType=${contextType}, contextId=${contextId}, currentSong=${currentSong?.title}, isYouTube=${currentSong?.isYouTube}`)
+    
+    // Check if we're in a station context (either directly or through a station song)
+    const isInStationContext = contextType === 'station' || (station && station._id)
+    const stationIdToUse = contextType === 'station' ? contextId : station?._id
+    
+    if (isInStationContext && stationIdToUse && currentSong) {
+      // Get current playback position for sync
+      let currentPlayTime = 0
+      if (currentSong.isYouTube) {
+        currentPlayTime = ytRef.current?.getCurrentTime() || 0
+      } else {
+        currentPlayTime = audioRef.current?.currentTime || 0
+      }
+      
+      console.log(`Broadcasting play for station ${stationIdToUse}, index: ${index}, song: ${currentSong.title} ${currentSong.isYouTube ? '(YouTube)' : '(Audio)'}, time: ${currentPlayTime}s`)
+      broadcastPlay(stationIdToUse, index, currentSong, currentPlayTime)
+    } else {
+      console.log(`🎵 NOT BROADCASTING: contextType=${contextType}, stationId=${stationIdToUse}, currentSong=${!!currentSong}`)
+    }
+  }, [contextId, contextType, currentSong, index, station])
 
   const emitPause = useCallback(() => {
-    if (contextType === 'station' && contextId) {
-      console.log(`Socket: Emitting station-send-pause for ${contextId}`)
-      socketService.emit('station-send-pause', contextId)
+    console.log(`🎵 EMIT PAUSE CHECK: contextType=${contextType}, contextId=${contextId}`)
+    
+    // Check if we're in a station context (either directly or through a station song)
+    const isInStationContext = contextType === 'station' || (station && station._id)
+    const stationIdToUse = contextType === 'station' ? contextId : station?._id
+    
+    if (isInStationContext && stationIdToUse) {
+      console.log(`Broadcasting pause for station ${stationIdToUse}`)
+      broadcastPause(stationIdToUse)
+    } else {
+      console.log(`🎵 NOT BROADCASTING PAUSE: contextType=${contextType}, stationId=${stationIdToUse}`)
     }
-  }, [contextId, contextType])
+  }, [contextId, contextType, station])
 
   // Reflect store -> audio or YouTube player
   // On track change: reset and load into the appropriate player
@@ -91,10 +149,22 @@ export function MusicPlayer({ station }) {
     setCurrentTime(0)
     if (!currentSong) return
 
+    console.log(`🎵 LOADING NEW SONG: ${currentSong.title}, isPlaying: ${isPlaying}`)
+
     if (currentSong.isYouTube) {
       try {
         const id = currentSong.youtubeVideoId || currentSong.id
+        console.log('🔄 Loading YouTube video:', id)
         ytRef.current?.load(id)
+        
+        // For YouTube, start playing immediately if isPlaying is true
+        if (isPlaying) {
+          console.log('▶️ Auto-playing YouTube video after load')
+          // Small delay to ensure video is loaded
+          setTimeout(() => {
+            ytRef.current?.play()
+          }, 300)
+        }
       } catch (e) {
         console.warn('YT load failed', e)
       }
@@ -107,13 +177,65 @@ export function MusicPlayer({ station }) {
       console.log('🔄 Loading audio:', currentSong.url)
       el.pause()
       el.currentTime = 0
+      el.src = currentSong.url // Explicitly set the source
       el.load()
-      if (isPlaying) {
-        console.log('▶️ Attempting to play audio')
-        el.play().catch((error) => {
-          console.error('❌ Audio play failed:', error)
-          setPlay(false)
-        })
+      
+      // Wait for metadata to load before potentially playing
+      const onLoadedMetadata = () => {
+        const duration = el.duration
+        console.log('✅ Audio metadata loaded, duration:', duration)
+        if (Number.isFinite(duration) && duration > 0) {
+          setDuration(duration)
+        }
+        
+        if (isPlaying) {
+          console.log('▶️ Auto-playing loaded audio')
+          el.play().catch((error) => {
+            console.error('❌ Audio play failed:', error)
+            setPlay(false)
+          })
+        }
+        el.removeEventListener('loadedmetadata', onLoadedMetadata)
+      }
+      
+      const onCanPlay = () => {
+        const duration = el.duration
+        console.log('✅ Audio can play, duration:', duration)
+        if (Number.isFinite(duration) && duration > 0) {
+          setDuration(duration)
+        }
+        el.removeEventListener('canplay', onCanPlay)
+      }
+      
+      const onDurationChange = () => {
+        const duration = el.duration
+        console.log('✅ Audio duration changed:', duration)
+        if (Number.isFinite(duration) && duration > 0) {
+          setDuration(duration)
+        }
+      }
+      
+      el.addEventListener('loadedmetadata', onLoadedMetadata)
+      el.addEventListener('canplay', onCanPlay)
+      el.addEventListener('durationchange', onDurationChange)
+      
+      // Fallback: if metadata doesn't load within 2 seconds, try to play anyway
+      const timeoutId = setTimeout(() => {
+        if (isPlaying && el.paused) {
+          console.log('⚠️ Metadata timeout, attempting to play anyway')
+          el.play().catch((error) => {
+            console.error('❌ Fallback audio play failed:', error)
+            setPlay(false)
+          })
+        }
+      }, 2000)
+      
+      // Cleanup function for this song
+      return () => {
+        clearTimeout(timeoutId)
+        el.removeEventListener('loadedmetadata', onLoadedMetadata)
+        el.removeEventListener('canplay', onCanPlay)
+        el.removeEventListener('durationchange', onDurationChange)
       }
     }
   }, [currentSong?.id])
@@ -121,21 +243,56 @@ export function MusicPlayer({ station }) {
   // Sync play/pause to active player
   useEffect(() => {
     if (!currentSong) return
+    
+    console.log(`🎵 SYNC PLAYER: isPlaying=${isPlaying}, song=${currentSong.title}, isYouTube=${currentSong.isYouTube}`)
+    
     if (currentSong.isYouTube) {
       try {
         if (isPlaying) {
+          console.log(`▶️ Playing YouTube video: ${currentSong.youtubeVideoId || currentSong.id}`)
           ytRef.current?.play()
         } else {
+          console.log(`⏸️ Pausing YouTube video: ${currentSong.youtubeVideoId || currentSong.id}`)
           ytRef.current?.pause()
         }
-      } catch (e) { console.warn('YT play/pause error', e) }
+      } catch (e) { 
+        console.warn('YT play/pause error', e) 
+      }
     } else {
       const el = audioRef.current
       if (!el) return
-      if (isPlaying && currentSong) el.play().catch(() => setPlay(false))
-      else el.pause()
+      if (isPlaying && currentSong) {
+        console.log(`▶️ Playing audio: ${currentSong.url}`)
+        el.play().catch(() => setPlay(false))
+      } else {
+        console.log(`⏸️ Pausing audio: ${currentSong.url}`)
+        el.pause()
+      }
     }
   }, [isPlaying, currentSong?.id])
+
+  // Broadcast play/pause changes to other users with debouncing
+  useEffect(() => {
+    if (!currentSong) {
+      console.log(`🎵 BROADCAST: No current song, skipping broadcast`)
+      return
+    }
+    
+    console.log(`🎵 BROADCAST: Song changed or play state changed - isPlaying: ${isPlaying}, song: ${currentSong.title}`)
+    
+    // Add a small delay to debounce rapid state changes
+    const timeoutId = setTimeout(() => {
+      if (isPlaying) {
+        console.log(`🎵 BROADCAST: Calling emitPlay`)
+        emitPlay()
+      } else {
+        console.log(`🎵 BROADCAST: Calling emitPause`)
+        emitPause()
+      }
+    }, 50) // 50ms debounce
+    
+    return () => clearTimeout(timeoutId)
+  }, [isPlaying, currentSong?.id, emitPlay, emitPause])
 
   // Keep CSS progress bar in sync
   useEffect(() => {
@@ -168,6 +325,43 @@ export function MusicPlayer({ station }) {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [currentSong, isPlaying])
+
+  // Socket sync seek events
+  useEffect(() => {
+    const handleSeekYouTube = (e) => {
+      const { time } = e.detail
+      console.log(`🎯 Received seekYouTube event: ${time}s`)
+      if (currentSong?.isYouTube && ytRef.current) {
+        try {
+          ytRef.current.seekTo(time)
+          setCurrentTime(time)
+        } catch (error) {
+          console.error('YouTube seek error:', error)
+        }
+      }
+    }
+
+    const handleSeekAudio = (e) => {
+      const { time } = e.detail
+      console.log(`🎯 Received seekAudio event: ${time}s`)
+      if (!currentSong?.isYouTube && audioRef.current) {
+        try {
+          audioRef.current.currentTime = time
+          setCurrentTime(time)
+        } catch (error) {
+          console.error('Audio seek error:', error)
+        }
+      }
+    }
+
+    window.addEventListener('seekYouTube', handleSeekYouTube)
+    window.addEventListener('seekAudio', handleSeekAudio)
+    
+    return () => {
+      window.removeEventListener('seekYouTube', handleSeekYouTube)
+      window.removeEventListener('seekAudio', handleSeekAudio)
+    }
+  }, [currentSong])
 
   // Media Session API (hardware keys / OS controls)
   useEffect(() => {
@@ -202,22 +396,24 @@ export function MusicPlayer({ station }) {
   }, [currentSong?.id, station?.name, duration])
 
   const handleTogglePlay = useCallback(() => {
-    const nextIsPlaying = !isPlaying
     if (!currentSong && queue.length > 0) {
       setIndex(0)
       setPlay(true)
     } else {
       togglePlay()
-      if (nextIsPlaying && currentSong) {
-        emitPlay()
-      } else {
-        emitPause()
-      }
     }
-  }, [currentSong, queue.length, isPlaying, emitPlay, emitPause])
+    // Note: Socket broadcasting is now handled by useEffect watching isPlaying changes
+  }, [currentSong, queue.length])
 
-  const onNext = useCallback(() => nextTrack(), [])
-  const onPrev = useCallback(() => prevTrack(), [])
+  const onNext = useCallback(() => {
+    nextTrack()
+    // Note: Socket broadcasting is now handled by useEffect watching isPlaying/currentSong changes
+  }, [])
+  
+  const onPrev = useCallback(() => {
+    prevTrack()
+    // Note: Socket broadcasting is now handled by useEffect watching isPlaying/currentSong changes  
+  }, [])
 
   const seekBy = useCallback((delta) => {
     if (!currentSong) return
@@ -421,14 +617,26 @@ export function MusicPlayer({ station }) {
           ref={audioRef}
           src={currentSong?.url || FALLBACK}
           preload="metadata"
-          onLoadedMetadata={() => {
-            const d = audioRef.current?.duration || 0
-            console.log('✅ Audio loaded, duration:', d, 'seconds')
-            setDuration(Number.isFinite(d) ? d : 0)
-            if (isPlaying) audioRef.current?.play().catch((error) => {
-              console.error('❌ Auto-play failed:', error)
-              setPlay(false)
-            })
+          onLoadedMetadata={(e) => {
+            const d = e.target.duration || 0
+            console.log('✅ Audio element loaded metadata, duration:', d, 'seconds')
+            if (Number.isFinite(d) && d > 0) {
+              setDuration(d)
+            }
+          }}
+          onCanPlay={(e) => {
+            const d = e.target.duration || 0
+            console.log('✅ Audio can play, duration:', d, 'seconds')
+            if (Number.isFinite(d) && d > 0) {
+              setDuration(d)
+            }
+          }}
+          onDurationChange={(e) => {
+            const d = e.target.duration || 0
+            console.log('✅ Audio element duration changed:', d, 'seconds')
+            if (Number.isFinite(d) && d > 0) {
+              setDuration(d)
+            }
           }}
           onTimeUpdate={() => {
             const t = audioRef.current?.currentTime || 0
@@ -450,9 +658,6 @@ export function MusicPlayer({ station }) {
               // Try fallback URL
               e.target.src = FALLBACK
             }
-          }}
-          onCanPlay={() => {
-            console.log('✅ Audio can play')
           }}
           onLoadStart={() => {
             console.log('🔄 Audio load started for:', currentSong?.url)
@@ -480,7 +685,10 @@ export function MusicPlayer({ station }) {
           }}
 
           onPlayingChange={(playing) => {
+            console.log(`🎬 YouTube playing state changed: ${playing}, current isPlaying: ${isPlaying}`)
+            // Only update state if it's different and not from a socket event
             if (playing !== isPlaying) {
+              console.log(`🎬 Updating isPlaying state to: ${playing}`)
               setPlay(playing)
             }
           }}

@@ -27,6 +27,16 @@ function createSocketService() {
 
             socket.on('connect', () => {
                 console.log('Successfully connected to socket server')
+                console.log('Socket ID:', socket.id)
+            })
+
+            socket.on('disconnect', (reason) => {
+                console.log('Socket disconnected:', reason)
+            })
+
+            // Add debugging for all socket events
+            socket.onAny((eventName, ...args) => {
+                console.log(`🔍 SOCKET EVENT RECEIVED: ${eventName}`, args)
             })
         },
         on(eventName, cb) {
@@ -48,6 +58,50 @@ function createSocketService() {
         },
         logout() {
             this.emit('unset-user-socket')
+        },
+        joinStation(stationId) {
+            if (!stationId) return
+            console.log(`Joining station room: ${stationId}`)
+            this.emit('station-join', stationId)
+        },
+        leaveStation(stationId) {
+            if (!stationId) return
+            console.log(`Leaving station room: ${stationId}`)
+            this.emit('station-leave', stationId)
+        },
+        sendPlay(stationId, index, song, currentTime = 0) {
+            console.log(`Sending play event for station ${stationId}, index ${index}, currentTime=${currentTime}`)
+            this.emit('station-send-play', { 
+                stationId, 
+                index, 
+                song,
+                currentTime, // Add current playback position
+                timestamp: Date.now() // Add timestamp for sync
+            })
+        },
+        sendPause(stationId) {
+            console.log(`Sending pause event for station ${stationId}`)
+            this.emit('station-send-pause', { 
+                stationId,
+                timestamp: Date.now() // Add timestamp for sync
+            })
+        },
+        isConnected() {
+            return socket && socket.connected
+        },
+        getSocketId() {
+            return socket ? socket.id : null
+        },
+        testConnection() {
+            if (!socket) {
+                console.log('❌ Socket not initialized')
+                return
+            }
+            console.log('🔍 Socket status:', {
+                connected: socket.connected,
+                id: socket.id,
+                transport: socket.io.engine.transport.name
+            })
         },
         terminate() {
             socket = null
