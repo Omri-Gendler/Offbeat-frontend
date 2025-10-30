@@ -247,9 +247,7 @@ const handleRowPlay = (song) => {
                 onToggleLike={handleToggleLike}
                 onSelectRow={handleSelectRow}
                 selectedId={selectedId}
-                onToggleLike={handleToggleLike}
-                onSelectRow={handleSelectRow}
-                selectedId={selectedId}
+
               />
             ) : (
               <SongRow
@@ -263,9 +261,7 @@ const handleRowPlay = (song) => {
                 onToggleLike={handleToggleLike}
                 onSelectRow={handleSelectRow}
                 selectedId={selectedId}
-                onToggleLike={handleToggleLike}
-                onSelectRow={handleSelectRow}
-                selectedId={selectedId}
+
               />
             )
           )}

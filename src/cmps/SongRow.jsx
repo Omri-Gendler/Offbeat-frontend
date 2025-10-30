@@ -74,7 +74,7 @@ export function SongRowBase({
   const kebabRef = useRef(null)
   const firstMenuBtnRef = useRef(null)
 
-  const isPicker = variant === 'picker'
+
 
   const isPicker = variant === 'picker'
   const showStationActions = !isPicker && !isLikedSongs
@@ -85,14 +85,6 @@ export function SongRowBase({
     state => (song?.id ? selectIsSongLiked(state, song.id) : false)
   )
 
-  // keep ARIA col indexes accurate (4 for picker, 5 for station)
-  const colIdx = useMemo(() => ({
-    index: 1,
-    title: 2,
-    album: 3,
-    added: 4,
-    actions: isPicker ? 4 : 5,
-  }), [isPicker])
 
   // keep ARIA col indexes accurate (4 for picker, 5 for station)
   const colIdx = useMemo(() => ({
@@ -114,7 +106,7 @@ export function SongRowBase({
     if (isMenuOpen) firstMenuBtnRef.current?.focus()
   }, [isMenuOpen])
 
-  const openMenuNearKebab = useCallback(() => {
+
   const openMenuNearKebab = useCallback(() => {
     const btn = kebabRef.current
     if (!btn) return
@@ -132,9 +124,8 @@ export function SongRowBase({
     })
     setMenuOpen(true)
   }, [])
-  }, [])
 
-  const handleToggleLike = useCallback(async (e) => {
+
   const handleToggleLike = useCallback(async (e) => {
     e.stopPropagation()
     if (!song?.id) return
@@ -146,7 +137,7 @@ export function SongRowBase({
       console.error('toggle like failed', err)
     }
   }, [song, isLiked, onToggleLike])
-  }, [song, isLiked, onToggleLike])
+
 
   const durationEl = (
     <div className="duration-text">
@@ -156,13 +147,7 @@ export function SongRowBase({
 
   return (
     <li
-      className={[
-        'row',
-        isPicker ? 'row--picker' : '',
-        isActive ? 'is-active' : '',
-        isPlaying && isActive ? 'is-playing' : '',
-        selectedId && selectedId === song?.id ? 'is-selected' : '',
-      ].filter(Boolean).join(' ')}
+
       className={[
         'row',
         isPicker ? 'row--picker' : '',
@@ -173,19 +158,16 @@ export function SongRowBase({
       role="row"
       aria-rowindex={idx + 2}
       onClick={() => onSelectRow?.(song)}
-      onClick={() => onSelectRow?.(song)}
+
     >
       <div className="song-list-row">
-        {/* index / play */}
         <div className="cell index flex" role="gridcell" aria-colindex={colIdx.index}>
-        <div className="cell index flex" role="gridcell" aria-colindex={colIdx.index}>
+
           <div className="index-inner">
             <button
               type="button"
               className={`play-btn ${isActive ? 'is-active' : ''}`}
               aria-pressed={pressed}
-              aria-label={pressed ? `Pause ${song?.title || ''}` : `Play ${song?.title || ''}`}
-              onClick={(e) => { e.stopPropagation(); onPlayToggle?.(song) }}
               aria-label={pressed ? `Pause ${song?.title || ''}` : `Play ${song?.title || ''}`}
               onClick={(e) => { e.stopPropagation(); onPlayToggle?.(song) }}
               tabIndex={-1}
@@ -207,8 +189,6 @@ export function SongRowBase({
         {/* title */}
         <div className="cell title container flex" role="gridcell" aria-colindex={colIdx.title}>
           {song?.imgUrl && (
-        <div className="cell title container flex" role="gridcell" aria-colindex={colIdx.title}>
-          {song?.imgUrl && (
             <img className="thumb" src={song.imgUrl} alt="" width={40} height={40} draggable={false} loading="eager" />
           )}
           <div className="song-meta">
@@ -217,19 +197,18 @@ export function SongRowBase({
               <div className={`title ${isActive ? 'title--playing' : ''}`}>{song?.title || '—'}</div>
             </a>
             {!!song?.artists && (
-            {!!song?.artists && (
+
               <div className="artists standalone-ellipsis-one-line">
                 <a draggable="true" tabIndex={-1}>{song.artists}</a>
                 {showGenre && song?.genre && <span className="genre-tag">• {song.genre}</span>}
-                {showGenre && song?.genre && <span className="genre-tag">• {song.genre}</span>}
+
               </div>
             )}
           </div>
         </div>
 
         {/* album */}
-        <div className="cell album" role="gridcell" aria-colindex={colIdx.album}>
-          {song?.album ? (
+
         <div className="cell album" role="gridcell" aria-colindex={colIdx.album}>
           {song?.album ? (
             <a className="standalone-ellipsis-one-line" tabIndex={-1}>{song.album}</a>
@@ -240,17 +219,16 @@ export function SongRowBase({
 
         {/* date added */}
         <div className="cell added" role="gridcell" aria-colindex={colIdx.added} aria-hidden={isPicker}>
-        <div className="cell added" role="gridcell" aria-colindex={colIdx.added} aria-hidden={isPicker}>
+
           {!isPicker && (
             <span className="subdued standalone-ellipsis-one-line">
               {formatAdded(song?.addedAt)}
-              {formatAdded(song?.addedAt)}
+
             </span>
           )}
         </div>
 
-        {/* actions & duration */}
-        <div className="cell actions" role="gridcell" aria-colindex={colIdx.actions} aria-label="Actions">
+
         {/* actions & duration */}
         <div className="cell actions" role="gridcell" aria-colindex={colIdx.actions} aria-label="Actions">
           {isPicker ? (
@@ -260,7 +238,7 @@ export function SongRowBase({
               onClick={(e) => { e.stopPropagation(); onAdd?.(song) }}
               tabIndex={-1}
             >
-              <span>Add</span>
+
               <span>Add</span>
             </button>
           ) : (
@@ -285,7 +263,6 @@ export function SongRowBase({
                 className="more-btn"
                 aria-haspopup="menu"
                 aria-expanded={isMenuOpen}
-                aria-label={`More options for ${song?.title || ''}${song?.artists ? ` by ${song.artists}` : ''}`}
                 aria-label={`More options for ${song?.title || ''}${song?.artists ? ` by ${song.artists}` : ''}`}
                 onClick={(e) => { e.stopPropagation(); openMenuNearKebab() }}
                 tabIndex={-1}
@@ -336,8 +313,6 @@ export const SongRow = React.memo(SongRowBase, (prev, next) =>
   prev.isPlaying === next.isPlaying &&
   prev.variant === next.variant &&
   prev.isInStation === next.isInStation &&
-  prev.isLikedSongs === next.isLikedSongs &&
-  prev.selectedId === next.selectedId
   prev.isLikedSongs === next.isLikedSongs &&
   prev.selectedId === next.selectedId
 )
