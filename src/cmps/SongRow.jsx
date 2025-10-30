@@ -10,6 +10,7 @@ import {
   Equalizer,
 } from './Icon.jsx'
 import { selectIsSongLiked } from '../store/selectors/player.selectors'
+import { LikeButtonWithFireworks } from './LikeButtonWithFireworks.jsx'
 
 function formatDuration(ms) {
   if (typeof ms !== 'number' || !Number.isFinite(ms)) return ''
@@ -227,15 +228,13 @@ export function SongRowBase({
             )
           ) : (
             <>
-              <button
+              <LikeButtonWithFireworks
+                isLiked={isLiked}
+                onToggleLike={handleToggleLike}
                 className="tertiary-btn add-btn"
-                aria-label={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
-                aria-pressed={isLiked}
-                onClick={handleToggleLike}
+                ariaLabel={isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs'}
                 tabIndex={-1}
-              >
-                {isLiked ? <IconCheckCircle24 /> : <IconAddCircle24 />}
-              </button>
+              />
 
               {/* Duration BEFORE kebab */}
               {durationEl}

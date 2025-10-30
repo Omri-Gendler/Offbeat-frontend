@@ -25,6 +25,42 @@
             width: 16px;
             margin-left: 10px;
         }
+        
+        /* Like Button Animations */
+        .tertiary-btn {
+            position: relative;
+            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: visible;
+            
+            .like-icon {
+                transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+            
+            &:hover {
+                transform: scale(1.1);
+                
+                .like-icon {
+                    filter: brightness(1.2);
+                }
+            }
+            
+            &:active {
+                transform: scale(0.9);
+            }
+            
+            &.liked {
+                .like-icon {
+                    color: #1ed760;
+                    fill: #1ed760;
+                }
+            }
+            
+            &.like-animating {
+                .like-icon {
+                    animation: likeHeartBeat 0.6s ease-out;
+                }
+            }
+        }
     }
 
     .player-center {
@@ -415,5 +451,109 @@
         .player-center .progress-bar-container {
             display: flex; /* Show in landscape */
         }
+    }
+}
+
+/* Like Button & Fireworks Animations */
+@keyframes likeHeartBeat {
+    0% {
+        transform: scale(1);
+    }
+    15% {
+        transform: scale(1.3) rotate(-5deg);
+    }
+    30% {
+        transform: scale(0.9) rotate(5deg);
+    }
+    45% {
+        transform: scale(1.2) rotate(-2deg);
+    }
+    60% {
+        transform: scale(1.05) rotate(1deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes fireworkExplosion {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2) rotate(180deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes sparkleFloat {
+    0% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-20px) scale(1.1) rotate(180deg);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(-40px) scale(0) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Firework particles */
+.firework-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    border-radius: 50%;
+    animation: fireworkExplosion 1s ease-out forwards;
+}
+
+.fireworks-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    
+    &.active {
+        &::before {
+            content: '💖';
+            position: absolute;
+            font-size: 24px;
+            animation: sparkleFloat 1s ease-out;
+            z-index: 10000;
+        }
+        
+        &::after {
+            content: '✨';
+            position: absolute;
+            font-size: 16px;
+            animation: sparkleFloat 1.2s ease-out 0.1s;
+            z-index: 10000;
+        }
+    }
+}
+
+/* Enhanced mobile animations */
+@media (max-width: 768px) {
+    .tertiary-btn.like-animating {
+        transform: scale(1.15);
+        
+        .like-icon {
+            animation: likeHeartBeat 0.8s ease-out;
+        }
+    }
+    
+    .firework-particle {
+        animation-duration: 1.2s;
     }
 }

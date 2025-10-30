@@ -1,5 +1,6 @@
 import DeleteIcon from '@mui/icons-material/Delete'
 import { PlayPauseButton } from '../cmps/PlayPauseButton.jsx'
+import { LikeButtonWithFireworks } from '../cmps/LikeButtonWithFireworks.jsx'
 import { IconMoreHorizontal24, IconAddCircle24, IconCheckCircle24 } from '../cmps/Icon.jsx'
 import { useNavigate } from 'react-router'
 import { useEffect, useState } from 'react'
@@ -99,17 +100,15 @@ export function StationActions({ station }) {
           disabled={!stationSongs.length}
         />
 
-        <button
-          type="button"
-          className="tertiary-btn"
-          onClick={handleToggleLibrary}
-          aria-pressed={added}
-          aria-label={added ? 'Added to your library' : 'Add to your library'}
-          data-added={added ? 'true' : 'false'}
+        <LikeButtonWithFireworks
+          isLiked={added}
+          onToggleLike={handleToggleLibrary}
+          className="tertiary-btn library-btn"
+          ariaLabel={added ? 'Added to your library' : 'Add to your library'}
           disabled={!station?._id}
-        >
-          {added ? <IconCheckCircle24 /> : <IconAddCircle24 />}
-        </button>
+          likedIcon={<IconCheckCircle24 />}
+          unlikedIcon={<IconAddCircle24 />}
+        />
 
         <button type="button" className="tertiary-btn" aria-label="More options">
           <IconMoreHorizontal24 className="icon" />

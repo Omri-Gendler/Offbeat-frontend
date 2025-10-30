@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { useSelector, shallowEqual } from 'react-redux'
 
-
+import { LikeButtonWithFireworks } from './LikeButtonWithFireworks.jsx'
 
 import {
   setIndex,
@@ -506,16 +506,13 @@ export function MusicPlayer({ station }) {
             {currentSong?.artists || ''}
           </span>
         </div>
-        <button
-          type="button"
+        <LikeButtonWithFireworks
+          isLiked={isLiked}
+          onToggleLike={onAddToLibrary}
           className="tertiary-btn"
-          aria-label={isLiked ? 'In Your Library' : 'Add to Your Library'}
-          aria-pressed={isLiked}
-          onClick={onAddToLibrary}
+          ariaLabel={isLiked ? 'In Your Library' : 'Add to Your Library'}
           disabled={!currentSong}
-        >
-          {isLiked ? <IconCheckCircle24 className="icon" /> : <IconAddCircle24 className="icon" />}
-        </button>
+        />
       </div>
       <div className="player-center">
         <div className="player-controls" role="group" aria-label="Playback">
