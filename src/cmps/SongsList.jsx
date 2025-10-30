@@ -3,7 +3,7 @@ import { playContext, togglePlay } from '../store/actions/player.actions'
 import { addSongToStation, likeSong, unlikeSong } from '../store/actions/station.actions'
 import { SongRow } from './SongRow.jsx'
 import { selectCurrentSong, selectIsPlaying } from '../store/selectors/player.selectors'
-import { DurationIcon, IconChevronDown16 } from './Icon.jsx'
+import { DurationIcon, IconCheckmark16, IconChevronDown16 } from './Icon.jsx'
 import { useMemo, useState } from 'react'
 
 function normalize(str = '') {
@@ -218,8 +218,8 @@ export function SongsList({
                   <div className="duration-container title-container flex" role="columnheader" aria-colindex={5} tabIndex={-1}>
                     <div data-testid="column-header-context-menu">
                       <div className="column-header-item duration flex" aria-label="Duration">
-                        <span><DurationIcon className="clock-svg" /></span>
-                        <span className="header-item"><IconChevronDown16 className="chevron-svg" /></span>
+                        <span><DurationIcon className='clock-svg'/></span>
+                        <span className="header-item "><IconChevronDown16 className="chevron-svg"/></span>
                       </div>
                     </div>
                   </div>

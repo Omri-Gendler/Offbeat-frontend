@@ -56,8 +56,6 @@ export function PlaylistHeader({ station, onSaveStation }) {
               <a className="station-owner">{station?.createdBy?.fullname ?? 'Unknown'}</a>
               <span className="dot">•</span>
               <span className="station-stats">{station?.songs?.length ?? 0} songs</span>
-              <span className="dot">•</span>
-              <span className="station-total">{station?.length ?? '—'}</span>
             </div>
           </div>
 

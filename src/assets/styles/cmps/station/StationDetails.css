@@ -43,27 +43,7 @@
   z-index: 0;
 }
 
-.content-spacing-container {
-   border-top: 0px solid  #3d3c3c15 ;
-  padding-top: 0px;
-  background-color: rgba(0, 0, 0, 0.683);
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(74, 74, 74, 0.425) 0%,
-      rgba(74, 74, 74, 0.425) 0%,
-      color-mix(in srgb, var(--cover-color) 1%, transparent 20%) 20px,
-      #000000 20%,
-      #000000 20%,
-      #202020 100%
-    );
 
-  /* key bits */
-  background-attachment: scroll;   /* attached to the element (not viewport) */
-  background-repeat: no-repeat;
-  background-position: top left;
-  background-size: 100% 100%;      /* fill the element, not 100vh */
-}
 
 .content-spacing-container{
   padding: none ;
@@ -206,7 +186,7 @@
 
 .station-details .station-type {
   display: flex;
-  font-weight: 400;
+  font-weight: 300;
   color: var(--clr4);
   font-family: var(--encore-body-font-stack);
   font-size: var(--encore-text-size-smaller);
@@ -228,6 +208,7 @@
     overflow: hidden;
 
     word-break: normal;
+    text-overflow: ellipsis;
     margin: 0;
     padding: 0;
   }
@@ -527,15 +508,17 @@
 }
 
 .duration {
-  & svg {
+  .clock-svg {
     fill: #b3b3b3;
   }
+  justify-items: space-between;
+  gap: 20px;
 }
 
 .duration-container {
 
   justify-content: flex-end;
-  margin-inline-end: 22px;
+  
 }
 
 .index {
@@ -555,13 +538,13 @@
 .index-inner {
   display: flex;
   align-items: center;
-  gap: 8px;
+ 
 }
 
 .index-number {
   width: 16px;
   display: flex;
-  text-align: right;
+  text-align: left;
   transition: opacity 120ms ease;
 
 }
@@ -614,13 +597,17 @@
 }
 
 .duration-text{
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .cell.duration svg {
   width: 16px;
   height: 16px;
   fill: var(--clr4);
+}
+
+.column-header-item.duration{
+
 }
 
 .cell.button {
@@ -638,8 +625,10 @@
 
 }
 
-.cell.duration {
-  justify-content: flex-end;
+.cell.actions {
+  justify-content: space-between;
+  gap: 20px;
+
 }
 
 .song-row:hover {
@@ -648,7 +637,7 @@
 
 .cell.album{
   display: flex;
-  font-size: 20px;
+  font-size: 18px;
   align-items: center;
 
 }
@@ -795,7 +784,7 @@
 
 .picker-panel .song-list--picker .song-item--picker { padding: 8px 10px; border-radius: 8px; }
 .picker-panel .song-list--picker .meta .title { font-weight: 600; }
-.picker-panel .song-list--picker .meta .sub { opacity: .7; font-size: .9rem; }
+.picker-panel .song-list--picker .meta .sub { opacity: .7; font-size: 16px; }
 .row--picker .btn-icon.add-btn { transform: none; }
 .row--picker:hover { background-color: grey; }
 
@@ -885,7 +874,7 @@ button.find-more-btn {
  display: flex;
  justify-self: flex-end;
       font-family: var(--encore-body-font-stack);
-    font-size: var(--encore-text-size-smaller);
+    font-size: var16px;
     margin-inline-end: 0;
   background-color:transparent;
   :hover{
@@ -920,7 +909,7 @@ button.find-more-btn {
 
     & span{
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 400;
       color: var(--clr4);
     }
     &:hover{
