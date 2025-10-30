@@ -61,6 +61,11 @@ export function SongsList({
   const playingId = nowPlaying?.id ?? null
   const isPicker = rowVariant === 'picker'
 
+  const existingIdsSet = useMemo(
+    () => (existingIds instanceof Set ? existingIds : new Set(existingIds || [])),
+    [existingIds]
+  )
+
   // Normalize incoming list source (support { songs } for external results)
   const baseSongs = useMemo(() => {
     if (songsOverride) return songsOverride
