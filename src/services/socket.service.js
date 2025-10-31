@@ -2,7 +2,7 @@ import io from 'socket.io-client'
 import { userService } from './user'
 
 const SOCKET_URL = process.env.NODE_ENV === 'production'
-    ? '/'
+    ? import.meta.env.VITE_BACKEND_URL?.replace('/api/', '') || 'https://your-backend-name.onrender.com'
     : '//localhost:3030'
 
 export const socketService = createSocketService()

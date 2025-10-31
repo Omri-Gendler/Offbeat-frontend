@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 const BASE_URL = process.env.NODE_ENV === 'production'
-    ? '/api/'
+    ? import.meta.env.VITE_BACKEND_URL || 'https://your-backend-name.onrender.com/api/'
     : '//localhost:3030/api/'
 
 
