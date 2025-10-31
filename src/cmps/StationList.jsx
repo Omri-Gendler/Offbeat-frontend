@@ -119,7 +119,7 @@ export function StationList({ stations, onRemoveStation, onUpdateStation, varian
         onKeyDown={onKeyOpen}
       >
         <StationPreview station={station} />
-        <PlayButton active={active} onClick={onPlayClick} />
+     
       </li>
     )
   }

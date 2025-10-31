@@ -27,9 +27,22 @@ export function SearchResultSongRow({ song, mapIndex, isThisSongPlaying, handleP
             className={`song-row-youtube ${isThisSongPlaying ? 'active' : ''}`}
             onClick={() => handlePlayPauseClick(song, mapIndex + 1)}
         >
-            <div className="col-index">
-                <div className="track-number">
-                    {/* <span className="number">{mapIndex + 2}</span> */}
+
+
+            <div className="col-title">
+                <div className="track-info">
+                    {song.imgUrl && (
+                        <div className="top-result-image-container">    
+                        <img src={song.imgUrl} alt={song.title} className="track-image" />
+                        </div>
+                    )}
+                    <div className="track-details">
+                        <div className={`track-name ${isThisSongPlaying ? 'playing' : ''}`}>
+                            {song.title}
+                        </div>
+                        <div className="track-artist">{song.artists}</div>
+                    </div>
+                </div>
                     <div className="play-pause-btn">
                         <PlayPauseButton
                             isPlaying={isThisSongPlaying}
@@ -39,30 +52,9 @@ export function SearchResultSongRow({ song, mapIndex, isThisSongPlaying, handleP
                             }}
                         />
                     </div>
-                </div>
             </div>
 
-            <div className="col-title">
-                <div className="track-info">
-                    {song.imgUrl && (
-                        <img src={song.imgUrl} alt={song.title} className="track-image" />
-                    )}
-                    <div className="track-details">
-                        <div className={`track-name ${isThisSongPlaying ? 'playing' : ''}`}>
-                            {song.title}
-                        </div>
-                        <div className="track-artist">{song.artists}</div>
-                    </div>
-                </div>
-            </div>
 
-            <div className="col-album">
-                {/* <span className="album-name">{song.album || 'YouTube'}</span> */}
-            </div>
-
-            <div className="col-date">
-                {/* <span className="date-added">Today</span> */}
-            </div>
 
             <div className="col-duration">
                 <div className="duration-actions">

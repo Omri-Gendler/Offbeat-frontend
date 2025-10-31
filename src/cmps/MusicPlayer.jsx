@@ -58,14 +58,16 @@ export function MusicPlayer({ station }) {
     state => (currentSong?.id ? selectIsSongLiked(state, currentSong.id) : false)
   )
 
-  // Debug logging for liked state in MusicPlayer
-  if (currentSong?.title?.includes('Blinding Lights')) {
-    console.log(`🎵 MusicPlayer Liked State Debug [${currentSong?.title}]:`, {
-      songId: currentSong?.id,
-      isLiked,
-      likedSongsCount: useSelector(state => state.userModule?.likedSongs?.length || 0)
-    })
-  }
+const likedSongsCount = useSelector(s => s.userModule?.likedSongs?.length || 0)
+
+// …later, only the console.log is conditional
+if (currentSong?.title?.includes('Blinding Lights')) {
+  console.log(`🎵 MusicPlayer Liked State Debug [${currentSong?.title}]:`, {
+    songId: currentSong?.id,
+    isLiked,
+    likedSongsCount,
+  })
+}
 
   const audioRef = useRef(null)
   const ytRef = useRef(null)
@@ -485,8 +487,9 @@ export function MusicPlayer({ station }) {
   }, [currentSong, isLiked])
 
   const canControl = !!currentSong
-  const canGoPrev = canControl && index > 0
-  const canGoNext = canControl && index < (playOrder?.length || 0) - 1
+const canGoPrev = canControl && (index > 0 || repeat === 'all')
+const canGoNext = canControl && (index < (playOrder?.length || 0) - 1 || repeat === 'all')
+
 
   return (
     <div className="music-player" role="region" aria-label="Player controls">
