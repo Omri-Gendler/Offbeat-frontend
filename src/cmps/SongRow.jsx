@@ -81,8 +81,8 @@ export function SongRowBase({
 
   // keep ARIA col indexes accurate (4 for picker, 5 for station)
   const colIdx = useMemo(() => ({
-    index: 1,
-    title: 2,
+    index: !isPicker ? 1 : null,
+    title: isPicker ? 1: 2,
     album: 3,
     added: 4,
     actions: isPicker ? 4 : 5,
@@ -150,6 +150,7 @@ export function SongRowBase({
     >
       <div className="song-list-row">
         {/* index / play */}
+        {!isPicker && (
         <div className="cell index flex" role="gridcell" aria-colindex={colIdx.index}>
           <div className="index-inner">
             <button
@@ -172,11 +173,26 @@ export function SongRowBase({
             )}
           </div>
         </div>
+        )}
+         {isPicker && (
+                        <button
+              type="button"
+              className={`play-btn ${isActive ? 'is-active' : ''}`}
+              aria-pressed={pressed}
+              aria-label={pressed ? `Pause ${song?.title || ''}` : `Play ${song?.title || ''}`}
+              onClick={(e) => { e.stopPropagation(); onPlayToggle?.(song) }}
+              tabIndex={-1}
+            >
+              {pressed ? <IconPause24 className="song-pause-icon" /> : <IconPlay24 />}
+            </button>
+          )}
 
         {/* title */}
         <div className="cell title container flex" role="gridcell" aria-colindex={colIdx.title}>
           {song?.imgUrl && (
+            <div className="img-container">
             <img className="thumb" src={song.imgUrl} alt="" width={40} height={40} draggable={false} loading="eager" />
+            </div>
           )}
           <div className="song-meta">
             <a className="track-link standalone-ellipsis-one-line" tabIndex={-1}>
@@ -189,6 +205,7 @@ export function SongRowBase({
               </div>
             )}
           </div>
+
         </div>
 
         {/* album */}
