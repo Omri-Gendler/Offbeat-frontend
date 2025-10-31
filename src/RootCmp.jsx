@@ -53,20 +53,20 @@ export function RootCmp() {
   //   }
   // }, [])
 
-  useEffect(() => {
-    const user = userService.getLoggedinUser()
-    if (user) {
-      socketService.login(user._id)
-    }
+  // useEffect(() => {
+  //   const user = userService.getLoggedinUser()
+  //   if (user) {
+  //     socketService.login(user._id)
+  //   }
     
-    // Setup socket listeners for station synchronization
-    setupSocketListeners()
+  //   // Setup socket listeners for station synchronization
+  //   setupSocketListeners()
     
-    // Cleanup listeners on unmount
-    return () => {
-      removeSocketListeners()
-    }
-  }, [])
+  //   // Cleanup listeners on unmount
+  //   return () => {
+  //     removeSocketListeners()
+  //   }
+  // }, [])
 
   useEffect(() => {
     var authParameters = {

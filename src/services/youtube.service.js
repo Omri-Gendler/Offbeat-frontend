@@ -493,7 +493,7 @@ function detectAlbum(title, description, channelTitle) {
         return 'Single'
     }
 
-    return 'YouTube'
+    return ''
 }
 
 function detectGenre(title, description, channelTitle) {
