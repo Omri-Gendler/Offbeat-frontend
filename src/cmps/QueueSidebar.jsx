@@ -16,7 +16,7 @@ export function QueueSidebar({ stations, onClose }) {
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                     <header className="modal-header">
                         <h2>Queue</h2>
-                        <button className="close-btn" onClick={onClose}>&times;</button>
+                        <button className="close-btn-queue" onClick={onClose}>&times;</button>
                     </header>
                     <p>Empty</p>
                 </div>
@@ -30,7 +30,7 @@ export function QueueSidebar({ stations, onClose }) {
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                 <header className="modal-header">
                     <h2>Next</h2>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
+                    <button className="close-btn-queue" onClick={onClose}>&times;</button>
                 </header>
 
                 <ul className="queue-list">
