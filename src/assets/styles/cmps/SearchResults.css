@@ -379,6 +379,7 @@
 
 .song-row-youtube:hover .duration {
   color: white;
+   
 }
 
 .add-btn,
@@ -386,8 +387,8 @@
   width: 16px;
   height: 16px;
   border: none;
-  background: white;
-  color: #b3b3b3;
+  
+  background-color: transparent;
   cursor: pointer;
   border-radius: 50%;
   display: flex;
@@ -397,13 +398,21 @@
   padding: 0;
   opacity: 0;
   visibility: hidden;
+   & svg {
+    fill: var(--clr5);
+    visibility: hidden;
+  }
 }
 
 .add-btn.is-liked {
+
   opacity: 1;
-  background-color: var(--clr3);
   visibility: visible;
   color: white;
+    & svg {
+      fill: #1db954;
+      visibility: visible;
+    }
 }
 
 .song-row-youtube:hover .add-btn,
@@ -412,18 +421,25 @@
 .song-row-youtube.active .more-btn {
   opacity: 1;
   visibility: visible;
+    & svg {
+    
+      visibility: visible;
+    }
+    .add-btn:active {
+      & svg{
+        fill: #1db954;
+      }
+    }
 }
 
-.add-btn:hover,
-.more-btn:hover {
-  color: white;
-  transform: scale(1.1);
-}
+
 
 .add-btn:active {
-  transform: scale(2.95);
-  background-color: rgb(35, 169, 127);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  
+  & svg{
+    fill: rgb(35, 169, 127);
+  }
+  
 }
 
 .song-row-youtube:hover .duration {
