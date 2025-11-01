@@ -75,9 +75,9 @@ export function StationIndex() {
     async function onRemoveStation(stationId) {
         try {
             await removeStation(stationId)
-            showSuccessMsg('Station removed')
+            showSuccessMsg('Playlist removed')
         } catch (err) {
-            showErrorMsg('Cannot remove station')
+            showErrorMsg('Cannot remove playlist')
         }
     }
 
@@ -86,9 +86,9 @@ export function StationIndex() {
         station.name = prompt('Name?', 'Some Name')
         try {
             const saved = await addStation(station)
-            showSuccessMsg(`Station added (id: ${saved._id})`)
+            showSuccessMsg(`Playlist added ("${saved.name}")`)
         } catch {
-            showErrorMsg('Cannot add station')
+            showErrorMsg('Cannot add playlist')
         }
     }
 
@@ -99,7 +99,7 @@ export function StationIndex() {
             const savedStation = await updateStation(stationToSave)
             showSuccessMsg(`You liked "${savedStation.name}"! It now has ${savedStation.likes} likes. 👍`)
         } catch (err) {
-            showErrorMsg('Cannot like station')
+            showErrorMsg('Cannot like playlist')
         }
     }
 

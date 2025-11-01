@@ -114,7 +114,7 @@ export function LikeButtonWithFireworks({
       <button
         ref={buttonRef}
         type="button"
-        className={`${className} ${isAnimating ? 'like-animating' : ''} ${isLiked ? 'liked' : ''}`}
+        className={`${className}  ${isLiked ? 'liked' : ''}`}
         aria-label={ariaLabel || (isLiked ? 'Remove from Liked Songs' : 'Save to Liked Songs')}
         aria-pressed={isLiked}
         onClick={handleClick}
@@ -128,11 +128,6 @@ export function LikeButtonWithFireworks({
       </button>
       
       {/* Fireworks container */}
-      <div 
-        ref={fireworksRef}
-        className={`fireworks-container ${showFireworks ? 'active' : ''}`}
-        style={{ pointerEvents: 'none' }}
-      />
     </>
   );
 }

@@ -2,185 +2,118 @@ import { useSelector } from "react-redux";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { loadStations, addStation } from "../store/actions/station.actions";
 import { useNavigate } from "react-router-dom";
-import { maxLength } from "../services/util.service";
 import { LIKED_ID } from "../store/reducers/station.reducer";
 import { Library } from './Library';
 import { ViewContextMenu } from './ViewContextMenu';
 import { SimpleContextMenu } from './SimpleContextMenu';
 
 import { playContext, togglePlay, setPlay } from "../store/actions/player.actions";
-import { IconListCompact, IconListDefault, IconGridDefault, IconPinned, IconSearch16, SearchLensIcon } from './Icon';
+import { IconListCompact, IconListDefault, IconGridDefault, IconPinned, SearchLensIcon } from './Icon';
 
 import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
 import { loadLikedSongs } from "../store/actions/user.actions";
 
-
+// -------------------------------- utils --------------------------------
 const VIEW_KEY = 'libraryViewMode';
 const DRAG_ORDER_KEY = 'libraryDragOrder';
+const PINNED_KEY = 'libraryPinnedIds';
+
 const VIEW_META = {
   grid: { label: 'Default grid', Icon: IconGridDefault },
   'grid-compact': { label: 'Compact grid', Icon: IconListCompact },
   list: { label: 'Default list', Icon: IconListDefault },
-}
+};
 const SORT_LABELS = {
   recent: 'Recents',
   recentlyAdded: 'Recently Added',
   alphabetical: 'Alphabetical',
   creator: 'Creator',
   custom: 'Custom order',
-}
+};
+
+const uniq = (arr) => Array.from(new Set(arr));
+const sanitizeOrder = (order, validIdsSet) => {
+  const out = [];
+  const seen = new Set();
+  for (const id of order || []) {
+    if (!validIdsSet.has(id)) continue;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push(id);
+  }
+  return out;
+};
 
 export function LeftSideBar() {
   const allStations = useSelector(s => s.stationModule.stations) || [];
   const { queue = [], isPlaying = false, contextId = null, contextType = null } =
     useSelector(s => s.playerModule || {});
-
   const loggedinUser = useSelector(s => s.userModule.user);
   const likedSongs = useSelector(s => s.userModule.likedSongs);
-  // -------------------------------------------------
 
   const navigate = useNavigate();
 
   const [filterBy, setFilterBy] = useState({ txt: '' });
   const [sortBy, setSortBy] = useState('recent');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [viewMode, setViewMode] = useState(() => localStorage.getItem(VIEW_KEY) || 'grid')
-  const PINNED_KEY = 'libraryPinnedIds'
+  const [viewMode, setViewMode] = useState(() => localStorage.getItem(VIEW_KEY) || 'grid');
 
+  const [menu, setMenu] = useState({ open: false, x: 0, y: 0, kind: null, itemId: null });
 
-  const [menu, setMenu] = useState({ open: false, x: 0, y: 0, kind: null, itemId: null })
-
-  // Drag and Drop state
+  // ---- Drag & Drop state ----
   const [dragOrder, setDragOrder] = useState(() => {
-    try { return JSON.parse(localStorage.getItem(DRAG_ORDER_KEY) || '[]') }
-    catch { return [] }
-  })
-  const [draggedItem, setDraggedItem] = useState(null)
-  const [dragOverIndex, setDragOverIndex] = useState(null)
-  const [previousSortBy, setPreviousSortBy] = useState('recent')
-  const [isTransitioningBack, setIsTransitioningBack] = useState(false)
+    try {
+      const raw = JSON.parse(localStorage.getItem(DRAG_ORDER_KEY) || '[]');
+      return uniq(raw);
+    } catch {
+      return [];
+    }
+  });
+  const [draggedItem, setDraggedItem] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [previousSortBy, setPreviousSortBy] = useState('recent');
+  const [isTransitioningBack, setIsTransitioningBack] = useState(false);
 
   const inputRef = useRef(null);
   const recentBtnRef = useRef(null);
+  const orderSnapshotRef = useRef([]); // snapshot of visible ids at drag start (excludes LIKED)
+
+  // ---- Pinned UI state (ignored in custom render order) ----
+  const [pinnedIds, setPinnedIds] = useState(() => {
+    try { return new Set(JSON.parse(localStorage.getItem(PINNED_KEY) || '[]')) }
+    catch { return new Set() }
+  });
 
   useEffect(() => {
     loadStations();
-    if (loggedinUser) {
-      loadLikedSongs();
-    }
-  }, [loggedinUser])
+    if (loggedinUser) loadLikedSongs();
+  }, [loggedinUser]);
 
   useEffect(() => { if (isSearchOpen) inputRef.current?.focus(); }, [isSearchOpen]);
   useEffect(() => { localStorage.setItem(VIEW_KEY, viewMode); }, [viewMode]);
   useEffect(() => { localStorage.setItem(DRAG_ORDER_KEY, JSON.stringify(dragOrder)); }, [dragOrder]);
+  useEffect(() => { localStorage.setItem(PINNED_KEY, JSON.stringify([...pinnedIds])); }, [pinnedIds]);
 
   const { label: viewLabel, Icon: ViewIcon } = VIEW_META[viewMode] || VIEW_META.grid;
-  const sortLabel = SORT_LABELS[sortBy] || 'Recents'
-  
-  // Show appropriate label based on drag state
+  const sortLabel = SORT_LABELS[sortBy] || 'Recents';
+
   const displayLabel = (() => {
-    // While actively dragging: show transition message
     if (draggedItem && sortBy === 'custom' && previousSortBy) {
-      return `${sortLabel} (will return to ${SORT_LABELS[previousSortBy]})`
+      return `${sortLabel} (will return to ${SORT_LABELS[previousSortBy]})`;
     }
-    // If we're transitioning back (after drag ended, before timeout): show target label
     if (isTransitioningBack && previousSortBy) {
-      return SORT_LABELS[previousSortBy]
+      return SORT_LABELS[previousSortBy];
     }
-    // Default: show current sort
-    return sortLabel
-  })()
-
-  const [pinnedIds, setPinnedIds] = useState(() => {
-    try { return new Set(JSON.parse(localStorage.getItem(PINNED_KEY) || '[]')) }
-    catch { return new Set() }
-  })
-
-  useEffect(() => {
-    localStorage.setItem(PINNED_KEY, JSON.stringify([...pinnedIds]))
-  }, [pinnedIds])
+    return sortLabel;
+  })();
 
   const togglePin = (id) => {
     setPinnedIds(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-
-  // Drag and Drop handlers
-  const handleDragStart = useCallback((e, item) => {
-    setDraggedItem(item)
-    e.dataTransfer.effectAllowed = 'move'
-    e.dataTransfer.setData('text/plain', item._id)
-    // Auto-switch to custom sort when dragging starts and save previous sort
-    if (sortBy !== 'custom') {
-      setPreviousSortBy(sortBy)
-      setSortBy('custom')
-    }
-  }, [sortBy])
-
-  const handleDragOver = useCallback((e, index) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    setDragOverIndex(index)
-  }, [])
-
-  const handleDragLeave = useCallback(() => {
-    setDragOverIndex(null)
-  }, [])
-
-  const handleDrop = useCallback((e, dropIndex) => {
-    e.preventDefault()
-    if (!draggedItem) return
-
-    const draggedId = draggedItem._id
-    setDragOrder(prevOrder => {
-      const newOrder = [...prevOrder]
-      
-      // Remove dragged item from its current position
-      const currentIndex = newOrder.indexOf(draggedId)
-      if (currentIndex !== -1) {
-        newOrder.splice(currentIndex, 1)
-      } else {
-        // If item wasn't in custom order, we need to add it
-        newOrder.push(draggedId)
-      }
-      
-      // Insert at new position
-      const finalDropIndex = dropIndex >= newOrder.length ? newOrder.length : dropIndex
-      newOrder.splice(finalDropIndex, 0, draggedId)
-      
-      return newOrder
-    })
-
-    setDraggedItem(null)
-    setDragOverIndex(null)
-    
-    // Keep the custom sort temporarily to show the result, 
-    // handleDragEnd will switch back after the delay
-  }, [draggedItem])
-
-  const handleDragEnd = useCallback(() => {
-    const wasDragging = draggedItem !== null
-    setDraggedItem(null)
-    setDragOverIndex(null)
-    
-    // Auto-exit drag mode and return to previous sort after a short delay
-    // Only if we were actually dragging (not just hovering)
-    if (wasDragging) {
-      setIsTransitioningBack(true)
-      setTimeout(() => {
-        if (previousSortBy && previousSortBy !== 'custom') {
-          setSortBy(previousSortBy)
-          setPreviousSortBy('recent')
-          setIsTransitioningBack(false)
-        }
-      }, 300) // Small delay to allow drop animation to complete
-    }
-  }, [previousSortBy, draggedItem])
-
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
 
   // ---- playback helpers ----
   const idsEqual = (a = [], b = []) => {
@@ -221,7 +154,6 @@ export function LeftSideBar() {
     openItemMenuAt(x, y, station._id);
   };
 
-
   const openMenuAtAnchor = (el) => {
     if (!el) return;
     const r = el.getBoundingClientRect();
@@ -234,7 +166,6 @@ export function LeftSideBar() {
     const onItem = e.target.closest('.library-item');
 
     if (onRecentBtn) {
-      // show view options
       openViewMenuAt(e.clientX, e.clientY);
       return;
     }
@@ -246,14 +177,11 @@ export function LeftSideBar() {
 
   const handleCreateStation = async () => {
     try {
-      const nextNumber =
-        Math.max(
-          0,
-          ...allStations
-            .map(s => s.name?.match(/^My Playlist #(\d+)$/)?.[1])
-            .filter(Boolean)
-            .map(n => +n)
-        ) + 1;
+      const numbers = (allStations || [])
+        .map(s => s.name?.match(/^My Playlist #(\d+)$/)?.[1])
+        .filter(Boolean)
+        .map(n => +n);
+      const nextNumber = (numbers.length ? Math.max(...numbers) : 0) + 1;
 
       const newStation = {
         name: `My Playlist #${nextNumber}`,
@@ -270,33 +198,36 @@ export function LeftSideBar() {
     }
   };
 
+  // ---- Build unique, filtered list ----
   const library = useMemo(() => {
     const userId = loggedinUser?._id;
 
-    const likedSongsStation = {
-      _id: LIKED_ID,
-      name: 'Liked Songs',
-      songs: likedSongs || [],
-      imgUrl: '/img/liked-songs.jpeg',
-      isLikedSongs: true,
-      createdBy: { fullname: 'You' }
-    };
+    // 0) Deduplicate stations by _id (prevents duplicate keys)
+    const uniqueMap = new Map();
+    for (const s of allStations || []) {
+      if (s?._id && !uniqueMap.has(s._id)) uniqueMap.set(s._id, s);
+    }
+    let list = Array.from(uniqueMap.values());
 
-    let list = allStations.filter(s =>
+    // 1) Only my stations or those I liked
+    list = list.filter(s =>
       s.owner?._id?.toString() === userId?.toString() ||
       (userId && s.likedByUsers?.some(likedUserId => likedUserId.toString() === userId.toString()))
     );
 
+    // 2) Text filter
     if (filterBy.txt) {
       const rx = new RegExp(filterBy.txt, 'i');
       list = list.filter(s => rx.test(s.name || ''));
     }
 
+    // 3) Pin decoration (for UI only)
     const decorated = list.map(s => ({ ...s, isPinned: pinnedIds.has(s._id) }));
 
+    // 4) Collator and sorters
     const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
-    const makeSorter = (sortBy) => {
-      switch (sortBy) {
+    const makeSorter = (mode) => {
+      switch (mode) {
         case 'recent':
           return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
         case 'recentlyAdded':
@@ -317,59 +248,143 @@ export function LeftSideBar() {
             if (byName !== 0) return byName;
             return (a._id || '').localeCompare(b._id || '');
           };
-        case 'custom':
-          return (a, b) => {
-            const aIndex = dragOrder.indexOf(a._id);
-            const bIndex = dragOrder.indexOf(b._id);
-            // Items not in dragOrder go to the end, sorted by recent
-            if (aIndex === -1 && bIndex === -1) {
-              return (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
-            }
-            if (aIndex === -1) return 1;
-            if (bIndex === -1) return -1;
-            return aIndex - bIndex;
-          };
         default:
           return (a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
       }
     };
 
+    // 5) Liked Songs pseudo-station
+    const likedSongsStation = {
+      _id: LIKED_ID,
+      name: 'Liked Songs',
+      songs: likedSongs || [],
+      imgUrl: '/img/liked-songs.jpeg',
+      isLikedSongs: true,
+      createdBy: { fullname: 'You' }
+    };
+
+    // 6) Custom mode: render strictly by dragOrder (ignore pin grouping)
+    if (sortBy === 'custom') {
+      const byId = new Map(decorated.map(s => [s._id, s]));
+      const validIds = new Set(decorated.map(s => s._id));
+      const cleanOrder = sanitizeOrder(dragOrder, validIds);
+
+      const ordered = cleanOrder.map(id => byId.get(id)).filter(Boolean);
+      const remaining = decorated.filter(s => !cleanOrder.includes(s._id));
+
+      // final unique merge (belt & suspenders)
+      const out = [likedSongsStation, ...ordered, ...remaining];
+      const seen = new Set();
+      return out.filter(st => {
+        if (!st?._id) return false;
+        if (seen.has(st._id)) return false;
+        seen.add(st._id);
+        return true;
+      });
+    }
+
+    // 7) Non-custom: pinned first, then others (by chosen sort)
     const sorter = makeSorter(sortBy);
     const pinned = decorated.filter(s => s.isPinned).sort(sorter);
     const unpinned = decorated.filter(s => !s.isPinned).sort(sorter);
-
     return [likedSongsStation, ...pinned, ...unpinned];
-
   }, [allStations, filterBy.txt, sortBy, pinnedIds, loggedinUser, likedSongs, dragOrder]);
 
+  // Snapshot visible order (excluding LIKED) to seed custom mode
+  const getVisibleOrderIds = useCallback(() => {
+    return library.filter(it => it._id !== LIKED_ID).map(it => it._id);
+  }, [library]);
 
+  // ---- Drag & Drop handlers (insert ABOVE) ----
+  const handleDragStart = useCallback((e, item) => {
+    setDraggedItem(item);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', item._id);
+
+    if (sortBy !== 'custom') {
+      setPreviousSortBy(sortBy);
+      const snapshot = uniq(getVisibleOrderIds());
+      orderSnapshotRef.current = snapshot;
+      setDragOrder(snapshot);
+      setSortBy('custom');
+    }
+  }, [sortBy, getVisibleOrderIds]);
+
+  const handleDragOver = useCallback((e, index) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setDragOverIndex(null);
+  }, []);
+
+  const handleDrop = useCallback((e, dropIndex) => {
+    e.preventDefault();
+    if (!draggedItem) return;
+
+    const draggedId = draggedItem._id;
+
+    // UI index -> data index if Liked Songs is at index 0
+    const likedOffset = library.length && library[0]?._id === LIKED_ID ? 1 : 0;
+    const rawTarget = Math.max(0, (dropIndex ?? 0) - likedOffset);
+
+    setDragOrder(prev => {
+      // base = sanitized current order or snapshot
+      const visible = getVisibleOrderIds();
+      const validSet = new Set(visible);
+      const base = sanitizeOrder(prev?.length ? prev : orderSnapshotRef.current, validSet);
+
+      const curIdx = base.indexOf(draggedId);
+      if (curIdx !== -1) base.splice(curIdx, 1);
+
+      // compensate if dragged was above target (because removing shifted indices)
+      const adjustedTarget = Math.min(
+        Math.max(0, rawTarget - (curIdx !== -1 && curIdx < rawTarget ? 1 : 0)),
+        base.length
+      );
+
+      // insert ABOVE target
+      base.splice(adjustedTarget, 0, draggedId);
+      return base;
+    });
+
+    setDraggedItem(null);
+    setDragOverIndex(null);
+  }, [draggedItem, library, getVisibleOrderIds]);
+
+  const handleDragEnd = useCallback(() => {
+    setDraggedItem(null);
+    setDragOverIndex(null);
+    // Stay in 'custom' to avoid flicker/stuck. If you want a manual exit, use the menu.
+    setIsTransitioningBack(false);
+  }, []);
+
+  // --------------------- UI: search + header ---------------------
   function searchBar() {
-    const containerRef = useRef(null)
+    const containerRef = useRef(null);
 
-    // close on outside click only when empty
     useEffect(() => {
-      if (!isSearchOpen) return
+      if (!isSearchOpen) return;
       const onDown = (e) => {
-        if (!containerRef.current) return
-        const clickedInside = containerRef.current.contains(e.target)
-        if (!clickedInside && !filterBy.txt) setIsSearchOpen(false)
-      }
+        if (!containerRef.current) return;
+        const clickedInside = containerRef.current.contains(e.target);
+        if (!clickedInside && !filterBy.txt) setIsSearchOpen(false);
+      };
       const onEsc = (e) => {
         if (e.key === 'Escape') {
-          if (filterBy.txt) {
-            inputRef.current?.blur()
-          } else {
-            setIsSearchOpen(false)
-          }
+          if (filterBy.txt) inputRef.current?.blur();
+          else setIsSearchOpen(false);
         }
-      }
-      document.addEventListener('mousedown', onDown, true)
-      document.addEventListener('keydown', onEsc)
+      };
+      document.addEventListener('mousedown', onDown, true);
+      document.addEventListener('keydown', onEsc);
       return () => {
-        document.removeEventListener('mousedown', onDown, true)
-        document.removeEventListener('keydown', onEsc)
-      }
-    }, [isSearchOpen, filterBy.txt])
+        document.removeEventListener('mousedown', onDown, true);
+        document.removeEventListener('keydown', onEsc);
+      };
+    }, [isSearchOpen, filterBy.txt]);
 
     return (
       <div
@@ -391,15 +406,16 @@ export function LeftSideBar() {
           className="search-input"
           type="text"
           name="txt"
+          autoCorrect="off"
+          autoComplete="off"
           value={filterBy.txt}
           onChange={(ev) => setFilterBy({ ...filterBy, [ev.target.name]: ev.target.value })}
           placeholder="Search in Your Library"
           onFocus={() => setIsSearchOpen(true)}
         />
       </div>
-    )
+    );
   }
-
 
   function leftHeader() {
     return (
@@ -413,12 +429,16 @@ export function LeftSideBar() {
     );
   }
 
+  // (Optional) quick duplicate guardrail in dev
+  useEffect(() => {
+    const ids = library.map(it => it._id);
+    const dup = ids.filter((id, i) => ids.indexOf(id) !== i);
+    if (dup.length) console.warn('Duplicate ids in library:', dup);
+  }, [library]);
+
   return (
     <section className="left-side-bar">
-      <aside
-        className="station-list-container"
-        onContextMenu={handleContextMenu}
-      >
+      <aside className="station-list-container" onContextMenu={handleContextMenu}>
         <div className="library-filters">
           {leftHeader()}
           <section className={`search-and-recent ${isSearchOpen ? 'search-open' : ''}`}>
@@ -462,8 +482,7 @@ export function LeftSideBar() {
 
         <ViewContextMenu
           open={menu.open && menu.kind === 'view'}
-          anchorEl={recentBtnRef}
-
+          anchorEl={recentBtnRef.current}
           groups={[
             {
               title: 'Sort by',
@@ -491,7 +510,6 @@ export function LeftSideBar() {
           onClose={closeMenu}
         />
 
-
         <SimpleContextMenu
           open={menu.open && menu.kind === 'global'}
           x={menu.x}
@@ -504,6 +522,7 @@ export function LeftSideBar() {
           }]}
           onClose={closeMenu}
         />
+
         <SimpleContextMenu
           open={menu.open && menu.kind === 'item'}
           x={menu.x}
@@ -531,5 +550,5 @@ export function LeftSideBar() {
         />
       </aside>
     </section>
-  )
+  );
 }

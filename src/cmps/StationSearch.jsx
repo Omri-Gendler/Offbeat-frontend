@@ -43,6 +43,7 @@ export function StationSearch({
             type="search"
             maxLength={80}
             autoCorrect="off"
+            autoComplete="off"
             autoCapitalize="off"
             spellCheck={false}
             placeholder="Search for songs or artists..."
@@ -63,7 +64,7 @@ export function StationSearch({
       {onClose && (
         <button
           type="button"
-          className="close-icon-btn"
+          className="close-btn"
           onClick={onClose}
           aria-label="Close"
         >

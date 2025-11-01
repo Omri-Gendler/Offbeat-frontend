@@ -91,7 +91,6 @@ export function SongPicker({ stationId, existingIds = new Set(), onClose }) {
     >
       <div className="picker-panel">
         <div className="picker-header">
-          <h2 id="song-picker-title" className="visually-hidden">Add songs</h2>
           <StationSearch
             value={query}
             onChange={setQuery}

@@ -48,7 +48,7 @@ body,
 .content-layout {
   flex: 1;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 1fr 3fr;
   gap: 8px;
   padding: 8px 8px 0 8px;
   overflow: hidden;
@@ -193,3 +193,13 @@ main {
     height: 56px;
   }
 }
+
+        .tertiary-btn {
+            
+            &.liked {
+                .like-icon {
+                    color: #1ed760;
+                    fill: #1ed760;
+                }
+            }
+        }

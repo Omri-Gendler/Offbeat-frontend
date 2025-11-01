@@ -111,6 +111,8 @@ export function StationFilter({ filterBy, setFilterBy }) {
             placeholder="What do you want to play?"
             value={txt}
             onChange={handleChange}
+            autoCorrect="off"
+            autoComplete="off"
             onFocus={() => txt.trim().length === 0 && setIsOpen(true)}
           />
 

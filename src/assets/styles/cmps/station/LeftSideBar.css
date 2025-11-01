@@ -225,9 +225,7 @@ ease-out;
     font-weight: 500;
     color: #fff;
     margin: 0 0 2px 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: 100%;
   }
 
   .library-item .sub {
@@ -527,8 +525,8 @@ width: max-content;
       
       &:hover{
         .play-button{
-            background-color: #3f3f3f;
-            opacity: 0.5;
+            background-color: transparent;
+            opacity: 0.8;
             svg{
                 opacity: 2;
             }
@@ -601,11 +599,10 @@ width: max-content;
     font-size: 1em;
     font-weight: 500;
     margin: 0 0 2px 0;
-
-    display: -webkit-box;
-     white-space: nowrap;
+    overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
-    
+    width: 100%;
     
   }
 
@@ -850,7 +847,7 @@ width: max-content;
   background: #1ed760;
   border-radius: 2px;
   box-shadow: 0 0 8px rgba(30, 215, 96, 0.6);
-  animation: dragPulse 1s ease-in-out infinite alternate;
+  animation: dragPulse s ease-in-out infinite alternate;
 }
 
 @keyframes dragPulse {
@@ -900,5 +897,7 @@ width: max-content;
     height: 2px;
     top: -4px;
   }
+
 }
+
 
