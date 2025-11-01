@@ -40,7 +40,7 @@ export function StationSearch({
           <input
             id="station-search-input"
             className="station-search-input"
-            type="search"
+            type="text"
             maxLength={80}
             autoCorrect="off"
             autoComplete="off"
