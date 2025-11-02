@@ -423,7 +423,6 @@ export function LeftSideBar() {
         <h3>Your Library</h3>
         <button className="create-station-btn" onClick={handleCreateStation}>
           <AddIcon />
-          <span>Create</span>
         </button>
       </div>
     );

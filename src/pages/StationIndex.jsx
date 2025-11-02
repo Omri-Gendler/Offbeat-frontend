@@ -127,7 +127,7 @@ export function StationIndex() {
     const filteredStations = filterStationsByKind(stations || [], filterBy.kind)
 
     // Get stations for different sections
-    const recentStations = filteredStations?.slice(1, 9) || []
+    const recentStations = filteredStations?.slice(1, 7) || []
     const madeForYouStations = showAllMadeForYou ? filteredStations : (filteredStations?.slice(1, 15) || [])
     const jumpBackStations = showAllJumpBack ? filteredStations : (filteredStations?.slice(9, 23) || [])
     const popStations = showAllPop ? filteredStations : (filteredStations?.slice(28, 41) || [])
