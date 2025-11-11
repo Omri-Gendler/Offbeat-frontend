@@ -690,13 +690,12 @@ const canGoNext = canControl && (index < (playOrder?.length || 0) - 1 || repeat 
         />
       )}
 
-      {isQueueOpen && (
-        <QueueSidebar
-          id="queue-sidebar"
-          stations={queue}
-          onClose={() => setIsQueueOpen(false)}
-        />
-      )}
+      <QueueSidebar
+        id="queue-sidebar"
+        stations={queue}
+        onClose={() => setIsQueueOpen(false)}
+        isOpen={isQueueOpen}
+      />
     </div>
   )
 }
