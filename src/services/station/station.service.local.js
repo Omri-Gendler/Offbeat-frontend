@@ -2,6 +2,7 @@
 import { storageService } from '../async-storage.service'
 import { makeId, loadFromStorage, saveToStorage } from '../util.service'
 import { userService } from '../user'
+import { getAssetUrl, ASSET_PATHS } from '../asset.service'
 
 const STORAGE_KEY = 'stationDB'
 const LIKED_SONGS_KEY = 'likedSongsStation'
@@ -11,7 +12,7 @@ export const likedSongsStationTemplate = {
     _id: 'liked-songs-station',
     name: 'Liked Songs',
     songs: [],
-    imgUrl: '/img/liked-songs.jpeg',
+    imgUrl: getAssetUrl(ASSET_PATHS.LIKED_SONGS),
     isLikedSongs: true,
     createdBy: {
         fullname: 'You'

@@ -5,6 +5,7 @@ import { ADD_STATION, REMOVE_STATION, SET_STATIONS, SET_STATION, UPDATE_STATION,
 import { PLAY_CONTEXT, SET_PLAY } from '../reducers/player.reducer'
 import { showSuccessMsg, showErrorMsg } from '../../services/event-bus.service'
 import { ADD_LIKED_SONG, REMOVE_LIKED_SONG } from '../reducers/user.reducer'
+import { getAssetUrl, ASSET_PATHS } from '../../services/asset.service'
 
 export async function loadStations(filterBy) {
   try {
@@ -24,7 +25,7 @@ export async function loadStation(stationId) {
         _id: LIKED_ID,
         name: 'Liked Songs',
         songs: likedSongs,
-        imgUrl: '/img/liked-songs.jpeg',
+        imgUrl: getAssetUrl(ASSET_PATHS.LIKED_SONGS),
         isLikedSongs: true,
         createdBy: { fullname: 'You' }
       }

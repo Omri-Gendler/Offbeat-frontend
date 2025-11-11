@@ -1,6 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { setIndex } from '../store/actions/player.actions'
 import { IconClose16, IconPause16, IconMoreHorizontal24, IconShuffle16, IconRepeat16, DurationIcon } from './Icon'
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service'
 
 export function QueueSidebar({ stations, onClose, isOpen }) {
     const dispatch = useDispatch()
@@ -28,7 +29,7 @@ export function QueueSidebar({ stations, onClose, isOpen }) {
                         <h4>Playing Liked Songs</h4>
                         <div className="current-song">
                             <img 
-                                src={currentSong.imgUrl || '/img/unnamed-song.png'} 
+                                src={currentSong.imgUrl || getAssetUrl(ASSET_PATHS.UNNAMED_SONG)} 
                                 alt={currentSong.title}
                                 className="song-image"
                             />
@@ -56,7 +57,7 @@ export function QueueSidebar({ stations, onClose, isOpen }) {
                                         onClick={() => onPlayFromQueue(actualIndex)}
                                     >
                                         <img 
-                                            src={song.imgUrl || '/img/unnamed-song.png'} 
+                                            src={song.imgUrl || getAssetUrl(ASSET_PATHS.UNNAMED_SONG)} 
                                             alt={song.title}
                                             className="song-image"
                                         />

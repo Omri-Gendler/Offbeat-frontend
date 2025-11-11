@@ -17,7 +17,10 @@ import {
 
 import { selectCurrentSong, selectIsSongLiked } from '../store/selectors/player.selectors'
 
-import { likeSong, unlikeSong } from '../store/actions/station.actions'
+import { utilService } from '../services/util.service'
+import { stationService } from '../services/station'
+import { loadStations, setCurrSong } from '../store/actions/station.actions'
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service'
 import {
   joinStationRoom,
   leaveStationRoom,
@@ -495,7 +498,7 @@ const canGoNext = canControl && (index < (playOrder?.length || 0) - 1 || repeat 
     <div className="music-player" role="region" aria-label="Player controls">
       <div className="player-left">
         <img
-          src={currentSong?.imgUrl || '/img/unnamed-song.png'}
+          src={currentSong?.imgUrl || getAssetUrl(ASSET_PATHS.UNNAMED_SONG)}
           alt=""
           className="player-album-cover"
           width={50}
