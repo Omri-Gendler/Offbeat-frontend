@@ -4,6 +4,7 @@ import { stationService } from '../services/station';
 import { addStation } from '../store/actions/station.actions';
 import { SongsList } from '../cmps/SongsList.jsx';
 import {PlaylistHeader} from './PlaylistHeader.jsx';
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service';
 
 export function AddStationModal() {
     const [stationName, setStationName] = useState('')
@@ -19,7 +20,7 @@ export function AddStationModal() {
 
         const newStation = stationService.getEmptyStation()
         newStation.name = stationName
-        newStation.imgUrl = '/img/unnamed-song.png'
+        newStation.imgUrl = getAssetUrl(ASSET_PATHS.UNNAMED_SONG)
         newStation.songs = [
             { id: 's101', title: 'Song A', artist: 'Artist 1', album: 'Album X', duration: '3:45', imgUrl: '/img/songA.jpg' },
             { id: 's102', title: 'Song B', artist: 'Artist 2', album: 'Album Y', duration: '4:15', imgUrl: '/img/songB.jpg' }

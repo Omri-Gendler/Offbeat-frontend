@@ -9,6 +9,7 @@ import { SimpleContextMenu } from './SimpleContextMenu';
 
 import { playContext, togglePlay, setPlay } from "../store/actions/player.actions";
 import { IconListCompact, IconListDefault, IconGridDefault, IconPinned, SearchLensIcon } from './Icon';
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service';
 
 import AddIcon from '@mui/icons-material/Add';
 import { loadLikedSongs } from "../store/actions/user.actions";
@@ -186,7 +187,7 @@ export function LeftSideBar() {
       const newStation = {
         name: `My Playlist #${nextNumber}`,
         description: '',
-        imgUrl: '/img/unnamed-song.png',
+        imgUrl: getAssetUrl(ASSET_PATHS.UNNAMED_SONG),
         songs: [],
         createdBy: { fullname: 'You' }
       };

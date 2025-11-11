@@ -4,23 +4,19 @@ import { demoYouTubeResults } from './demo-youtube.service.js'
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const BASE_URL = 'https://www.googleapis.com/youtube/v3'
 const searchCache = new Map()
-const USE_DEMO_MODE = !API_KEY || API_KEY === 'demo' // Use demo if no API key
+const USE_DEMO_MODE = !API_KEY || API_KEY === 'demo' || API_KEY === 'undefined' // Use demo if no API key
 
 // Debug logging for production
 console.log('🎵 YouTube Service initialized')
 console.log('📍 Environment:', import.meta.env.MODE)
-console.log('🔑 API_KEY exists:', !!API_KEY)
-console.log('🔑 API_KEY (first 10 chars):', API_KEY?.substring(0, 10) + '...')
-console.log('🌐 Current origin:', window.location.origin)
+console.log('🔑 API_KEY exists:', !!API_KEY && API_KEY !== 'undefined')
+console.log('🔧 Using demo mode:', USE_DEMO_MODE)
 
-if (!API_KEY) {
-    console.error('❌ VITE_YOUTUBE_API_KEY is not set in environment variables')
-    if (import.meta.env.MODE === 'production') {
-        console.error('🚨 Production Error: Environment variables not configured on Render')
-        console.error('💡 Add VITE_YOUTUBE_API_KEY in Render dashboard > Environment tab')
-    } else {
-        console.error('💡 Please check your .env file and restart the development server')
-    }
+if (!API_KEY || API_KEY === 'undefined') {
+    console.warn('⚠️ YouTube API key not configured - using demo mode')
+    console.log('💡 To enable YouTube integration, add VITE_YOUTUBE_API_KEY to your environment')
+} else {
+    console.log('✅ YouTube API configured')
 }
 
 export const youtubeService = {
@@ -29,6 +25,21 @@ export const youtubeService = {
 }
 
 export const searchVideos = async (query, maxResults) => {
+    // Use demo mode if no valid API key
+    if (USE_DEMO_MODE) {
+        console.warn('⚠️ Using demo YouTube videos (API key not configured)')
+        return demoYouTubeResults.songs.slice(0, maxResults || 10).map(song => ({
+            id: { videoId: song.id },
+            snippet: {
+                title: song.title,
+                channelTitle: song.artist,
+                thumbnails: {
+                    medium: { url: song.imgUrl }
+                }
+            }
+        }))
+    }
+
     const response = await axios.get(`${BASE_URL}/search`, {
         params: {
             part: 'snippet',

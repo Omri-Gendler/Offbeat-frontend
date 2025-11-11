@@ -2,6 +2,7 @@
 import React, { memo } from 'react'
 import { LIKED_ID } from '../store/reducers/station.reducer'
 import { IconPinned } from './Icon'
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service'
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 function getMetaParts(station, likedId) {
@@ -146,7 +147,7 @@ const parts = getMetaParts(station,LIKED_ID)
       onDragEnd={handleDragEnd}
     >
       <div className="thumb-wrap">
-        <img  loading="lazy" src={station.imgUrl || '/img/unnamed-song.png'} alt={station.name} />
+        <img  loading="lazy" src={station.imgUrl || getAssetUrl(ASSET_PATHS.UNNAMED_SONG)} alt={station.name} />
         {!compact &&
         <button
           type="button"

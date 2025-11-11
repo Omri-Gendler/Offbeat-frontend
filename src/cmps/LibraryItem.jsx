@@ -1,5 +1,6 @@
 
 import { LIKED_ID } from '../store/reducers/station.reducer'
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service'
 
 export default function LibraryItem({
   station,
@@ -38,7 +39,7 @@ export default function LibraryItem({
       <div className="thumb-wrap">
         <img
           loading="lazy"
-          src={station.imgUrl || '/img/unnamed-song.png'}
+          src={station.imgUrl || getAssetUrl(ASSET_PATHS.UNNAMED_SONG)}
           alt={station.name}
         />
         <button

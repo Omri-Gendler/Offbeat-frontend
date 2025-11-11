@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { setBgImage } from '../store/actions/app.actions'
 import { EditStationModal } from './EditStationModal'
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service'
 
 export function PlaylistHeader({ station, onSaveStation }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -42,7 +43,7 @@ export function PlaylistHeader({ station, onSaveStation }) {
                 aria-hidden="false"
                 draggable="false"
                 loading="eager"
-                src={coverUrl || (isUserPlaylist ? '/img/unnamed-song.png' : '/img/AppLogo.png')}
+                src={coverUrl || (isUserPlaylist ? getAssetUrl(ASSET_PATHS.UNNAMED_SONG) : getAssetUrl(ASSET_PATHS.APP_LOGO))}
                 alt={station?.name || 'Playlist cover'}
                 className="station-cover-img"
                 sizes="(min-width: 1280px) 232px, 192px"

@@ -5,7 +5,9 @@ export function getAssetUrl(path) {
     
     // In production (GitHub Pages), we need to use the base path
     if (import.meta.env.MODE === 'production') {
-        return `/Offbeat-frontend/${cleanPath}`
+        const url = `/Offbeat-frontend/${cleanPath}`
+        console.log(`🖼️ Asset URL generated: ${path} → ${url}`)
+        return url
     }
     
     // In development, use the path as-is
