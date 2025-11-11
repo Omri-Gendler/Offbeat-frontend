@@ -4,19 +4,20 @@ import { demoYouTubeResults } from './demo-youtube.service.js'
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const BASE_URL = 'https://www.googleapis.com/youtube/v3'
 const searchCache = new Map()
-const USE_DEMO_MODE = !API_KEY || API_KEY === 'demo' || API_KEY === 'undefined' // Use demo if no API key
+const USE_DEMO_MODE = !API_KEY || API_KEY === 'demo' || API_KEY === 'undefined' || API_KEY === '' // Use demo if no API key
 
 // Debug logging for production
 console.log('🎵 YouTube Service initialized')
 console.log('📍 Environment:', import.meta.env.MODE)
-console.log('🔑 API_KEY exists:', !!API_KEY && API_KEY !== 'undefined')
+console.log('🔑 API_KEY exists:', !!API_KEY && API_KEY !== 'undefined' && API_KEY !== '')
 console.log('🔧 Using demo mode:', USE_DEMO_MODE)
 
-if (!API_KEY || API_KEY === 'undefined') {
+if (!API_KEY || API_KEY === 'undefined' || API_KEY === '') {
     console.warn('⚠️ YouTube API key not configured - using demo mode')
     console.log('💡 To enable YouTube integration, add VITE_YOUTUBE_API_KEY to your environment')
 } else {
-    console.log('✅ YouTube API configured')
+    console.log('✅ YouTube API configured and ready!')
+    console.log('🔑 API Key preview:', API_KEY.substring(0, 8) + '...')
 }
 
 export const youtubeService = {
@@ -88,8 +89,8 @@ async function searchSongs(query) {
         throw new Error('YouTube API key is not configured')
     }
 
-    console.log('Fetching from API:', cacheKey)
-    console.log('Using API key:', API_KEY ? 'Yes' : 'No')
+    console.log('🔍 Fetching from YouTube API:', cacheKey)
+    console.log('🔑 Using API key:', API_KEY ? '✅ Yes' : '❌ No')
     try {
         // First search for general content
         const searchResponse = await axios.get(`${BASE_URL}/search`, {

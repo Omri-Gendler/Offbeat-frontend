@@ -37,6 +37,7 @@ jobs:
         env:
           NODE_ENV: production
           VITE_LOCAL: true
+          VITE_YOUTUBE_API_KEY: ${{ secrets.VITE_YOUTUBE_API_KEY }}
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
