@@ -7,6 +7,7 @@ export default defineConfig({
 	base: process.env.NODE_ENV === 'production' ? '/Offbeat-frontend/' : '/',
 	define: {
 		'import.meta.env.VITE_LOCAL': process.env.NODE_ENV === 'production' ? '"true"' : 'undefined',
+		'import.meta.env.VITE_YOUTUBE_API_KEY': JSON.stringify(process.env.VITE_YOUTUBE_API_KEY || 'YOUR_YOUTUBE_API_KEY_HERE'),
 	},
 	preview: {
 		port: process.env.PORT || 4173,

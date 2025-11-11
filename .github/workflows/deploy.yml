@@ -39,6 +39,8 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
+          VITE_YOUTUBE_API_KEY: ${{ secrets.VITE_YOUTUBE_API_KEY }}
+          VITE_SPOTIFY_API_KEY: ${{ secrets.VITE_SPOTIFY_API_KEY }}
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
