@@ -7,6 +7,7 @@ import { StationFilter } from './StationFilter'
 import { useState, useEffect } from 'react'
 import { stationService } from '../services/station'
 import { HomeFilledIcon, HomeOutlineIcon } from './Icon'
+import { getAssetUrl, ASSET_PATHS } from '../services/asset.service'
 
 export function AppHeader() {
 	const user = useSelector(storeState => storeState.userModule.user)
@@ -33,7 +34,7 @@ export function AppHeader() {
 			<nav className='nav'>
 
 				<div className='logo-container'>
-					<img className='app-header-logo' src="/img/spotify-white-icon.webp" alt="Offbeat Logo" onClick={() => navigate('')} />
+					<img className='app-header-logo' src={getAssetUrl(ASSET_PATHS.SPOTIFY_LOGO)} alt="Offbeat Logo" onClick={() => navigate('')} />
 				</div>
 				<div className='middle-app-header flex'>
 					<button className="home-btn" title="Home" onClick={() => navigate('')}>

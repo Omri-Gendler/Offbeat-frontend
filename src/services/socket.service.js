@@ -7,13 +7,21 @@ const SOCKET_URL = process.env.NODE_ENV === 'production'
 
 export const socketService = createSocketService()
 
-socketService.setup()
+// Don't auto-setup socket for static deployments (GitHub Pages)
+if (import.meta.env.VITE_LOCAL !== 'true') {
+    socketService.setup()
+}
 
 function createSocketService() {
     var socket = null
 
     const socketService = {
         setup() {
+            // Skip socket setup for local/static deployments
+            if (import.meta.env.VITE_LOCAL === 'true') {
+                console.log('Socket service disabled for static deployment')
+                return
+            }
             if (socket) return
             socket = io(SOCKET_URL, { transports: ['websocket'] })
             console.log('Socket Connection initiated with:', SOCKET_URL)
