@@ -1,3 +1,5 @@
+import { getAssetUrl, ASSET_PATHS } from './asset.service'
+
 const NUM_STATIONS = 100
 const SONGS_PER_STATION = 40
 
@@ -5,11 +7,15 @@ export function initDemoData() {
     const stations = getFromStorage('stationDB')
     const artists = getFromStorage('artistDB')
 
+    console.log('🔍 InitDemoData - Current localStorage:')
+    console.log('Stations:', stations?.length || 0, 'Artists:', artists?.length || 0)
+
     if (stations && stations.length > 0 && artists && artists.length > 0) {
         console.log('Demo data already exists in localStorage.')
         // Validate that the data structure is correct
         const hasValidStructure = stations.every(station => station._id && station.name && Array.isArray(station.songs))
         if (hasValidStructure) {
+            console.log('✅ Valid data structure found, using existing data')
             return
         } else {
             console.log('Invalid data structure detected, regenerating...')
@@ -22,7 +28,7 @@ export function initDemoData() {
             _id: 'liked-songs-station',
             name: 'Liked Songs',
             songs: allSongs.filter(song => song.likedBy && song.likedBy.includes('u100')),
-            imgUrl: '/img/liked-songs.jpeg',
+            imgUrl: getAssetUrl(ASSET_PATHS.LIKED_SONGS),
             isLikedSongs: true,
             createdBy: {
                 fullname: 'You'
@@ -30,9 +36,10 @@ export function initDemoData() {
         }
     }
 
-    console.log('Generating new demo data...')
+    console.log('🔄 Generating new demo data...')
 
     const generatedArtists = _generateDemoArtists()
+    console.log('Generated artists:', generatedArtists.length)
     saveToStorage('artistDB', generatedArtists)
 
     // Only create Spotify-based stations (comment out other stations)
@@ -41,14 +48,17 @@ export function initDemoData() {
     
     // Add Spotify-based stations only
     const spotifyStations = _createSpotifyStations()
+    console.log('Generated Spotify stations:', spotifyStations.length)
     
     let generatedStations = [...spotifyStations]
 
     const likedStation = _createLikedSongsStation(generatedStations)
     generatedStations.push(likedStation)
 
+    console.log('Total stations to save:', generatedStations.length)
     // Save to localStorage
     saveToStorage('stationDB', generatedStations)
+    console.log('✅ Demo data generated and saved!')
     console.log(`Demo data generated and saved! (${generatedStations.length} stations, ${generatedArtists.length} artists)`)
 }
 
