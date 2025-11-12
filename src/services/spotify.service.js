@@ -17,6 +17,12 @@ export const spotifyService = {
  * Get or refresh Spotify access token
  */
 async function getAccessToken() {
+    // Check if we have the required API keys
+    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
+        console.warn('⚠️ Spotify API keys not available - search will return demo results')
+        throw new Error('Spotify API keys not configured')
+    }
+    
     // Check if current token is still valid (with 5 minute buffer)
     if (accessToken && tokenExpiry && Date.now() < tokenExpiry - 300000) {
         return accessToken
@@ -78,6 +84,74 @@ async function makeSpotifyRequest(url) {
 }
 
 /**
+ * Get demo search results when Spotify API is not available
+ */
+function getDemoSearchResults(query, type = 'tracks') {
+    const demoTracks = [
+        {
+            id: 'demo_track_1',
+            type: 'song',
+            title: 'Blinding Lights',
+            artist: 'The Weeknd',
+            artists: 'The Weeknd',
+            album: 'After Hours',
+            durationMs: 200000,
+            imgUrl: 'https://i.scdn.co/image/ab67616d0000b273c9b6c7bb3dade2ce0c8c4239',
+            previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            isSpotify: false,
+            isDemo: true,
+            addedAt: Date.now()
+        },
+        {
+            id: 'demo_track_2',
+            type: 'song', 
+            title: 'Shape of You',
+            artist: 'Ed Sheeran',
+            artists: 'Ed Sheeran',
+            album: '÷ (Divide)',
+            durationMs: 233000,
+            imgUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
+            previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            isSpotify: false,
+            isDemo: true,
+            addedAt: Date.now()
+        },
+        {
+            id: 'demo_track_3',
+            type: 'song',
+            title: 'Stay',
+            artist: 'Rihanna',
+            artists: 'Rihanna',
+            album: 'Unapologetic', 
+            durationMs: 240000,
+            imgUrl: 'https://i.scdn.co/image/ab67616d0000b273e20e5c366b497518353497b0',
+            previewUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+            isSpotify: false,
+            isDemo: true,
+            addedAt: Date.now()
+        }
+    ]
+    
+    // Filter demo tracks based on query
+    const filteredTracks = demoTracks.filter(track => 
+        track.title.toLowerCase().includes(query.toLowerCase()) ||
+        track.artist.toLowerCase().includes(query.toLowerCase()) ||
+        track.album.toLowerCase().includes(query.toLowerCase())
+    )
+    
+    if (type === 'tracks') {
+        return { tracks: filteredTracks }
+    }
+    
+    return {
+        songs: filteredTracks,
+        artists: [],
+        albums: [],
+        total: filteredTracks.length
+    }
+}
+
+/**
  * Search for tracks on Spotify
  */
 async function searchTracks(query, limit = 20, offset = 0) {
@@ -107,7 +181,9 @@ async function searchTracks(query, limit = 20, offset = 0) {
         }
     } catch (error) {
         console.error('❌ Error searching Spotify tracks:', error)
-        throw error
+        // Return demo results as fallback
+        console.log('🎵 Returning demo search results for:', query)
+        return getDemoSearchResults(query, 'tracks')
     }
 }
 
@@ -241,6 +317,8 @@ async function searchAll(query, limit = 10) {
         }
     } catch (error) {
         console.error('❌ Error searching Spotify (all types):', error)
-        throw error
+        // Return demo results as fallback
+        console.log('🎵 Returning demo search results for:', query)
+        return getDemoSearchResults(query, 'all')
     }
 }

@@ -11,7 +11,11 @@ export const likedSongsStationTemplate = {
     _id: 'liked-songs-station',
     name: 'Liked Songs',
     songs: [],
-    imgUrl: getAssetUrl('img/liked-songs.jpeg'),
+    get imgUrl() {
+        // Dynamically generate the asset URL
+        const baseUrl = import.meta.env.BASE_URL || '/';
+        return baseUrl + 'img/liked-songs.jpeg';
+    },
     isLikedSongs: true,
     createdBy: {
         fullname: 'You'
