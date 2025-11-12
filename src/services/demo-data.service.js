@@ -1,5 +1,3 @@
-import { getAssetUrl, ASSET_PATHS } from './asset.service'
-
 const NUM_STATIONS = 100
 const SONGS_PER_STATION = 40
 
@@ -10,7 +8,12 @@ export function initDemoData() {
     console.log('🔍 InitDemoData - Current localStorage:')
     console.log('Stations:', stations?.length || 0, 'Artists:', artists?.length || 0)
 
-    if (stations && stations.length > 0 && artists && artists.length > 0) {
+    // For GitHub Pages, force regenerate if we have fewer than 5 stations
+    const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io')
+    
+    if (isGitHubPages && (!stations || stations.length < 5)) {
+        console.log('🚀 GitHub Pages detected with insufficient data - forcing regeneration')
+    } else if (stations && stations.length > 0 && artists && artists.length > 0) {
         console.log('Demo data already exists in localStorage.')
         // Validate that the data structure is correct
         const hasValidStructure = stations.every(station => station._id && station.name && Array.isArray(station.songs))
@@ -28,7 +31,7 @@ export function initDemoData() {
             _id: 'liked-songs-station',
             name: 'Liked Songs',
             songs: allSongs.filter(song => song.likedBy && song.likedBy.includes('u100')),
-            imgUrl: getAssetUrl(ASSET_PATHS.LIKED_SONGS),
+            imgUrl: '/img/liked-songs.jpeg',
             isLikedSongs: true,
             createdBy: {
                 fullname: 'You'
@@ -843,9 +846,115 @@ export function addDefaultStationsManually() {
     return stationsAdded
 }
 
+// Simple fallback demo data for GitHub Pages
+export function createSimpleDemoData() {
+    console.log('🚀 Creating simple demo data for GitHub Pages...')
+    
+    const baseUrl = (typeof window !== 'undefined' && window.location.pathname.includes('/Offbeat-frontend/')) 
+        ? '/Offbeat-frontend/' 
+        : '/'
+    
+    const simpleDemoStations = [
+        {
+            _id: 'liked-songs-station',
+            name: 'Liked Songs',
+            songs: [],
+            imgUrl: baseUrl + 'img/liked-songs.jpeg',
+            isLikedSongs: true,
+            createdBy: { fullname: 'You' }
+        },
+        {
+            _id: 'demo_today_hits',
+            name: "Today's Top Hits",
+            description: 'The hottest tracks right now',
+            imgUrl: 'https://i.scdn.co/image/ab67706f00000002ea546f8c6250aa17529644f7',
+            createdBy: { _id: 'spotify', fullname: 'Spotify' },
+            songs: [
+                {
+                    id: 'song_1',
+                    title: 'Blinding Lights',
+                    artists: 'The Weeknd',
+                    album: 'After Hours',
+                    durationMs: 200000,
+                    imgUrl: 'https://i.scdn.co/image/ab67616d0000b273c9b6c7bb3dade2ce0c8c4239',
+                    addedAt: Date.now(),
+                    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+                },
+                {
+                    id: 'song_2',
+                    title: 'Shape of You',
+                    artists: 'Ed Sheeran',
+                    album: '÷ (Divide)',
+                    durationMs: 233000,
+                    imgUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96',
+                    addedAt: Date.now(),
+                    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+                }
+            ],
+            likedByUsers: []
+        },
+        {
+            _id: 'demo_chill_vibes',
+            name: 'Chill Vibes',
+            description: 'Relaxing music for any mood',
+            imgUrl: 'https://i.scdn.co/image/ab67706f000000026b30471dcc036d254dcc8041',
+            createdBy: { _id: 'spotify', fullname: 'Spotify' },
+            songs: [
+                {
+                    id: 'song_3',
+                    title: 'Stay',
+                    artists: 'Rihanna',
+                    album: 'Unapologetic',
+                    durationMs: 240000,
+                    imgUrl: 'https://i.scdn.co/image/ab67616d0000b273e20e5c366b497518353497b0',
+                    addedAt: Date.now(),
+                    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+                }
+            ],
+            likedByUsers: []
+        },
+        {
+            _id: 'demo_workout',
+            name: 'Beast Mode',
+            description: 'High-energy workout tracks',
+            imgUrl: 'https://i.scdn.co/image/ab67706f000000021c85876e7d9b8633ec32a8b9',
+            createdBy: { _id: 'spotify', fullname: 'Spotify' },
+            songs: [
+                {
+                    id: 'song_4',
+                    title: 'Thunder',
+                    artists: 'Imagine Dragons',
+                    album: 'Evolve',
+                    durationMs: 187000,
+                    imgUrl: 'https://i.scdn.co/image/ab67616d0000b273b5cf1d7e7e9c65bbcc365075',
+                    addedAt: Date.now(),
+                    url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
+                }
+            ],
+            likedByUsers: []
+        }
+    ]
+    
+    // Save to localStorage
+    saveToStorage('stationDB', simpleDemoStations)
+    saveToStorage('likedSongsStation', simpleDemoStations[0])
+    
+    // Create some basic artists
+    const simpleArtists = [
+        { id: 'artist_1', type: 'artist', title: 'The Weeknd', imgUrl: 'https://i.scdn.co/image/ab67616d0000b273c9b6c7bb3dade2ce0c8c4239' },
+        { id: 'artist_2', type: 'artist', title: 'Ed Sheeran', imgUrl: 'https://i.scdn.co/image/ab67616d0000b273ba5db46f4b838ef6027e6f96' },
+        { id: 'artist_3', type: 'artist', title: 'Rihanna', imgUrl: 'https://i.scdn.co/image/ab67616d0000b273e20e5c366b497518353497b0' }
+    ]
+    saveToStorage('artistDB', simpleArtists)
+    
+    console.log('✅ Simple demo data created successfully!')
+    return simpleDemoStations
+}
+
 // Make functions available globally for debugging
 if (typeof window !== 'undefined') {
     window.testAddDefaultStations = testAddDefaultStations
     window.addDefaultStationsToUserLibrary = addDefaultStationsToUserLibrary
     window.addDefaultStationsManually = addDefaultStationsManually
+    window.createSimpleDemoData = createSimpleDemoData
 }

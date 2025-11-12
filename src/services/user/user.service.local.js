@@ -89,17 +89,51 @@ function saveLoggedinUser(user) {
 	return user
 }
 
-// To quickly create an admin user, uncomment the next line
-// _createAdmin()
-async function _createAdmin() {
-    const user = {
-        username: 'admin',
-        password: 'admin',
-        fullname: 'Mustafa Adminsky',
-        imgUrl: 'https://cdn.pixabay.com/photo/2020/07/01/12/58/icon-5359553_1280.png',
-        score: 10000,
+// Create default users for demo
+export function createDefaultUsers() {
+    const defaultUsers = [
+        {
+            _id: 'user_guest',
+            username: 'guest',
+            password: 'guest',
+            fullname: 'Guest User',
+            imgUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
+            score: 1000,
+            isAdmin: false
+        },
+        {
+            _id: 'user_admin',
+            username: 'admin',
+            password: 'admin',
+            fullname: 'Admin User',
+            imgUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face',
+            score: 10000,
+            isAdmin: true
+        },
+        {
+            _id: 'user_demo',
+            username: 'demo',
+            password: 'demo',
+            fullname: 'Demo User',
+            imgUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b98d?w=400&h=400&fit=crop&crop=face',
+            score: 5000,
+            isAdmin: false
+        }
+    ]
+    
+    // Save users to localStorage
+    const existingUsers = JSON.parse(localStorage.getItem('userDB') || '[]')
+    if (existingUsers.length === 0) {
+        localStorage.setItem('userDB', JSON.stringify(defaultUsers))
+        console.log('✅ Default users created for GitHub Pages')
     }
+    
+    return defaultUsers
+}
 
-    const newUser = await storageService.post('user', userCred)
-    console.log('newUser: ', newUser)
+// Initialize default users on GitHub Pages
+if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
+    setTimeout(() => {
+        createDefaultUsers()
+    }, 100)
 }

@@ -21,7 +21,13 @@ function getDefaultFilter() {
     }
 }
 
-const service = (VITE_LOCAL === 'true') ? local : remote
+// Force local service for GitHub Pages or when backend is disabled
+const isStaticDeployment = 
+    (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) ||
+    import.meta.env.VITE_DISABLE_BACKEND === 'true' ||
+    import.meta.env.VITE_LOCAL === 'true'
+
+const service = isStaticDeployment ? local : remote
 export const stationService = { getEmptyStation, getDefaultFilter, ...service }
 
 // Easy access to this service from the dev tools console
