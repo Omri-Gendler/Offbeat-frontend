@@ -1,8 +1,8 @@
-// GitHub Pages Demo Data Initializer
-// This script ensures demo data is loaded on GitHub Pages
+// This file is no longer needed - demo data initialization is handled in the main app
+// Keeping this as a backup manual initializer
 
 (function() {
-    console.log('🚀 GitHub Pages Demo Data Initializer');
+    console.log('🚀 GitHub Pages Demo Data Initializer (Backup)');
     
     // Check if we're on GitHub Pages
     const isGitHubPages = window.location.hostname.includes('github.io');
