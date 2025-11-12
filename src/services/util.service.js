@@ -7,6 +7,7 @@ export const util = {
     debounce,
     saveToStorage,
     loadFromStorage,
+    getAssetUrl,
 }
 
 
@@ -72,4 +73,15 @@ export function saveToStorage(key, value) {
 export function loadFromStorage(key) {
     const data = localStorage.getItem(key)
     return (data) ? JSON.parse(data) : undefined
+}
+
+export function getAssetUrl(path) {
+    // Remove leading slash if present
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path
+    
+    // Get the base URL from Vite environment
+    const baseUrl = import.meta.env.BASE_URL || '/'
+    
+    // Combine base URL with the asset path
+    return baseUrl + cleanPath
 }

@@ -1,8 +1,7 @@
 
 import { storageService } from '../async-storage.service'
-import { makeId, loadFromStorage, saveToStorage } from '../util.service'
+import { makeId, loadFromStorage, saveToStorage, getAssetUrl } from '../util.service'
 import { userService } from '../user'
-import { getAssetUrl, ASSET_PATHS } from '../asset.service'
 
 const STORAGE_KEY = 'stationDB'
 const LIKED_SONGS_KEY = 'likedSongsStation'
@@ -12,7 +11,7 @@ export const likedSongsStationTemplate = {
     _id: 'liked-songs-station',
     name: 'Liked Songs',
     songs: [],
-    imgUrl: getAssetUrl(ASSET_PATHS.LIKED_SONGS),
+    imgUrl: getAssetUrl('img/liked-songs.jpeg'),
     isLikedSongs: true,
     createdBy: {
         fullname: 'You'
@@ -229,7 +228,7 @@ async function save(station) {
                 fullname: loggedinUser?.fullname || 'You'
             },
             msgs: [],
-            imgUrl: station.imgUrl || '/img/infected.jpg'
+            imgUrl: station.imgUrl || getAssetUrl('img/infected.jpg')
         }
         savedStation = await storageService.post(STORAGE_KEY, stationToSave)
     }

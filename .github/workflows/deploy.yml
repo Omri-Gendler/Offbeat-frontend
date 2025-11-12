@@ -36,8 +36,12 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          VITE_LOCAL: true
+          VITE_DISABLE_BACKEND: true
           VITE_YOUTUBE_API_KEY: ${{ secrets.VITE_YOUTUBE_API_KEY }}
+          VITE_SPOTIFY_API_KEY: ${{ secrets.VITE_SPOTIFY_API_KEY }}
+          VITE_SPOTIFY_API_KEY_SECRET: ${{ secrets.VITE_SPOTIFY_API_KEY_SECRET }}
+          VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
+          VITE_CLOUDINARY_UPLOAD_PRESET: ${{ secrets.VITE_CLOUDINARY_UPLOAD_PRESET }}
           
       - name: Setup Pages
         uses: actions/configure-pages@v4

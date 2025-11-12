@@ -5,11 +5,19 @@ const SOCKET_URL = process.env.NODE_ENV === 'production'
     ? import.meta.env.VITE_BACKEND_URL?.replace('/api/', '') || 'https://your-backend-name.onrender.com'
     : '//localhost:3030'
 
+// Check if we're on GitHub Pages or static deployment
+const isStaticDeployment = 
+    (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) ||
+    import.meta.env.VITE_DISABLE_BACKEND === 'true' ||
+    (!import.meta.env.VITE_BACKEND_URL && import.meta.env.PROD)
+
 export const socketService = createSocketService()
 
-// Don't auto-setup socket for static deployments (GitHub Pages)
-if (import.meta.env.VITE_LOCAL !== 'true') {
-    socketService.setup()
+// Only setup socket if not on static deployment
+if (!isStaticDeployment && import.meta.env.VITE_LOCAL !== 'true') {
+    setTimeout(() => {
+        socketService.setup()
+    }, 100)
 }
 
 function createSocketService() {
@@ -17,14 +25,23 @@ function createSocketService() {
 
     const socketService = {
         setup() {
-            // Skip socket setup for local/static deployments
-            if (import.meta.env.VITE_LOCAL === 'true') {
-                console.log('Socket service disabled for static deployment')
+            // Skip socket setup for static deployments
+            if (isStaticDeployment) {
+                console.log('🚀 Socket service disabled for static deployment (GitHub Pages)')
                 return
             }
             if (socket) return
-            socket = io(SOCKET_URL, { transports: ['websocket'] })
-            console.log('Socket Connection initiated with:', SOCKET_URL)
+            try {
+                socket = io(SOCKET_URL, { 
+                    transports: ['websocket'],
+                    timeout: 5000,
+                    forceNew: true
+                })
+                console.log('Socket Connection initiated with:', SOCKET_URL)
+            } catch (error) {
+                console.warn('Failed to initialize socket:', error)
+                return
+            }
 
             // const user = userService.getLoggedinUser()
             // if (user) this.login(user._id)
@@ -48,8 +65,9 @@ function createSocketService() {
             })
         },
         on(eventName, cb) {
+            if (isStaticDeployment) return
             if (!socket) this.setup()
-            socket.on(eventName, cb)
+            if (socket) socket.on(eventName, cb)
         },
         off(eventName, cb = null) {
             if (!socket) return
@@ -57,9 +75,17 @@ function createSocketService() {
             else socket.off(eventName, cb)
         },
         emit(eventName, data) {
+            if (isStaticDeployment) {
+                console.log(`🚫 Socket disabled - would emit: ${eventName}`, data)
+                return
+            }
             if (!socket) this.setup()
-            console.log(`Emitting event: ${eventName}`, data)
-            socket.emit(eventName, data)
+            if (socket && socket.connected) {
+                console.log(`Emitting event: ${eventName}`, data)
+                socket.emit(eventName, data)
+            } else {
+                console.warn(`Socket not connected - cannot emit: ${eventName}`)
+            }
         },
         login(userId) {
             this.emit('set-user-socket', userId)
