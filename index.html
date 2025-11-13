@@ -15,10 +15,243 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/overlayscrollbars/styles/overlayscrollbars.css">
   <script src="https://unpkg.com/overlayscrollbars/browser/overlayscrollbars.browser.es6.min.js"></script>
+  
+  <!-- Professional Loading Screen Styles -->
+  <style>
+    .initial-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+      color: white;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    .initial-loading.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    .loading-container {
+      background: rgba(255,255,255,0.1);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+      max-width: 400px;
+      margin: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    
+    .loading-logo {
+      font-size: 64px;
+      margin-bottom: 20px;
+      animation: pulse-logo 2s ease-in-out infinite;
+    }
+    
+    .loading-title {
+      margin: 0 0 10px 0;
+      color: #1ed760;
+      font-size: 32px;
+      font-weight: 700;
+    }
+    
+    .loading-subtitle {
+      margin: 0 0 30px 0;
+      opacity: 0.8;
+      font-size: 16px;
+    }
+    
+    .loading-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 20px 0;
+    }
+    
+    .loading-dot {
+      width: 12px;
+      height: 12px;
+      background: #1ed760;
+      border-radius: 50%;
+      animation: loading-bounce 1.4s ease-in-out infinite both;
+    }
+    
+    .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+    .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+    .loading-dot:nth-child(3) { animation-delay: 0; }
+    
+    @keyframes loading-bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+    
+    @keyframes pulse-logo {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .loading-status {
+      font-size: 14px;
+      color: #888;
+      margin-top: 20px;
+      min-height: 20px;
+    }
+    
+    .refresh-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #1ed760;
+      color: #121212;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .refresh-btn:hover {
+      background: #1db954;
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 
 <body>
+  <!-- Professional Loading Screen -->
+  <div id="initial-loading" class="initial-loading">
+    <div class="loading-container">
+      <div class="loading-logo">🎵</div>
+      <h1 class="loading-title">Offbeat</h1>
+      <p class="loading-subtitle">Your music streaming experience</p>
+      <div class="loading-dots">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+      </div>
+      <p class="loading-status" id="loading-status">Initializing app...</p>
+    </div>
+  </div>
+
+  <!-- Main App Container -->
   <div id="root"></div>
+
+  <!-- Loading Management Script -->
+  <script>
+    let loadingShown = true;
+    let statusMessages = [
+      'Initializing app...',
+      'Loading music library...',
+      'Setting up offline mode...',
+      'Preparing your experience...',
+      'Almost ready...'
+    ];
+    let currentMessageIndex = 0;
+    
+    function updateLoadingStatus() {
+      const statusEl = document.getElementById('loading-status');
+      if (statusEl && loadingShown && currentMessageIndex < statusMessages.length) {
+        statusEl.textContent = statusMessages[currentMessageIndex];
+        currentMessageIndex++;
+        if (currentMessageIndex < statusMessages.length) {
+          setTimeout(updateLoadingStatus, 1800);
+        }
+      }
+    }
+    
+    function hideInitialLoading() {
+      if (!loadingShown) return;
+      
+      const loadingEl = document.getElementById('initial-loading');
+      if (loadingEl) {
+        loadingShown = false;
+        loadingEl.classList.add('fade-out');
+        setTimeout(() => {
+          loadingEl.style.display = 'none';
+        }, 500);
+        console.log('✅ Initial loading screen hidden - app loaded successfully');
+      }
+    }
+    
+    function showConnectionIssue() {
+      const statusEl = document.getElementById('loading-status');
+      if (statusEl && loadingShown) {
+        statusEl.innerHTML = `
+          Connection taking longer than expected...<br>
+          <button class="refresh-btn" onclick="window.location.reload()">
+            Refresh Page
+          </button>
+        `;
+        console.log('⚠️ Showing connection issue message');
+      }
+    }
+    
+    function checkAppLoaded() {
+      const root = document.getElementById('root');
+      if (root && root.children.length > 0) {
+        // Additional check - make sure it's not just the loading fallback
+        const hasActualContent = root.querySelector('.app, .MuiBox-root, [class*="App"]');
+        if (hasActualContent || root.innerHTML.length > 200) {
+          hideInitialLoading();
+          return true;
+        }
+      }
+      return false;
+    }
+    
+    // Start status message cycling
+    setTimeout(updateLoadingStatus, 1000);
+    
+    // Check for app load every 200ms
+    const checkInterval = setInterval(() => {
+      if (checkAppLoaded()) {
+        clearInterval(checkInterval);
+      }
+    }, 200);
+    
+    // Show connection issue after 8 seconds
+    setTimeout(() => {
+      if (loadingShown && !checkAppLoaded()) {
+        showConnectionIssue();
+      }
+    }, 8000);
+    
+    // Force hide loading after 15 seconds total
+    setTimeout(() => {
+      if (loadingShown) {
+        console.log('⏰ Force hiding loading screen after timeout');
+        hideInitialLoading();
+      }
+    }, 15000);
+    
+    // GitHub Pages detection
+    if (window.location.hostname.includes('github.io')) {
+      console.log('🌐 GitHub Pages mode detected');
+      window.GITHUB_PAGES_MODE = true;
+    }
+    
+    // Expose functions globally for debugging
+    window.hideLoading = hideInitialLoading;
+    window.showLoading = () => {
+      const loadingEl = document.getElementById('initial-loading');
+      if (loadingEl) {
+        loadingShown = true;
+        loadingEl.style.display = 'flex';
+        loadingEl.classList.remove('fade-out');
+      }
+    };
+  </script>
+
   <script type="module" src="/src/index.jsx"></script>
 </body>
 

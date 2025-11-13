@@ -21,6 +21,16 @@ try {
     createSimpleDemoData()
 }
 
+// Hide initial loading screen once React app is ready
+function hideInitialLoading() {
+    // Small delay to ensure React has fully rendered
+    setTimeout(() => {
+        if (window.hideLoading) {
+            window.hideLoading()
+        }
+    }, 100)
+}
+
 // For GitHub Pages, ensure we have demo data after a small delay
 if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
     setTimeout(() => {
@@ -39,6 +49,8 @@ if (typeof window !== 'undefined' && window.location.hostname.includes('github.i
 window.resetStationData = clearAndRegenerateDemoData
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
+
+// Render the app and hide loading screen when ready
 root.render(
 	<Provider store={store}>
 		<Router>
@@ -46,6 +58,9 @@ root.render(
 		</Router>
 	</Provider>
 )
+
+// Hide loading screen after render
+hideInitialLoading()
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -146,9 +146,19 @@ export const offlineSearchService = {
 }
 
 function isOfflineMode() {
-    return !import.meta.env.VITE_SPOTIFY_API_KEY || 
-           !import.meta.env.VITE_SPOTIFY_API_KEY_SECRET ||
-           typeof window !== 'undefined' && window.location.hostname.includes('github.io')
+    const noApiKeys = !import.meta.env.VITE_SPOTIFY_API_KEY || 
+                      !import.meta.env.VITE_SPOTIFY_API_KEY_SECRET ||
+                      import.meta.env.VITE_SPOTIFY_API_KEY === 'undefined'
+    
+    const isGitHubPages = typeof window !== 'undefined' && window.location.hostname.includes('github.io')
+    
+    const offline = noApiKeys || isGitHubPages
+    
+    if (offline) {
+        console.log('🔧 Offline mode active:', { noApiKeys, isGitHubPages })
+    }
+    
+    return offline
 }
 
 function searchTracks(query, limit = 20) {
