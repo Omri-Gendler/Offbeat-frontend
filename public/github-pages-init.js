@@ -23,7 +23,100 @@
         } else {
             console.log('✅ Demo data already exists:', stationData.length, 'stations');
         }
+        
+        // Also check if the main React app loaded
+        checkAppLoad();
     }, 1000);
+    
+    function checkAppLoad() {
+        setTimeout(() => {
+            const root = document.getElementById('root');
+            if (root && root.children.length === 0) {
+                console.warn('⚠️ Main app did not load, showing fallback UI');
+                showFallbackUI();
+            }
+        }, 5000); // Wait 5 seconds for app to load
+    }
+    
+    function showFallbackUI() {
+        const root = document.getElementById('root');
+        if (root) {
+            root.innerHTML = `
+                <div style="
+                    display: flex; 
+                    flex-direction: column; 
+                    justify-content: center; 
+                    align-items: center; 
+                    height: 100vh; 
+                    font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+                    background: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+                    color: white;
+                    text-align: center;
+                    padding: 20px;
+                ">
+                    <div style="
+                        background: rgba(255,255,255,0.1);
+                        padding: 40px;
+                        border-radius: 20px;
+                        backdrop-filter: blur(10px);
+                    ">
+                        <h1 style="margin: 0 0 20px 0; font-size: 48px;">🎵</h1>
+                        <h2 style="margin: 0 0 10px 0; color: #1ed760;">Offbeat Music</h2>
+                        <p style="margin: 0 0 20px 0; opacity: 0.8;">Your music streaming experience is loading...</p>
+                        <div style="margin: 20px 0;">
+                            <div style="
+                                display: inline-block;
+                                width: 12px;
+                                height: 12px;
+                                background: #1ed760;
+                                border-radius: 50%;
+                                margin: 0 4px;
+                                animation: pulse 1.4s ease-in-out infinite both;
+                            "></div>
+                            <div style="
+                                display: inline-block;
+                                width: 12px;
+                                height: 12px;
+                                background: #1ed760;
+                                border-radius: 50%;
+                                margin: 0 4px;
+                                animation: pulse 1.4s ease-in-out 0.2s infinite both;
+                            "></div>
+                            <div style="
+                                display: inline-block;
+                                width: 12px;
+                                height: 12px;
+                                background: #1ed760;
+                                border-radius: 50%;
+                                margin: 0 4px;
+                                animation: pulse 1.4s ease-in-out 0.4s infinite both;
+                            "></div>
+                        </div>
+                        <button onclick="window.location.reload()" style="
+                            margin-top: 20px;
+                            padding: 12px 24px;
+                            background: #1ed760;
+                            color: #121212;
+                            border: none;
+                            border-radius: 25px;
+                            cursor: pointer;
+                            font-weight: bold;
+                            font-size: 16px;
+                            transition: background 0.3s ease;
+                        " onmouseover="this.style.background='#1db954'" onmouseout="this.style.background='#1ed760'">
+                            Refresh Page
+                        </button>
+                    </div>
+                </div>
+                <style>
+                    @keyframes pulse {
+                        0%, 80%, 100% { transform: scale(0); }
+                        40% { transform: scale(1); }
+                    }
+                </style>
+            `;
+        }
+    }
     
     function createBasicDemoData() {
         const baseUrl = window.location.pathname.includes('/Offbeat-frontend/') 
