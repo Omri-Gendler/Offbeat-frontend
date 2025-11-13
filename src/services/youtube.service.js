@@ -4,7 +4,11 @@ import { demoYouTubeResults } from './demo-youtube.service.js'
 const API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY
 const BASE_URL = 'https://www.googleapis.com/youtube/v3'
 const searchCache = new Map()
-const USE_DEMO_MODE = !API_KEY || API_KEY === 'demo' || API_KEY === 'undefined' || API_KEY === '' // Use demo if no API key
+const USE_DEMO_MODE = !API_KEY || 
+                     API_KEY === 'demo' || 
+                     API_KEY === 'undefined' || 
+                     API_KEY === '' ||
+                     (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) // Use demo if no API key or on GitHub Pages
 
 // Debug logging for production
 console.log('🎵 YouTube Service initialized')

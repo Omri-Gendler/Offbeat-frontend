@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { youtubeService } from '../services/youtube.service'
+import { spotifyService } from '../services/spotify.service'
+import { offlineSearchService } from '../services/offline-search.service'
 import { IconPlay24, IconPause24 } from './Icon'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { SearchResultSongRow } from './SearchResultSongRow.jsx'
@@ -28,7 +29,6 @@ export function SearchResults({ searchTerm }) {
   const [activeFilter, setActiveFilter] = useState('All')
   const [displayedArtistsCount, setDisplayedArtistsCount] = useState(6)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const [accessToken, setAccessToken] = useState('')
   const [spotifyResults, setSpotifyResults] = useState({ tracks: [], artists: [] })
 
   const currentPlayingSong = useSelector(selectCurrentSong)
@@ -45,29 +45,7 @@ export function SearchResults({ searchTerm }) {
 
   const filters = ['All', 'Artists', 'Playlists', 'Songs', 'Albums']
 
-  // Spotify token
-  useEffect(() => {
-    const authParameters = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body:
-        'grant_type=client_credentials' +
-        '&client_id=' + import.meta.env.VITE_SPOTIFY_API_KEY +
-        '&client_secret=' + import.meta.env.VITE_SPOTIFY_API_KEY_SECRET,
-    }
-
-    fetch('https://accounts.spotify.com/api/token', authParameters)
-      .then(res => res.json())
-      .then(data => {
-        console.log('✅ Spotify access token obtained')
-        setAccessToken(data.access_token)
-      })
-      .catch(err => {
-        console.error('❌ Error getting Spotify access token:', err)
-      })
-  }, [])
-
-  // Trigger search
+  // Trigger search when search term changes
   useEffect(() => {
     if (!searchTerm?.trim()) {
       setAllSongs([])
@@ -75,9 +53,9 @@ export function SearchResults({ searchTerm }) {
       setSpotifyResults({ tracks: [], artists: [] })
       return
     }
-    if (accessToken) searchSongs()
+    searchSongs()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchTerm, accessToken])
+  }, [searchTerm])
 
   const displayedArtists = useMemo(() => {
     if (activeFilter === 'All' || activeFilter === 'Artists') return allArtists
@@ -101,220 +79,76 @@ export function SearchResults({ searchTerm }) {
   }
 
   async function searchSongs() {
-    if (!accessToken) {
-      console.log('⏳ Waiting for Spotify access token...')
-      return
-    }
-
     try {
       setIsLoading(true)
       setError(null)
-      console.log('🔍 Searching Spotify + YouTube:', searchTerm)
+      console.log('🔍 Searching with offline-capable services:', searchTerm)
 
-      const spotifySearchParams = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      }
-
-      const [spotifyTracksResponse, spotifyArtistsResponse, youtubeResults] = await Promise.all([
-        fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(searchTerm)}&type=track&limit=20&market=US`, spotifySearchParams),
-        fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(searchTerm)}&type=artist&limit=15`, spotifySearchParams),
-        youtubeService.searchSongs(searchTerm).catch(err => {
-          console.warn('⚠️ YouTube search failed:', err)
+      // Use our offline-capable services
+      const [spotifyResults, offlineResults] = await Promise.all([
+        spotifyService.searchAll(searchTerm, 20).catch(err => {
+          console.warn('⚠️ Spotify search failed, using offline fallback:', err)
+          return { songs: [], artists: [] }
+        }),
+        offlineSearchService.searchAll(searchTerm, 10).catch(err => {
+          console.warn('⚠️ Offline search failed:', err)
           return { songs: [], artists: [] }
         })
       ])
 
-      const [spotifyTracks, spotifyArtists] = await Promise.all([
-        spotifyTracksResponse.json(),
-        spotifyArtistsResponse.json()
-      ])
+      console.log('📊 Spotify results:', spotifyResults.songs?.length || 0, 'songs,', spotifyResults.artists?.length || 0, 'artists')
+      console.log('📊 Offline results:', offlineResults.songs?.length || 0, 'songs,', offlineResults.artists?.length || 0, 'artists')
 
-      console.log('📊 Spotify tracks:', spotifyTracks.tracks?.items?.length || 0)
-      console.log('📊 Spotify artists:', spotifyArtists.artists?.items?.length || 0)
-      console.log('📊 YouTube results:', youtubeResults.songs?.length || 0)
-
-      // Map Spotify tracks
-      const processedSpotifyTracks = spotifyTracks.tracks?.items?.map(track => ({
-        id: track.id,
-        type: 'song',
-        title: track.name,
-        artist: track.artists?.[0]?.name || 'Unknown Artist',
-        artists: track.artists?.map(a => a.name).join(', ') || 'Unknown Artist',
-        album: track.album?.name || 'Unknown Album',
-        durationMs: track.duration_ms || 0,
-        imgUrl: track.album?.images?.[0]?.url || track.album?.images?.[1]?.url,
-        url: track.external_urls?.spotify,
-        previewUrl: track.preview_url,
-        isSpotify: true,
-        spotifyId: track.id,
-        addedAt: Date.now(),
-        youtubeMatch: findBestYouTubeMatch(track, youtubeResults.songs || [])
-      })) || []
-
-      // Map Spotify artists
-      const processedSpotifyArtists = spotifyArtists.artists?.items?.map(artist => ({
-        id: artist.id,
-        type: 'artist',
-        title: artist.name,
-        imgUrl: artist.images?.[0]?.url || artist.images?.[1]?.url,
-        followers: artist.followers?.total || 0,
-        genres: artist.genres || [],
-        popularity: artist.popularity || 0,
-        url: artist.external_urls?.spotify,
-        isSpotify: true,
-        spotifyId: artist.id
-      })) || []
-
-      // Build hybrid songs (Spotify metadata + YouTube id)
-      const hybridSongs = []
-      const usedYouTubeIds = new Set()
-
-      for (const sp of processedSpotifyTracks) {
-        if (sp.youtubeMatch) {
-          const yt = sp.youtubeMatch
-          hybridSongs.push({
-            id: yt.id,
-            youtubeVideoId: yt.youtubeVideoId || yt.id,
-            isYouTube: true,
-            url: yt.url,
-            type: 'song',
-
-            title: sp.title,
-            artist: sp.artist,
-            artists: sp.artists,
-            album: sp.album,
-            imgUrl: sp.imgUrl || yt.imgUrl,
-            durationMs: sp.durationMs || yt.durationMs,
-            previewUrl: sp.previewUrl,
-
-            isSpotify: true,
-            isHybrid: true,
-            spotifyId: sp.spotifyId,
-            spotifyUrl: sp.url,
-
-            genre: yt.genre,
-            _original: yt._original,
-
-            addedAt: Date.now()
-          })
-          usedYouTubeIds.add(yt.id)
-        }
-      }
-
-      // Add remaining YouTube-only songs
-      const remainingYouTubeSongs = (youtubeResults.songs || []).filter(song => !usedYouTubeIds.has(song.id))
-      hybridSongs.push(...remainingYouTubeSongs.map(song => ({
-        ...song,
-        isHybrid: true,
-        isSpotifyEnriched: false
-      })))
-
-      // Combine artists (Spotify first, then YouTube uniques)
-      const combinedArtists = [
-        ...processedSpotifyArtists,
-        ...(youtubeResults.artists || []).filter(ytArtist =>
-          !processedSpotifyArtists.some(spArtist =>
-            spArtist.title.toLowerCase() === ytArtist.title.toLowerCase()
-          )
-        )
+      // Combine and deduplicate results
+      const allSongsFound = [
+        ...(spotifyResults.songs || []),
+        ...(offlineResults.songs || [])
       ]
 
-      // De-dup results by id
-      const dedupSongs = uniqBy(hybridSongs, s => s.id)
-      const dedupArtists = uniqBy(combinedArtists, a => a.id)
+      const allArtistsFound = [
+        ...(spotifyResults.artists || []),
+        ...(offlineResults.artists || [])
+      ]
 
-      setSpotifyResults({ tracks: processedSpotifyTracks, artists: processedSpotifyArtists })
+      // De-dup results by id and title
+      const dedupSongs = uniqBy(allSongsFound, s => s.id)
+      const dedupArtists = uniqBy(allArtistsFound, a => a.id || a.title?.toLowerCase())
+
+      setSpotifyResults({ 
+        tracks: spotifyResults.songs || [], 
+        artists: spotifyResults.artists || [] 
+      })
       setAllSongs(dedupSongs)
       setAllArtists(dedupArtists)
 
-      console.log('✅ Hybrid search complete:', {
-        hybridSongs: dedupSongs.length,
-        allArtists: dedupArtists.length,
-        displayedSongs: dedupSongs.slice(0, 4).length,
+      console.log('✅ Search complete:', {
+        totalSongs: dedupSongs.length,
+        totalArtists: dedupArtists.length,
         activeFilter
       })
     } catch (err) {
       console.error('❌ Search failed:', err)
-      setError(`Failed to search: ${err.message}. Check console for details.`)
+      setError(`Search failed: ${err.message}`)
     } finally {
       setIsLoading(false)
     }
   }
 
-  function findBestYouTubeMatch(spotifyTrack, youtubeTracks) {
-    const spotifyTitle = (spotifyTrack?.name || '').toLowerCase()
-    const spotifyArtist = (spotifyTrack?.artists?.[0]?.name || '').toLowerCase()
 
-    let bestMatch = null
-    let bestScore = 0
-
-    for (const yt of youtubeTracks || []) {
-      const ytTitle = (yt.title || '').toLowerCase()
-      const ytArtistRaw = yt.artist ?? yt.artists ?? ''
-      const ytArtist = Array.isArray(ytArtistRaw) ? ytArtistRaw.join(', ') : ytArtistRaw
-      const ytArtistLc = (ytArtist || '').toLowerCase()
-
-      let score = 0
-      if (ytTitle.includes(spotifyTitle) || spotifyTitle.includes(ytTitle)) score += 50
-      if (ytArtistLc.includes(spotifyArtist) || spotifyArtist.includes(ytArtistLc)) score += 30
-
-      const spotifyWords = `${spotifyTitle} ${spotifyArtist}`.split(/\s+/)
-      const youtubeWords = `${ytTitle} ${ytArtistLc}`.split(/\s+/)
-      const common = spotifyWords.filter(w => w.length > 2 && youtubeWords.some(yw => yw.includes(w) || w.includes(yw)))
-      score += common.length * 5
-
-      if (ytTitle.length < 100) score += 10
-      const avoid = ['cover','remix','live','acoustic','karaoke']
-      if (avoid.some(k => ytTitle.includes(k))) score -= 20
-
-      if (score > bestScore && score > 30) {
-        bestScore = score
-        bestMatch = yt
-      }
-    }
-    return bestMatch
-  }
 
   async function loadMoreArtists() {
-    if (isLoadingMore || !accessToken) return
+    if (isLoadingMore) return
 
     try {
       setIsLoadingMore(true)
 
-      const spotifySearchParams = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      }
+      // Try to load more from our services
+      const results = await spotifyService.searchArtists(searchTerm, 20, allArtists.filter(a => a.isSpotify).length)
+        .catch(() => offlineSearchService.searchArtists(searchTerm, 20))
 
-      const response = await fetch(
-        `https://api.spotify.com/v1/search?q=${encodeURIComponent(searchTerm)}&type=artist&limit=20&offset=${allArtists.filter(a => a.isSpotify).length}`,
-        spotifySearchParams
-      )
-      const data = await response.json()
-
-      if (data.artists?.items?.length > 0) {
-        const newArtists = data.artists.items.map(artist => ({
-          id: artist.id,
-          type: 'artist',
-          title: artist.name,
-          imgUrl: artist.images?.[0]?.url || artist.images?.[1]?.url,
-          followers: artist.followers?.total || 0,
-          genres: artist.genres || [],
-          popularity: artist.popularity || 0,
-          url: artist.external_urls?.spotify,
-          isSpotify: true,
-          spotifyId: artist.id
-        }))
-
+      if (results.artists?.length > 0) {
         const existingIds = new Set(allArtists.map(a => a.id))
-        const filteredNewArtists = newArtists.filter(a => !existingIds.has(a.id))
+        const filteredNewArtists = results.artists.filter(a => !existingIds.has(a.id))
 
         if (filteredNewArtists.length > 0) {
           setAllArtists(prev => [...prev, ...filteredNewArtists])
