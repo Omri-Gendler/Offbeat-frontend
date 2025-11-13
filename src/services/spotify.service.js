@@ -1,3 +1,5 @@
+import { offlineSearchService } from './offline-search.service.js'
+
 let accessToken = null
 let tokenExpiry = null
 
@@ -155,6 +157,12 @@ function getDemoSearchResults(query, type = 'tracks') {
  * Search for tracks on Spotify
  */
 async function searchTracks(query, limit = 20, offset = 0) {
+    // Use offline search if in offline mode
+    if (offlineSearchService.isOfflineMode()) {
+        console.log('🔍 Using offline search for tracks:', query)
+        return offlineSearchService.searchTracks(query, limit)
+    }
+    
     try {
         const encodedQuery = encodeURIComponent(query)
         const url = `https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&limit=${limit}&offset=${offset}&market=US`
@@ -181,9 +189,9 @@ async function searchTracks(query, limit = 20, offset = 0) {
         }
     } catch (error) {
         console.error('❌ Error searching Spotify tracks:', error)
-        // Return demo results as fallback
-        console.log('🎵 Returning demo search results for:', query)
-        return getDemoSearchResults(query, 'tracks')
+        // Fallback to offline search
+        console.log('🎵 Falling back to offline search for:', query)
+        return offlineSearchService.searchTracks(query, limit)
     }
 }
 
@@ -191,6 +199,12 @@ async function searchTracks(query, limit = 20, offset = 0) {
  * Search for artists on Spotify  
  */
 async function searchArtists(query, limit = 20, offset = 0) {
+    // Use offline search if in offline mode
+    if (offlineSearchService.isOfflineMode()) {
+        console.log('🔍 Using offline search for artists:', query)
+        return offlineSearchService.searchArtists(query, limit)
+    }
+    
     try {
         const encodedQuery = encodeURIComponent(query)
         const url = `https://api.spotify.com/v1/search?q=${encodedQuery}&type=artist&limit=${limit}&offset=${offset}`
@@ -214,7 +228,9 @@ async function searchArtists(query, limit = 20, offset = 0) {
         }
     } catch (error) {
         console.error('❌ Error searching Spotify artists:', error)
-        throw error
+        // Fallback to offline search
+        console.log('🎵 Falling back to offline search for artists:', query)
+        return offlineSearchService.searchArtists(query, limit)
     }
 }
 
@@ -254,6 +270,12 @@ async function searchAlbums(query, limit = 20, offset = 0) {
  * Search all types (tracks, artists, albums) on Spotify
  */
 async function searchAll(query, limit = 10) {
+    // Use offline search if in offline mode
+    if (offlineSearchService.isOfflineMode()) {
+        console.log('🔍 Using offline search for all types:', query)
+        return offlineSearchService.searchAll(query, limit)
+    }
+    
     try {
         const encodedQuery = encodeURIComponent(query)
         const url = `https://api.spotify.com/v1/search?q=${encodedQuery}&type=track,artist,album&limit=${limit}&market=US`
@@ -317,8 +339,8 @@ async function searchAll(query, limit = 10) {
         }
     } catch (error) {
         console.error('❌ Error searching Spotify (all types):', error)
-        // Return demo results as fallback
-        console.log('🎵 Returning demo search results for:', query)
-        return getDemoSearchResults(query, 'all')
+        // Fallback to offline search
+        console.log('🎵 Falling back to offline search for:', query)
+        return offlineSearchService.searchAll(query, limit)
     }
 }
