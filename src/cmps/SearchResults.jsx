@@ -47,15 +47,39 @@ export function SearchResults({ searchTerm }) {
 
   // Trigger search when search term changes
   useEffect(() => {
+    console.log('🔄 Search effect triggered. searchTerm:', searchTerm)
     if (!searchTerm?.trim()) {
-      setAllSongs([])
-      setAllArtists([])
-      setSpotifyResults({ tracks: [], artists: [] })
+      console.log('🔍 No search term, showing default results')
+      // Show some default results instead of empty
+      loadDefaultResults()
       return
     }
     searchSongs()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm])
+
+  async function loadDefaultResults() {
+    try {
+      setIsLoading(true)
+      console.log('📦 Loading default results...')
+      
+      // Get some default content to show
+      const defaultResults = await offlineSearchService.searchAll('', 8)
+      
+      setAllSongs(defaultResults.songs || [])
+      setAllArtists(defaultResults.artists || [])
+      setSpotifyResults({ tracks: [], artists: [] })
+      
+      console.log('✅ Default results loaded:', {
+        songs: defaultResults.songs?.length || 0,
+        artists: defaultResults.artists?.length || 0
+      })
+    } catch (err) {
+      console.error('❌ Failed to load default results:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const displayedArtists = useMemo(() => {
     if (activeFilter === 'All' || activeFilter === 'Artists') return allArtists
@@ -83,21 +107,26 @@ export function SearchResults({ searchTerm }) {
       setIsLoading(true)
       setError(null)
       console.log('🔍 Searching with offline-capable services:', searchTerm)
+      
+      // Check if we're in offline mode
+      const isOffline = offlineSearchService.isOfflineMode()
+      console.log('🌐 Offline mode:', isOffline)
 
       // Use our offline-capable services
       const [spotifyResults, offlineResults] = await Promise.all([
         spotifyService.searchAll(searchTerm, 20).catch(err => {
-          console.warn('⚠️ Spotify search failed, using offline fallback:', err)
+          console.warn('⚠️ Spotify search failed, using offline fallback:', err.message)
           return { songs: [], artists: [] }
         }),
         offlineSearchService.searchAll(searchTerm, 10).catch(err => {
-          console.warn('⚠️ Offline search failed:', err)
+          console.warn('⚠️ Offline search failed:', err.message)
           return { songs: [], artists: [] }
         })
       ])
 
-      console.log('📊 Spotify results:', spotifyResults.songs?.length || 0, 'songs,', spotifyResults.artists?.length || 0, 'artists')
-      console.log('📊 Offline results:', offlineResults.songs?.length || 0, 'songs,', offlineResults.artists?.length || 0, 'artists')
+      console.log('📊 Search results breakdown:')
+      console.log('   - Spotify:', spotifyResults.songs?.length || 0, 'songs,', spotifyResults.artists?.length || 0, 'artists')
+      console.log('   - Offline:', offlineResults.songs?.length || 0, 'songs,', offlineResults.artists?.length || 0, 'artists')
 
       // Combine and deduplicate results
       const allSongsFound = [
@@ -110,9 +139,13 @@ export function SearchResults({ searchTerm }) {
         ...(offlineResults.artists || [])
       ]
 
+      console.log('📦 Before deduplication:', allSongsFound.length, 'songs,', allArtistsFound.length, 'artists')
+
       // De-dup results by id and title
       const dedupSongs = uniqBy(allSongsFound, s => s.id)
       const dedupArtists = uniqBy(allArtistsFound, a => a.id || a.title?.toLowerCase())
+
+      console.log('📦 After deduplication:', dedupSongs.length, 'songs,', dedupArtists.length, 'artists')
 
       setSpotifyResults({ 
         tracks: spotifyResults.songs || [], 
@@ -124,7 +157,8 @@ export function SearchResults({ searchTerm }) {
       console.log('✅ Search complete:', {
         totalSongs: dedupSongs.length,
         totalArtists: dedupArtists.length,
-        activeFilter
+        activeFilter,
+        displayedSongs: dedupSongs.slice(0, 4).length
       })
     } catch (err) {
       console.error('❌ Search failed:', err)
@@ -206,13 +240,34 @@ export function SearchResults({ searchTerm }) {
     console.log('Navigate to search for artist:', artistName)
   }
 
+  // Show default content when no search term
   if (!searchTerm?.trim()) {
-    return (
-      <div className="search-results empty">
-        <h2>Search for music</h2>
-        <p>Find songs, artists, and more</p>
-      </div>
-    )
+    if (isLoading) {
+      return (
+        <div className="search-results loading">
+          <h2>Loading music...</h2>
+          <div className="spotify-loading-dots-big">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+          </div>
+        </div>
+      )
+    }
+    
+    // Show default results if we have any
+    if (allSongs.length > 0 || allArtists.length > 0) {
+      // Fall through to show the normal results
+    } else {
+      return (
+        <div className="search-results empty">
+          <h2>Discover Music</h2>
+          <p>Search for songs, artists, and albums</p>
+          <p className="search-hint">Try searching for "The Weeknd", "Shape of You", or any artist name</p>
+        </div>
+      )
+    }
   }
 
   if (isLoading) {

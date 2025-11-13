@@ -669,6 +669,14 @@
 .search-results.empty p {
   font-size: 16px;
   color: #b3b3b3;
+  margin: 8px 0;
+}
+
+.search-results.empty .search-hint {
+  font-size: 14px;
+  color: #888;
+  font-style: italic;
+  margin-top: 16px;
 }
 
 /* Loading State */

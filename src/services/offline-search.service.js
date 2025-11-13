@@ -154,11 +154,21 @@ function isOfflineMode() {
 function searchTracks(query, limit = 20) {
     console.log('🔍 Offline search for tracks:', query)
     
+    if (!query || query.trim().length === 0) {
+        console.log('📋 No query provided, returning all demo songs')
+        return Promise.resolve({
+            tracks: demoSongs.slice(0, limit)
+        })
+    }
+    
+    const lowerQuery = query.toLowerCase().trim()
     const results = demoSongs.filter(song => 
-        song.title.toLowerCase().includes(query.toLowerCase()) ||
-        song.artist.toLowerCase().includes(query.toLowerCase()) ||
-        song.album.toLowerCase().includes(query.toLowerCase())
+        song.title.toLowerCase().includes(lowerQuery) ||
+        song.artist.toLowerCase().includes(lowerQuery) ||
+        song.album.toLowerCase().includes(lowerQuery)
     ).slice(0, limit)
+    
+    console.log('🎵 Found', results.length, 'tracks for query:', query)
     
     return Promise.resolve({
         tracks: results
@@ -168,9 +178,19 @@ function searchTracks(query, limit = 20) {
 function searchArtists(query, limit = 20) {
     console.log('🔍 Offline search for artists:', query)
     
+    if (!query || query.trim().length === 0) {
+        console.log('📋 No query provided, returning all demo artists')
+        return Promise.resolve({
+            artists: demoArtists.slice(0, limit)
+        })
+    }
+    
+    const lowerQuery = query.toLowerCase().trim()
     const results = demoArtists.filter(artist =>
-        artist.title.toLowerCase().includes(query.toLowerCase())
+        artist.title.toLowerCase().includes(lowerQuery)
     ).slice(0, limit)
+    
+    console.log('🎭 Found', results.length, 'artists for query:', query)
     
     return Promise.resolve({
         artists: results
@@ -180,15 +200,28 @@ function searchArtists(query, limit = 20) {
 function searchAll(query, limit = 10) {
     console.log('🔍 Offline search for all:', query)
     
+    if (!query || query.trim().length === 0) {
+        console.log('📋 No query provided, returning sample results')
+        return Promise.resolve({
+            songs: demoSongs.slice(0, Math.min(limit, 6)),
+            artists: demoArtists.slice(0, Math.min(Math.floor(limit / 2), 3)),
+            albums: [],
+            total: Math.min(limit, 6) + Math.min(Math.floor(limit / 2), 3)
+        })
+    }
+    
+    const lowerQuery = query.toLowerCase().trim()
     const trackResults = demoSongs.filter(song => 
-        song.title.toLowerCase().includes(query.toLowerCase()) ||
-        song.artist.toLowerCase().includes(query.toLowerCase()) ||
-        song.album.toLowerCase().includes(query.toLowerCase())
+        song.title.toLowerCase().includes(lowerQuery) ||
+        song.artist.toLowerCase().includes(lowerQuery) ||
+        song.album.toLowerCase().includes(lowerQuery)
     ).slice(0, limit)
     
     const artistResults = demoArtists.filter(artist =>
-        artist.title.toLowerCase().includes(query.toLowerCase())
+        artist.title.toLowerCase().includes(lowerQuery)
     ).slice(0, Math.floor(limit / 2))
+    
+    console.log('🎯 Search results:', trackResults.length, 'songs,', artistResults.length, 'artists')
     
     return Promise.resolve({
         songs: trackResults,
