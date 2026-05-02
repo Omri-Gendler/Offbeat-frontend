@@ -34,7 +34,7 @@ import YouTubePlayer from './YouTubePlayer'
 import { showUserMsg } from '../services/event-bus.service'
 import { Icon } from '@mui/material'
 
-const FALLBACK = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+const FALLBACK = ''
 
 export function MusicPlayer({ station }) {
   const {
@@ -618,7 +618,7 @@ const canGoNext = canControl && (index < (playOrder?.length || 0) - 1 || repeat 
       {!currentSong?.isYouTube && (
         <audio
           ref={audioRef}
-          src={currentSong?.url || FALLBACK}
+          src={currentSong?.previewUrl || currentSong?.url || FALLBACK}
           preload="metadata"
           onLoadedMetadata={(e) => {
             const d = e.target.duration || 0
@@ -651,13 +651,12 @@ const canGoNext = canControl && (index < (playOrder?.length || 0) - 1 || repeat 
             }
           }}
           onError={(e) => {
-            if (currentSong?.url !== FALLBACK) {
-              // Try fallback URL
-              e.target.src = FALLBACK
-            }
+            console.warn('Audio source failed for track:', currentSong?.title)
+            setPlay(false)
+            showUserMsg({ txt: 'This track has no playable preview', type: 'error' })
           }}
           onLoadStart={() => {
-            console.log('🔄 Audio load started for:', currentSong?.url)
+            console.log('🔄 Audio load started for:', currentSong?.previewUrl || currentSong?.url)
           }}
         />
       )}
