@@ -47,6 +47,37 @@ export function SearchResults({ searchTerm }) {
 
   const filters = ['All', 'Artists', 'Playlists', 'Songs', 'Albums']
 
+  const normalize = (txt = '') => txt.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim()
+
+  const pickBestYouTubeMatch = useCallback((sourceSong, candidates = []) => {
+    if (!sourceSong || !Array.isArray(candidates) || !candidates.length) return null
+
+    const sourceTitle = normalize(sourceSong.title || '')
+    const sourceArtist = normalize(sourceSong.artist || sourceSong.artists || '')
+
+    let best = null
+    let bestScore = -1
+
+    for (const candidate of candidates) {
+      const candTitle = normalize(candidate.title || '')
+      const candArtist = normalize(candidate.artist || candidate.artists || '')
+
+      let score = 0
+      if (sourceTitle && candTitle && (candTitle.includes(sourceTitle) || sourceTitle.includes(candTitle))) score += 2
+      if (sourceArtist && candArtist && (candArtist.includes(sourceArtist) || sourceArtist.includes(candArtist))) score += 2
+      if (sourceTitle && candTitle === sourceTitle) score += 1
+      if (sourceArtist && candArtist === sourceArtist) score += 1
+
+      if (score > bestScore) {
+        bestScore = score
+        best = candidate
+      }
+    }
+
+    // Require at least a partial match on either title or artist to avoid unrelated tracks.
+    return bestScore >= 2 ? best : null
+  }, [])
+
   // Trigger search when search term changes
   useEffect(() => {
     console.log('🔄 Search effect triggered. searchTerm:', searchTerm)
@@ -216,10 +247,10 @@ export function SearchResults({ searchTerm }) {
       try {
         const fallbackQuery = `${song.title || ''} ${song.artist || song.artists || ''}`.trim()
         const ytResults = await youtubeService.searchSongs(fallbackQuery)
-        const ytSong = ytResults?.songs?.[0]
+        const ytSong = pickBestYouTubeMatch(song, ytResults?.songs || [])
 
         if (!ytSong) {
-          showErrorMsg('No playable source found for this song')
+          showErrorMsg('No matching playable source found for this song')
           return
         }
 
