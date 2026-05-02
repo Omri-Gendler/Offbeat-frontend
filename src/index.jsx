@@ -12,14 +12,41 @@ import { initDemoData, clearAndRegenerateDemoData, createSimpleDemoData } from '
 
 import './assets/styles/main.css'
 
-// Force initialize demo data, especially for GitHub Pages
-try {
-    initDemoData()
-} catch (error) {
-    console.error('Failed to init demo data:', error)
+function _safeReadStations() {
+    try {
+        const rawStations = localStorage.getItem('stationDB')
+        if (!rawStations) return []
 
-    createSimpleDemoData()
+        const parsedStations = JSON.parse(rawStations)
+        return Array.isArray(parsedStations) ? parsedStations : []
+    } catch (error) {
+        console.error('Failed reading stationDB from localStorage:', error)
+        return []
+    }
 }
+
+function ensureDemoData() {
+    const existingStations = _safeReadStations()
+    if (existingStations.length > 0) return
+
+    try {
+        initDemoData()
+    } catch (error) {
+        console.error('Failed to init demo data:', error)
+    }
+
+    const stationsAfterInit = _safeReadStations()
+    if (stationsAfterInit.length > 0) return
+
+    try {
+        createSimpleDemoData()
+    } catch (error) {
+        console.error('Failed to create fallback demo data:', error)
+    }
+}
+
+// Always ensure local demo data exists on startup (Vercel/GitHub Pages/local)
+ensureDemoData()
 
 // Hide initial loading screen once React app is ready
 function hideInitialLoading() {
@@ -34,9 +61,8 @@ function hideInitialLoading() {
 // For GitHub Pages, ensure we have demo data after a small delay
 if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
     setTimeout(() => {
-        const stations = localStorage.getItem('stationDB')
-        const stationData = stations ? JSON.parse(stations) : []
-        if (!stations || stationData.length < 2) {
+        const stationData = _safeReadStations()
+        if (stationData.length < 2) {
             console.log('🚀 GitHub Pages detected - creating simple demo data')
             createSimpleDemoData()
             // Force a page reload to ensure the new data is loaded
