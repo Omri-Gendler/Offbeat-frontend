@@ -17,7 +17,7 @@ try {
     initDemoData()
 } catch (error) {
     console.error('Failed to init demo data:', error)
-    // Fallback to simple demo data
+
     createSimpleDemoData()
 }
 
