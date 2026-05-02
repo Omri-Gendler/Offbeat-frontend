@@ -2,11 +2,13 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { spotifyService } from '../services/spotify.service'
 import { offlineSearchService } from '../services/offline-search.service'
+import { youtubeService } from '../services/youtube.service'
 import { IconPlay24, IconPause24 } from './Icon'
 import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 import { SearchResultSongRow } from './SearchResultSongRow.jsx'
 import { playContext, togglePlay } from '../store/actions/player.actions'
 import { selectCurrentSong } from '../store/selectors/player.selectors'
+import { showErrorMsg } from '../services/event-bus.service'
 
 export function SearchResults({ searchTerm }) {
   const navigate = useNavigate()
@@ -204,17 +206,35 @@ export function SearchResults({ searchTerm }) {
     ) || null
   }, [allSongs])
 
-  function handlePlaySong(song) {
+  async function handlePlaySong(song) {
     if (!song) return
+
+    let songToPlay = song
     const playable = !!(song?.isYouTube || song?.previewUrl || song?.url)
+
     if (!playable) {
-      setError('This track has no playable preview available')
-      return
+      try {
+        const fallbackQuery = `${song.title || ''} ${song.artist || song.artists || ''}`.trim()
+        const ytResults = await youtubeService.searchSongs(fallbackQuery)
+        const ytSong = ytResults?.songs?.[0]
+
+        if (!ytSong) {
+          showErrorMsg('No playable source found for this song')
+          return
+        }
+
+        songToPlay = ytSong
+      } catch (err) {
+        console.error('YouTube fallback failed:', err)
+        showErrorMsg('Could not load a playable source')
+        return
+      }
     }
+
     const context = {
       contextId: searchContextId,     // must match our context checks
       contextType: 'search',
-      tracks: [song],
+      tracks: [songToPlay],
       index: 0,
       autoplay: true
     }
@@ -222,12 +242,12 @@ export function SearchResults({ searchTerm }) {
     playContext(context)
   }
 
-  const handlePlayPauseClick = (song) => {
+  const handlePlayPauseClick = async (song) => {
     const isThisSongPlaying =
       !!(currentPlayingSong && currentPlayingSong.id === song.id) &&
       isCurrentSearchContext
     if (isThisSongPlaying) togglePlay()
-    else handlePlaySong(song)
+    else await handlePlaySong(song)
   }
 
   function formatDuration(ms) {
