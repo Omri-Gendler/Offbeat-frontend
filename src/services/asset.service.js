@@ -15,5 +15,7 @@ export const ASSET_PATHS = {
     UNNAMED_SONG: '/img/unnamed-song.png',
     APP_LOGO: '/img/AppLogo.png',
     SPOTIFY_LOGO: '/img/spotify-white-icon.webp',
-    LIKED_SONGS: '/img/liked-songs.jpeg'
+    LIKED_SONGS: '/img/liked-songs.jpeg',
+    SPOTIFY_MOBILE_1: '/img/spotify1.jpeg',
+    SPOTIFY_MOBILE_2: '/img/spotify2.jpeg'
 }

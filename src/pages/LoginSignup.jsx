@@ -27,6 +27,11 @@ export function LoginSignup() {
 
                     <Outlet/>
                 </div>
+
+                <section className="auth-mobile-shots" aria-label="Offbeat mobile screenshots">
+                    <img src={getAssetUrl(ASSET_PATHS.SPOTIFY_MOBILE_1)} alt="Offbeat mobile view 1" />
+                    <img src={getAssetUrl(ASSET_PATHS.SPOTIFY_MOBILE_2)} alt="Offbeat mobile view 2" />
+                </section>
             </section>
         </div>
     )

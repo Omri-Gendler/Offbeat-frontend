@@ -110,7 +110,7 @@
   }
 }
 
-@media (max-width: 414px) {
+@media (max-width: 768px) {
   .browser-categories .categories {
     padding: 16px;
     padding-top: 24px;

@@ -4,7 +4,7 @@
   display: none;
 }
 
-@media (max-width: 414px) {
+@media (max-width: 768px) {
   .mobile-header {
     display: flex;
     align-items: center;

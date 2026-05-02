@@ -9,6 +9,7 @@
 	width: 100%;
 	display: grid;
 	place-items: center;
+	gap: 14px;
 }
 
 .auth-card {
@@ -148,4 +149,26 @@
 	margin-top: 6px;
 	border-radius: 10px;
 	border: 1px solid #333;
+}
+
+.auth-mobile-shots {
+	width: min(460px, 100%);
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+
+.auth-mobile-shots img {
+	width: 100%;
+	aspect-ratio: 9 / 19.5;
+	object-fit: cover;
+	border-radius: 18px;
+	border: 2px solid #1f1f1f;
+	box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 769px) {
+	.auth-mobile-shots {
+		display: none;
+	}
 }

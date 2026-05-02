@@ -1066,7 +1066,7 @@ button.find-more-btn {
   margin-bottom: 20px;
 }
 
-@media (max-width: 414px) {
+@media (max-width: 768px) {
   .station-details {
     padding: 0;
     min-height: calc(100vh - 110px);

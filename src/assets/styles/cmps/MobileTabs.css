@@ -4,7 +4,7 @@
   display: none;
 }
 
-@media (max-width: 414px) {
+@media (max-width: 768px) {
   .mobile-tabs {
     position: fixed;
     bottom: 60px; /* Above music player */
@@ -123,17 +123,6 @@
     }
   }
 
-  /* Adjust content for bottom tabs */
-  .content-layout {
-    margin-bottom: 110px; /* 60px music player + 50px tabs */
-  }
-
-  @supports (padding-bottom: env(safe-area-inset-bottom)) {
-    .content-layout {
-      margin-bottom: calc(110px + env(safe-area-inset-bottom));
-    }
-  }
-
   /* Tab transitions */
   .mobile-tab {
     transition: color 0.2s ease, transform 0.1s ease;
@@ -186,7 +175,7 @@
   }
 
   .content-layout {
-    margin-bottom: 94px; /* Adjust for smaller components */
+    margin-bottom: 64px;
   }
 }
 

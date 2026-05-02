@@ -409,7 +409,7 @@
 }
 
 /* Mobile-specific styles to match Spotify exactly */
-@media (max-width: 414px) {
+@media (max-width: 768px) {
   .station-index {
     padding: 0;
     background: #121212;
