@@ -1,0 +1,4 @@
+# Prevent caching issues
+.git
+node_modules
+.env.local
