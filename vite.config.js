@@ -3,13 +3,10 @@ import react from '@vitejs/plugin-react-swc'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-	const isGitHubPagesBuild = process.env.VITE_DEPLOY_TARGET === 'github-pages' || process.env.GITHUB_ACTIONS === 'true'
-	const basePath = mode === 'production' && isGitHubPagesBuild ? '/Offbeat-frontend/' : '/'
-
 	return ({
 	plugins: [react()],
-	// Use root path by default (Vercel/Render). Switch only for explicit GitHub Pages builds.
-	base: basePath,
+	// Always use root path for Vercel
+	base: '/',
 	server: {
 		port: 5173,
 		host: true,
