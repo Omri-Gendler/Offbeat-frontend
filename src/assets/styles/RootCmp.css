@@ -56,6 +56,11 @@ body,
   margin-bottom: 80px; /* Space for the music player */
 }
 
+.content-layout.auth-route {
+  grid-template-columns: 1fr;
+  margin-bottom: 0;
+}
+
 /* Mobile-first responsive adjustments */
 @media (max-width: 768px) {
   .content-layout {

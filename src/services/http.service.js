@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 const BASE_URL = process.env.NODE_ENV === 'production'
-    ? import.meta.env.VITE_BACKEND_URL || 'https://offbeat-back.onrender.com/api/'
+    ? import.meta.env.VITE_BACKEND_URL || '/api/'
     : '//localhost:3030/api/'
 
 

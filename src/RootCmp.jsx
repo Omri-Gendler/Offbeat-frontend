@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
-import { Routes, Route } from 'react-router'
+import { Routes, Route, useLocation } from 'react-router'
 import { FastAverageColor } from 'fast-average-color'
 import { HomePage } from './pages/HomePage'
 import { AboutUs, AboutTeam, AboutVision } from './pages/AboutUs'
@@ -26,6 +26,8 @@ import { setupSocketListeners, removeSocketListeners } from './store/actions/soc
 
 
 export function RootCmp() {
+  const location = useLocation()
+  const isAuthRoute = location.pathname.startsWith('/auth')
   const bgImageUrl = useSelector(s => s.appModule?.bgImageUrl)
   const stations = useSelector(s => s.stationModule?.stations || [])
   const coverHex = useSelector(s => s.appModule?.coverHex) || '#1f1f1f'
@@ -154,8 +156,8 @@ export function RootCmp() {
       <AppHeader />
       <UserMsg />
 
-      <div className="content-layout">
-        <LeftSideBar />
+      <div className={`content-layout ${isAuthRoute ? 'auth-route' : ''}`}>
+        {!isAuthRoute && <LeftSideBar />}
 
         <UserMsg />
 
@@ -165,7 +167,7 @@ export function RootCmp() {
           style={{
             '--cover-color': coverHex,
             backgroundColor: '#121212',
-            backgroundImage: dynamicBg,     // ← the hue overlay
+            backgroundImage: isAuthRoute ? 'none' : dynamicBg,     // ← the hue overlay
             backgroundRepeat: 'no-repeat',
             backgroundSize: '100% 360px',   // ← how tall the tint is
             backgroundPosition: 'top left', // ← sits at the top, scrolls
@@ -195,7 +197,7 @@ export function RootCmp() {
         </main>
       </div>
 
-      <AppFooter />
+      {!isAuthRoute && <AppFooter />}
     </div>
   )
 }
