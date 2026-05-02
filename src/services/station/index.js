@@ -21,9 +21,12 @@ function getDefaultFilter() {
     }
 }
 
-// Force local service for GitHub Pages or when backend is disabled
+// Force local service for static-host deployments or when backend is disabled
 const isStaticDeployment = 
-    (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) ||
+    (typeof window !== 'undefined' && (
+        window.location.hostname.includes('github.io') ||
+        window.location.hostname.includes('vercel.app')
+    )) ||
     import.meta.env.VITE_DISABLE_BACKEND === 'true' ||
     import.meta.env.VITE_LOCAL === 'true'
 
