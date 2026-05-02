@@ -48,6 +48,14 @@ export function SearchResults({ searchTerm }) {
   const filters = ['All', 'Artists', 'Playlists', 'Songs', 'Albums']
 
   const normalize = (txt = '') => txt.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim()
+  const hasOverlap = (a = '', b = '') => {
+    const aSet = new Set(normalize(a).split(' ').filter(Boolean))
+    const bSet = new Set(normalize(b).split(' ').filter(Boolean))
+    for (const w of aSet) {
+      if (bSet.has(w)) return true
+    }
+    return false
+  }
 
   const pickBestYouTubeMatch = useCallback((sourceSong, candidates = []) => {
     if (!sourceSong || !Array.isArray(candidates) || !candidates.length) return null
@@ -65,6 +73,8 @@ export function SearchResults({ searchTerm }) {
       let score = 0
       if (sourceTitle && candTitle && (candTitle.includes(sourceTitle) || sourceTitle.includes(candTitle))) score += 2
       if (sourceArtist && candArtist && (candArtist.includes(sourceArtist) || sourceArtist.includes(candArtist))) score += 2
+      if (hasOverlap(sourceTitle, candTitle)) score += 1
+      if (hasOverlap(sourceArtist, candArtist)) score += 1
       if (sourceTitle && candTitle === sourceTitle) score += 1
       if (sourceArtist && candArtist === sourceArtist) score += 1
 
@@ -74,8 +84,57 @@ export function SearchResults({ searchTerm }) {
       }
     }
 
-    // Require at least a partial match on either title or artist to avoid unrelated tracks.
-    return bestScore >= 2 ? best : null
+    // Require at least minimal title/artist relation to avoid unrelated tracks.
+    return bestScore >= 1 ? best : null
+  }, [])
+
+  const resolveItunesPreview = useCallback(async (sourceSong) => {
+    const term = `${sourceSong?.title || ''} ${sourceSong?.artist || sourceSong?.artists || ''}`.trim()
+    if (!term) return null
+
+    try {
+      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=song&limit=10`
+      const res = await fetch(url)
+      if (!res.ok) return null
+      const data = await res.json()
+      const rows = Array.isArray(data?.results) ? data.results : []
+      if (!rows.length) return null
+
+      let best = null
+      let bestScore = -1
+      const sourceTitle = sourceSong?.title || ''
+      const sourceArtist = sourceSong?.artist || sourceSong?.artists || ''
+
+      for (const row of rows) {
+        const title = row.trackName || ''
+        const artist = row.artistName || ''
+        let score = 0
+        if (hasOverlap(sourceTitle, title)) score += 2
+        if (hasOverlap(sourceArtist, artist)) score += 2
+        if (normalize(sourceTitle) === normalize(title)) score += 2
+        if (normalize(sourceArtist) === normalize(artist)) score += 1
+        if (score > bestScore) {
+          bestScore = score
+          best = row
+        }
+      }
+
+      if (!best?.previewUrl || bestScore < 2) return null
+
+      return {
+        ...sourceSong,
+        title: sourceSong.title || best.trackName,
+        artist: sourceSong.artist || sourceSong.artists || best.artistName,
+        artists: sourceSong.artists || sourceSong.artist || best.artistName,
+        imgUrl: sourceSong.imgUrl || best.artworkUrl100,
+        previewUrl: best.previewUrl,
+        url: best.previewUrl,
+        isYouTube: false,
+      }
+    } catch (err) {
+      console.warn('iTunes preview lookup failed:', err)
+      return null
+    }
   }, [])
 
   // Trigger search when search term changes
@@ -245,6 +304,10 @@ export function SearchResults({ searchTerm }) {
 
     if (!playable) {
       try {
+        const itunesSong = await resolveItunesPreview(song)
+        if (itunesSong) {
+          songToPlay = itunesSong
+        } else {
         const fallbackQuery = `${song.title || ''} ${song.artist || song.artists || ''}`.trim()
         const ytResults = await youtubeService.searchSongs(fallbackQuery)
         const ytSong = pickBestYouTubeMatch(song, ytResults?.songs || [])
@@ -255,6 +318,7 @@ export function SearchResults({ searchTerm }) {
         }
 
         songToPlay = ytSong
+        }
       } catch (err) {
         console.error('YouTube fallback failed:', err)
         showErrorMsg('Could not load a playable source')
