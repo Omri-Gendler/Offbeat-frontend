@@ -6,15 +6,28 @@ import { useState, useEffect } from 'react'
 import { userService } from '../services/user'
 import { login, signup } from '../store/actions/user.actions'
 import { ImgUploader } from '../cmps/ImgUploader'
+import { ASSET_PATHS, getAssetUrl } from '../services/asset.service'
 
 export function LoginSignup() {
     return (
         <div className="login-page">
-            <nav>
-                <NavLink to="login">Login</NavLink>
-                <NavLink to="signup">Signup</NavLink>
-            </nav>
-            <Outlet/>
+            <section className="auth-shell">
+                <div className="auth-card">
+                    <div className="auth-brand">
+                        <img src={getAssetUrl(ASSET_PATHS.SPOTIFY_LOGO)} alt="Offbeat" />
+                        <h1>Offbeat</h1>
+                    </div>
+
+                    <p className="auth-subtitle">Music for everyone.</p>
+
+                    <nav className="auth-tabs">
+                        <NavLink to="login">Login</NavLink>
+                        <NavLink to="signup">Signup</NavLink>
+                    </nav>
+
+                    <Outlet/>
+                </div>
+            </section>
         </div>
     )
 }
@@ -50,14 +63,17 @@ export function Login() {
     
     return (
         <form className="login-form" onSubmit={onLogin}>
+            <label className="auth-label" htmlFor="auth-user-select">Choose account</label>
             <select
+                id="auth-user-select"
+                className="auth-input"
                 name="username"
                 value={credentials.username}
                 onChange={handleChange}>
                     <option value="">Select User</option>
                     {users.map(user => <option key={user._id} value={user.username}>{user.fullname}</option>)}
             </select>
-            <button>Login</button>
+            <button className="auth-primary-btn">Login</button>
         </form>
     )
 }
@@ -93,7 +109,10 @@ export function Signup() {
 
     return (
         <form className="signup-form" onSubmit={onSignup}>
+            <label className="auth-label" htmlFor="auth-fullname">Full name</label>
             <input
+                id="auth-fullname"
+                className="auth-input"
                 type="text"
                 name="fullname"
                 value={credentials.fullname}
@@ -101,7 +120,10 @@ export function Signup() {
                 onChange={handleChange}
                 required
             />
+            <label className="auth-label" htmlFor="auth-username">Username</label>
             <input
+                id="auth-username"
+                className="auth-input"
                 type="text"
                 name="username"
                 value={credentials.username}
@@ -109,7 +131,10 @@ export function Signup() {
                 onChange={handleChange}
                 required
             />
+            <label className="auth-label" htmlFor="auth-password">Password</label>
             <input
+                id="auth-password"
+                className="auth-input"
                 type="password"
                 name="password"
                 value={credentials.password}
@@ -118,7 +143,7 @@ export function Signup() {
                 required
             />
             <ImgUploader onUploaded={onUploaded} />
-            <button>Signup</button>
+            <button className="auth-primary-btn">Signup</button>
         </form>
     )
 }
