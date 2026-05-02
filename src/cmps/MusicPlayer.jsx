@@ -289,6 +289,29 @@ if (currentSong?.title?.includes('Blinding Lights')) {
     }
   }, [isPlaying, currentSong?.id])
 
+  // Ensure only one media source is active (audio vs YouTube)
+  useEffect(() => {
+    if (!currentSong) return
+
+    if (currentSong.isYouTube) {
+      const audioEl = audioRef.current
+      if (audioEl) {
+        try {
+          audioEl.pause()
+          audioEl.currentTime = 0
+        } catch (e) {
+          console.warn('Audio cleanup error', e)
+        }
+      }
+    } else {
+      try {
+        ytRef.current?.pause()
+      } catch (e) {
+        console.warn('YouTube cleanup error', e)
+      }
+    }
+  }, [currentSong?.id, currentSong?.isYouTube])
+
   // Broadcast play/pause changes to other users with debouncing
   useEffect(() => {
     if (!currentSong) {

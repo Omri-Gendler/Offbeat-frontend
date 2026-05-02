@@ -2,16 +2,12 @@
 export function getAssetUrl(path) {
     // Remove leading slash if present
     const cleanPath = path.startsWith('/') ? path.slice(1) : path
-    
-    // In production (GitHub Pages), we need to use the base path
-    if (import.meta.env.MODE === 'production') {
-        const url = `/Offbeat-frontend/${cleanPath}`
-        console.log(`🖼️ Asset URL generated: ${path} → ${url}`)
-        return url
-    }
-    
-    // In development, use the path as-is
-    return `/${cleanPath}`
+
+    // Use Vite base URL for all environments (works for Vercel and GH Pages)
+    const baseUrl = import.meta.env.BASE_URL || '/'
+    const url = `${baseUrl}${cleanPath}`
+    console.log(`🖼️ Asset URL generated: ${path} → ${url}`)
+    return url
 }
 
 // Common asset paths

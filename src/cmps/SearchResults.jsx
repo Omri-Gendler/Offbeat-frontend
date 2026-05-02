@@ -206,12 +206,16 @@ export function SearchResults({ searchTerm }) {
 
   function handlePlaySong(song) {
     if (!song) return
-    const indexToPlay = Math.max(0, getAllSongsIndex(song))
+    const playable = !!(song?.isYouTube || song?.previewUrl || song?.url)
+    if (!playable) {
+      setError('This track has no playable preview available')
+      return
+    }
     const context = {
       contextId: searchContextId,     // must match our context checks
       contextType: 'search',
-      tracks: allSongs,
-      index: indexToPlay,
+      tracks: [song],
+      index: 0,
       autoplay: true
     }
     // If your actions self-dispatch, this is fine; otherwise use: dispatch(playContext(context))
