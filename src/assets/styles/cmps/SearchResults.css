@@ -940,3 +940,270 @@
   cursor: pointer;
 }
 
+@media (max-width: 768px) {
+  .browser {
+    padding: 12px 0 24px;
+    min-height: calc(100vh - 132px);
+  }
+
+  .search-container-youtube {
+    padding: 0 16px 24px;
+  }
+
+  .search-filters {
+    flex-wrap: nowrap;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 8px 0 14px;
+    margin: 0 -4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .search-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-btn {
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    border-radius: 999px;
+  }
+
+  .search-results {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 8px;
+  }
+
+  .top-result-section,
+  .songs-section,
+  .artists-section,
+  .featuring-section {
+    margin-inline-start: 0;
+  }
+
+  .top-result-header-section .section-title-youtube,
+  .songs-section h2,
+  .artists-section h2,
+  .featuring-section .section-title {
+    font-size: 1.9rem;
+    line-height: 1.05;
+    margin: 0 0 14px;
+  }
+
+  .top-result {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    min-height: 0;
+    padding: 16px;
+  }
+
+  .top-result img {
+    width: 88px;
+    height: 88px;
+    margin-bottom: 0;
+    border-radius: 16px;
+  }
+
+  .top-result .artist-title-results {
+    font-size: 1.9rem;
+    margin-bottom: 4px;
+  }
+
+  .top-result p {
+    font-size: 0.95rem;
+  }
+
+  .top-result .play-btn {
+    opacity: 1;
+    transform: none;
+    width: 44px;
+    height: 44px;
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .songs-section {
+    min-width: 0;
+  }
+
+  .songs-table {
+    width: 100%;
+  }
+
+  .song-row-youtube {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-height: 64px;
+    height: auto;
+    padding: 10px 0 10px 6px;
+    padding-inline-end: 0;
+  }
+
+  .track-info {
+    gap: 10px;
+  }
+
+  .song-row-youtube .top-result-image-container,
+  .track-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+  }
+
+  .track-name {
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+
+  .track-artist,
+  .duration {
+    font-size: 0.92rem;
+  }
+
+  .col-duration {
+    min-width: 52px;
+  }
+
+  .duration-actions {
+    justify-content: flex-end;
+  }
+
+  .add-btn,
+  .more-btn {
+    display: none;
+  }
+
+  .artists-section {
+    margin-top: 28px;
+  }
+
+  .artists-section h2 {
+    margin-inline-start: 0;
+  }
+
+  .artists-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-inline-start: 0;
+    margin-bottom: 20px;
+  }
+
+  .artist-card {
+    padding: 0;
+    background: transparent;
+  }
+
+  .artist-card:hover {
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .artist-image-container {
+    margin-bottom: 8px;
+  }
+
+  .artist-info h3 {
+    font-size: 0.92rem;
+    margin-bottom: 2px;
+  }
+
+  .artist-info p {
+    font-size: 0.8rem;
+  }
+
+  .featuring-section {
+    margin-top: 28px;
+  }
+
+  .featuring-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .featuring-card {
+    padding: 0;
+  }
+
+  .featuring-card-content {
+    padding-top: 8px;
+  }
+
+  .featuring-card h3 {
+    font-size: 0.98rem;
+    margin-bottom: 2px;
+  }
+
+  .featuring-card p {
+    font-size: 0.82rem;
+  }
+
+  .search-results.empty,
+  .search-results.loading,
+  .search-results.error {
+    padding: 40px 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .search-container-youtube {
+    padding-inline: 12px;
+  }
+
+  .top-result-header-section .section-title-youtube,
+  .songs-section h2,
+  .artists-section h2,
+  .featuring-section .section-title {
+    font-size: 1.6rem;
+  }
+
+  .top-result {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .top-result img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .top-result .artist-title-results {
+    font-size: 1.45rem;
+  }
+
+  .song-row-youtube {
+    min-height: 60px;
+    gap: 8px;
+  }
+
+  .song-row-youtube .top-result-image-container,
+  .track-image {
+    width: 44px;
+    height: 44px;
+  }
+
+  .track-name {
+    font-size: 0.96rem;
+  }
+
+  .track-artist,
+  .duration {
+    font-size: 0.84rem;
+  }
+
+  .artists-grid {
+    gap: 12px;
+  }
+
+  .featuring-grid {
+    gap: 12px;
+  }
+}
+

@@ -30,6 +30,8 @@ function getRandomAvatar() {
 // Force local service for static-host deployments or when backend is disabled
 const isStaticDeployment = 
     (typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
         window.location.hostname.includes('github.io') ||
         window.location.hostname.includes('vercel.app')
     )) ||

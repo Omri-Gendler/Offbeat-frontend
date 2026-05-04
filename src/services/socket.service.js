@@ -7,7 +7,11 @@ const SOCKET_URL = process.env.NODE_ENV === 'production'
 
 // Check if we're on GitHub Pages or static deployment
 const isStaticDeployment = 
-    (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) ||
+    (typeof window !== 'undefined' && (
+        window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.includes('github.io')
+    )) ||
     import.meta.env.VITE_DISABLE_BACKEND === 'true' ||
     (!import.meta.env.VITE_BACKEND_URL && import.meta.env.PROD)
 

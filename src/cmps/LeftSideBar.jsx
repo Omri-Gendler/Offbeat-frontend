@@ -210,11 +210,17 @@ export function LeftSideBar() {
     }
     let list = Array.from(uniqueMap.values());
 
-    // 1) Only my stations or those I liked
-    list = list.filter(s =>
-      s.owner?._id?.toString() === userId?.toString() ||
-      (userId && s.likedByUsers?.some(likedUserId => likedUserId.toString() === userId.toString()))
-    );
+    // 1) Logged-in users: only my stations or those I liked.
+    // Guests: keep all stations so the library is populated.
+    if (userId) {
+      list = list.filter(s =>
+        s.owner?._id?.toString() === userId.toString() ||
+        s.likedByUsers?.some(likedUserId => likedUserId.toString() === userId.toString())
+      );
+    }
+
+    // Prevent duplicate Liked Songs entries (we inject a dedicated pseudo-station below)
+    list = list.filter(s => s._id !== LIKED_ID);
 
     // 2) Text filter
     if (filterBy.txt) {

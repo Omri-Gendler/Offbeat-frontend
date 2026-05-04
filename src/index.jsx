@@ -25,9 +25,13 @@ function _safeReadStations() {
     }
 }
 
+function _countRealStations(stations = []) {
+    return stations.filter(st => st?._id !== 'liked-songs-station').length
+}
+
 function ensureDemoData() {
     const existingStations = _safeReadStations()
-    if (existingStations.length > 0) return
+    if (_countRealStations(existingStations) > 0) return
 
     try {
         initDemoData()
@@ -36,7 +40,7 @@ function ensureDemoData() {
     }
 
     const stationsAfterInit = _safeReadStations()
-    if (stationsAfterInit.length > 0) return
+    if (_countRealStations(stationsAfterInit) > 0) return
 
     try {
         createSimpleDemoData()
