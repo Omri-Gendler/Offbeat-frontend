@@ -18,6 +18,11 @@ export function initDemoData() {
         // Validate that the data structure is correct
         const hasValidStructure = stations.every(station => station._id && station.name && Array.isArray(station.songs))
         if (hasValidStructure) {
+            const { stations: syncedStations, changed } = _syncSpotifyStationMetadata(stations)
+            if (changed) {
+                saveToStorage('stationDB', syncedStations)
+                console.log('✅ Refreshed existing station images from default Spotify metadata')
+            }
             console.log('✅ Valid data structure found, using existing data')
             return
         } else {
@@ -212,6 +217,47 @@ function _createSpotifyStations() {
     return stations
 }
 
+function _syncSpotifyStationMetadata(stations = []) {
+    const playlistById = {}
+
+    Object.values(SPOTIFY_PLAYLISTS).forEach(playlists => {
+        playlists.forEach(playlist => {
+            playlistById[playlist.spotifyId] = playlist
+        })
+    })
+
+    let changed = false
+
+    const syncedStations = stations.map(station => {
+        if (!station?.spotifyId) return station
+
+        const source = playlistById[station.spotifyId]
+        if (!source) return station
+
+        const nextImgUrl = source.imgUrl?.trim?.() || station.imgUrl
+        const nextName = source.title || station.name
+        const nextDescription = source.description || station.description
+
+        if (
+            station.imgUrl !== nextImgUrl ||
+            station.name !== nextName ||
+            station.description !== nextDescription
+        ) {
+            changed = true
+            return {
+                ...station,
+                imgUrl: nextImgUrl,
+                name: nextName,
+                description: nextDescription
+            }
+        }
+
+        return station
+    })
+
+    return { stations: syncedStations, changed }
+}
+
 /**
  * Generate demo songs that fit the playlist theme
  */
@@ -232,7 +278,7 @@ function _generateDemoSongsForSpotifyPlaylist(playlistTitle, category) {
             artists: artist,
             album: `${getRandomItem(themeWords.albums)}`,
             durationMs: getRandomInt(150000, 360000),
-            imgUrl: `https://picsum.photos/id/${200 + i}/200`,
+            imgUrl: `https://picsum.photos/seed/${encodeURIComponent(`${artist}-${songId}`)}/200`,
             addedAt: Date.now() - getRandomInt(0, 31536000000),
             addedBy: 'spotify',
             likedBy: Math.random() > 0.7 ? ['u100'] : [], // 30% chance of being liked
@@ -254,25 +300,25 @@ function _getThemeWords(category, playlistTitle) {
         pop: {
             adjectives: ['Electric', 'Bright', 'Golden', 'Shining', 'Sweet', 'Dancing', 'Dreaming', 'Rising'],
             nouns: ['Star', 'Heart', 'Light', 'Dream', 'Song', 'Beat', 'Love', 'Night'],
-            artists: ['Pop Star', 'Luna Rose', 'The Bright Lights', 'Golden Hearts', 'Sweet Dreams', 'Dance Floor'],
+            artists: ['Dua Lipa', 'The Weeknd', 'Ariana Grande', 'Taylor Swift', 'Doja Cat', 'Billie Eilish'],
             albums: ['Pop Perfection', 'Hit Collection', 'Chart Toppers', 'Radio Ready', 'Pop Gems']
         },
         decades: {
             adjectives: ['Classic', 'Vintage', 'Timeless', 'Retro', 'Nostalgic', 'Old School', 'Legendary'],
             nouns: ['Memories', 'Times', 'Groove', 'Soul', 'Rhythm', 'Beat', 'Sound', 'Vibe'],
-            artists: ['The Classics', 'Vintage Sound', 'Retro Kings', 'Time Machine', 'Nostalgia Band'],
+            artists: ['Pink Floyd', 'Queen', 'Fleetwood Mac', 'ABBA', 'David Bowie', 'The Beatles'],
             albums: ['Greatest Hits', 'Classic Collection', 'Timeless Tracks', 'Vintage Vibes', 'Retro Gold']
         },
         hiphop: {
             adjectives: ['Heavy', 'Hard', 'Raw', 'Street', 'Underground', 'Fierce', 'Bold', 'Real'],
             nouns: ['Beats', 'Flow', 'Rhyme', 'Bass', 'Street', 'Game', 'Life', 'Hustle'],
-            artists: ['MC Flow', 'Street Beats', 'Underground Kings', 'Raw Talent', 'Hip Hop Legends'],
+            artists: ['Kendrick Lamar', 'Drake', 'J. Cole', 'Travis Scott', 'Cardi B', 'Missy Elliott'],
             albums: ['Street Chronicles', 'Beat Collection', 'Raw Rhymes', 'Underground Hits', 'Hip Hop Classics']
         },
         latin: {
             adjectives: ['Peaceful', 'Calm', 'Serene', 'Gentle', 'Soft', 'Relaxing', 'Soothing', 'Tranquil'],
             nouns: ['Breeze', 'Waves', 'Peace', 'Calm', 'Rest', 'Breath', 'Quiet', 'Soul'],
-            artists: ['Peaceful Vibes', 'Calm Waters', 'Serene Sounds', 'Gentle Waves', 'Quiet Storm'],
+            artists: ['Bad Bunny', 'Rosalía', 'Karol G', 'J Balvin', 'Shakira', 'Rauw Alejandro'],
             albums: ['Peaceful Moments', 'Calm Collection', 'Relaxation', 'Soft Sounds', 'Tranquil Times']
         }
     }
